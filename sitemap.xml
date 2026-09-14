@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Replace YOUR-DOMAIN.com with your real domain after deployment -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://YOUR-DOMAIN.com/index.html</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/discover.html</loc><priority>0.9</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=trending</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=popular</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=festival</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=wedding</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=professional</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=couple</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/category.html?c=cinematic</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/blog.html</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://YOUR-DOMAIN.com/article.html?s=write-perfect-ai-image-prompts</loc><priority>0.6</priority></url>
+  <url><loc>https://YOUR-DOMAIN.com/article.html?s=best-free-ai-image-tools</loc><priority>0.6</priority></url>
+  <url><loc>https://YOUR-DOMAIN.com/article.html?s=couple-photo-prompt-tips</loc><priority>0.6</priority></url>
+  <url><loc>https://YOUR-DOMAIN.com/article.html?s=durga-puja-ai-photo-guide</loc><priority>0.6</priority></url>
+</urlset>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09090b">
+  <title>TEZOFY — Premium AI Image Prompt Library</title>
+  <meta name="description" content="Discover & copy premium AI image prompts. Create stunning portraits with one tap — free templates for Gemini, ChatGPT, Midjourney and more.">
+  <meta property="og:title" content="TEZOFY — Premium AI Image Prompt Library">
+  <meta property="og:description" content="Discover & copy premium AI image prompts. Create beautiful portraits with one tap.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="assets/img/og-card.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="assets/img/og-card.png">
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23FF2DAA"/><stop offset="1" stop-color="%23FF7A00"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><path d="M32 14l4.4 11.6L48 30l-11.6 4.4L32 46l-4.4-11.6L16 30l11.6-4.4z" fill="white"/></svg>'>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TEZOFY">
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body data-page="home">
+
+  <main class="wrap">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="wrap">
+        <span class="hero-badge"><span class="dot"></span> 1,000+ free prompt templates · new prompt every day</span>
+        <h1 class="reveal">AI Image Prompt Library<br><span class="grad">Create Stunning AI Portraits</span></h1>
+        <p class="lead reveal">Discover &amp; copy premium AI image prompts. Create beautiful portraits with one tap — no prompt-engineering skills needed.</p>
+        <div class="hero-cta reveal">
+          <button class="search-pill" data-open-search>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <span>Search prompts…</span><kbd>⌘K</kbd>
+          </button>
+          <a class="btn" href="discover.html">Explore All
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="stats reveal">
+          <div class="stat"><b>1K+</b><span>Prompts</span></div>
+          <div class="stat"><b>50K+</b><span>Copies</span></div>
+          <div class="stat"><b>Free</b><span>To Use</span></div>
+        </div>
+
+        <!-- Install app banner (shown when PWA installable) -->
+        <div class="install-banner" id="installBanner">
+          <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
+          <div class="txt"><b>Install TEZOFY App</b><p>One-tap access from your home screen — works offline too.</p></div>
+          <button class="btn" id="installGo">Install</button>
+          <button class="x" id="installClose" aria-label="Dismiss"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prompt of the Day -->
+    <section class="section" id="potd"></section>
+
+    <!-- Top 3 -->
+    <section class="section">
+      <div class="section-head reveal">
+        <span class="emoji">🏆</span>
+        <h2>Top This Week</h2>
+        <a class="see-all" href="category.html?c=trending">See All
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div id="top3" class="top3"></div>
+    </section>
+
+    <!-- Recently viewed (only when the user has history) -->
+    <section class="section" id="recent" style="display:none"></section>
+
+    <!-- Category sections (rendered by JS) -->
+    <section class="section" id="sec-trending"></section>
+    <section class="section" id="sec-popular"></section>
+    <section class="section" id="sec-festival"></section>
+    <section class="section" id="sec-wedding"></section>
+    <section class="section" id="sec-professional"></section>
+
+    <!-- Categories -->
+    <section class="section">
+      <div class="section-head reveal"><span class="emoji">🗂️</span><h2>Popular Prompt Categories</h2></div>
+      <p class="reveal" style="color:var(--muted);font-size:.88rem;margin:-6px 0 16px">From photorealistic portraits to festive celebrations — find the perfect prompt template for every occasion.</p>
+      <div class="cat-grid" id="categories"></div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section">
+      <div class="section-head reveal"><span class="emoji">⚙️</span><h2>How TEZOFY Works</h2></div>
+      <p class="reveal" style="color:var(--muted);font-size:.88rem;margin:-6px 0 16px">Generate stunning AI images in three simple steps. No technical skills required.</p>
+      <div class="steps">
+        <div class="step reveal"><b class="num">1</b><h3>Browse Templates</h3><p>Explore a curated library of prompt templates organized by category — portraits, couples, festivals, cinematic, retro and more.</p></div>
+        <div class="step reveal"><b class="num">2</b><h3>Customize &amp; Copy</h3><p>Replace placeholders like [CITY] and [COLOR] with your own details. One tap copies the complete, optimized prompt to your clipboard.</p></div>
+        <div class="step reveal"><b class="num">3</b><h3>Generate &amp; Download</h3><p>Paste into Gemini, ChatGPT or Midjourney with your photo. Generate stunning images instantly and save them in high resolution.</p></div>
+      </div>
+    </section>
+
+    <!-- Blog -->
+    <section class="section">
+      <div class="section-head reveal">
+        <span class="emoji">📚</span><h2>Latest from the Blog</h2>
+        <a class="see-all" href="blog.html">View All
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#FF7A00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <p class="reveal" style="color:var(--muted);font-size:.88rem;margin:-6px 0 16px">Expert guides, tutorials and tips for AI image generation.</p>
+      <div class="grid" id="blogCards"></div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+      <div class="section-head reveal"><span class="emoji">❓</span><h2>Frequently Asked Questions</h2></div>
+      <p class="reveal" style="color:var(--muted);font-size:.88rem;margin:-6px 0 16px">Everything you need to know about using TEZOFY for AI image generation.</p>
+      <div class="faq">
+        <details class="reveal"><summary>What is TEZOFY?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">TEZOFY is a premium AI image prompt library — a curated collection of pre-tested, professionally crafted prompt templates. Browse, customize and copy prompts, then paste them into tools like Google Gemini, ChatGPT or Midjourney to generate stunning portraits.</div></details>
+        <details class="reveal"><summary>Do I need an account?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Every prompt is free to copy without an account. Creating a free account (tap the profile icon in the header) unlocks a personal profile, daily streak tracking, and a clean home for your saved prompts and likes — all stored privately on your device in this free version.</div></details>
+        <details class="reveal"><summary>How do the Customize options work?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Every prompt page has a Customize panel with scrollable option rows — Outfit, Background, Lighting, Time of Day, Camera Angle, Mood, Extra Effects and Aspect Ratio. Just tap the options you want; the prompt text rewrites itself live. Then press Copy once — your personalized version is on the clipboard.</div></details>
+        <details class="reveal"><summary>Is TEZOFY free to use?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Yes! Every template in the library is completely free to copy and use as many times as you like. A future VIP collection with exclusive designs is planned, but the core library will always remain free.</div></details>
+        <details class="reveal"><summary>Which AI tools work with TEZOFY prompts?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">TEZOFY prompts are designed for all major AI image generators, including Google Gemini, ChatGPT, Microsoft Designer (Bing Image Creator), Meta AI and Midjourney. Each template page notes which tool works best for that specific prompt.</div></details>
+        <details class="reveal"><summary>How do I use a prompt template?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Find a template you like, tap it, customize any highlighted placeholders (like [CITY] or [COLOR]), then press Copy. Paste the prompt into your favourite AI tool — with a reference photo if the template asks for one — and generate. The whole process takes under a minute.</div></details>
+        <details class="reveal"><summary>What categories of prompts are available?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">The library covers festival themes (Durga Puja, Eid, Diwali), couple portraits, cinematic scenes, retro film looks, editorial fashion and more — with professional headshots and 3D name art coming soon. New templates are added every week.</div></details>
+        <details class="reveal"><summary>Can I use AI-generated images commercially?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Usage rights depend on the AI tool you generate with — most major platforms allow commercial use under their own terms of service. TEZOFY prompts themselves are free to use anywhere. Always check your generator's licensing terms.</div></details>
+        <details class="reveal"><summary>How often are new prompts added?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">New templates drop weekly, with special collections released around festivals, weddings and trending social-media themes. Seasonal collections appear right before each major celebration.</div></details>
+        <details class="reveal"><summary>Does TEZOFY work on mobile?<span class="plus"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span></summary><div class="ans">Absolutely — the site is designed mobile-first with an app-style bottom navigation, one-tap copy, and touch-friendly cards. Add it to your home screen for an app-like experience. No install required.</div></details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta reveal">
+      <h2>Start Creating Stunning AI Images Today</h2>
+      <p>Join thousands of creators using TEZOFY's premium prompt templates to generate professional-quality AI portraits.</p>
+      <div class="btns">
+        <a class="btn btn-block" href="discover.html">Explore Free Templates</a>
+        <a class="btn btn-ghost btn-block" href="blog.html">Learn Prompt Engineering</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="index.html">
+            <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
+            <span>TEZOFY<small>Premium AI Prompt Library</small></span>
+          </a>
+          <p class="muted">The easiest way to create stunning AI portraits — discover, customize and copy prompts that actually work.</p>
+        </div>
+        <div class="footer-links">
+          <div>
+            <h4>Explore</h4>
+            <a href="discover.html">All Prompts</a>
+            <a href="category.html?c=trending">Trending</a>
+            <a href="category.html?c=wedding">Wedding</a>
+            <a href="category.html?c=professional">Professional</a>
+          </div>
+          <div>
+            <h4>Resources</h4>
+            <a href="blog.html">Blog</a>
+            <a href="saved.html">Saved Prompts</a>
+            <button data-open-auth style="display:block;text-align:left;font-size:.86rem;color:var(--muted);padding:5px 0;font-family:inherit">My Account</button>
+            <a href="category.html?c=cinematic">Cinematic</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 TEZOFY. Made with ❤️ for creators.</span>
+        <span>Every prompt free to copy, forever.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
