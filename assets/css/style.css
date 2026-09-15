@@ -832,3 +832,66 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 .lock-card h3 { font-size: 1.15rem; margin: 0 0 8px; }
 .lock-card p { color: var(--muted); font-size: .92rem; line-height: 1.6; margin: 0 0 16px; }
 .unlock-btn { width: 100%; justify-content: center; }
+
+/* ===== Official brand logo + footer social ===== */
+.brand-mark:has(img), .brand-mark.mark-img {
+  background: none !important; box-shadow: none !important; overflow: hidden;
+}
+.brand-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+.footer-social { margin-top: 18px; }
+.fs-label {
+  display: block; font-size: .68rem; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 10px;
+}
+.fs-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.fs-btn {
+  width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px;
+  background: var(--card-2); border: 1px solid var(--border); color: var(--muted);
+  transition: transform .2s, background .25s, color .25s, border-color .25s, box-shadow .25s;
+}
+.fs-btn svg { width: 17px; height: 17px; }
+.fs-btn:hover {
+  background: var(--grad); color: #fff; border-color: transparent;
+  transform: translateY(-2px); box-shadow: 0 8px 18px -8px rgba(255, 45, 170, .5);
+}
+
+/* ===== Pinterest masonry + flush cards + quick actions + light mode ===== */
+.masonry { columns: 2; column-gap: 13px; }
+.masonry > .card { break-inside: avoid; margin-bottom: 13px; }
+@media (min-width: 640px)  { .masonry { columns: 3; column-gap: 15px; } .masonry > .card { margin-bottom: 15px; } }
+@media (min-width: 1024px) { .masonry { columns: 4; } }
+@media (min-width: 1360px) { .masonry { columns: 5; } }
+.masonry .card-img { aspect-ratio: auto; }
+.masonry .card-img img { height: auto; }
+
+.card { background: transparent; border: 0; box-shadow: none; }
+.card:hover { border-color: transparent; box-shadow: none; transform: translateY(-2px); }
+.card-img { border-radius: 18px; }
+.card-info { padding: 9px 4px 2px; }
+
+.qk {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  display: flex; flex-direction: column; gap: 8px;
+  opacity: 0; transform: translateY(-4px);
+  transition: opacity .2s ease, transform .2s ease;
+}
+.card:hover .qk, .card:focus-within .qk { opacity: 1; transform: none; }
+.qk-btn {
+  width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
+  border: 1px solid rgba(255,255,255,.22); background: rgba(9,9,11,.62);
+  backdrop-filter: blur(8px); color: #fff; display: grid; place-items: center;
+  transition: transform .15s, background .2s, border-color .2s;
+}
+.qk-btn svg { width: 16px; height: 16px; }
+.qk-btn:hover { background: var(--pink); border-color: transparent; transform: scale(1.08); }
+.qk-btn.on { background: var(--grad); border-color: transparent; }
+@media (hover: none) { .qk { display: none; } }
+
+:root[data-theme="light"] {
+  --bg: #f4f4f8; --bg-soft: #ffffff; --card: #ffffff; --card-2: #eeeef4;
+  --border: #e2e2eb; --border-soft: #ebebf2; --text: #17171c;
+  --muted: #565660; --muted-2: #8a8a95;
+}
+:root[data-theme="light"] body { color-scheme: light; }
+.theme-btn svg { width: 17px; height: 17px; }
