@@ -895,3 +895,56 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 }
 :root[data-theme="light"] body { color-scheme: light; }
 .theme-btn svg { width: 17px; height: 17px; }
+
+/* ===== No-crop blurred fill (any ratio image, never cut) ===== */
+.card-img .fill { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.25); filter: blur(24px) brightness(.55); }
+.card-img .main { position: relative; width: 100%; height: 100%; object-fit: contain; }
+.masonry .card-img .fill { display: none; }
+.masonry .card-img .main { position: static; height: auto; object-fit: cover; }
+.card:hover .card-img .fill { transform: scale(1.32); }
+
+/* ===== Template image bigger on desktop ===== */
+@media (min-width: 1024px) { .detail-layout { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 40px; } }
+
+/* ===== Light mode: header / brand / inputs readable ===== */
+:root[data-theme="light"] .site-header { background: rgba(255, 255, 255, .85); }
+:root[data-theme="light"] .bottombar { background: rgba(255, 255, 255, .94); }
+:root[data-theme="light"] .brand { color: var(--text); }
+:root[data-theme="light"] .header-search-pill { background: var(--card); color: var(--muted); }
+:root[data-theme="light"] input, :root[data-theme="light"] textarea, :root[data-theme="light"] select { background: var(--card); color: var(--text); }
+
+/* ===== Prompt of the Day — pro edition ===== */
+.potd.pro {
+  border: 1px solid transparent;
+  background: linear-gradient(var(--card), var(--card)) padding-box, var(--grad) border-box;
+  box-shadow: 0 24px 60px -28px rgba(255, 45, 170, .35);
+}
+@media (min-width: 820px) { .potd.pro { grid-template-columns: .9fr 1.1fr; } }
+.potd-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 2px; }
+.pchip { display: inline-flex; align-items: center; gap: 6px; font-size: .72rem; color: var(--muted); background: var(--card-2); border: 1px solid var(--border); padding: 5px 11px; border-radius: 999px; }
+.pchip svg { width: 12px; height: 12px; }
+.pchip.timer { color: #ffb4e2; border-color: rgba(255, 45, 170, .35); background: rgba(255, 45, 170, .08); }
+
+/* ===== Top This Week: compact multi-card slider ===== */
+@media (min-width: 640px)  { .top3 { grid-auto-columns: 32%; } }
+@media (min-width: 1024px) { .top3 { grid-auto-columns: 24%; } .rail-nav { display: flex; } }
+.rail-nav { display: none; gap: 8px; justify-content: flex-end; margin: 2px 0 14px; }
+.rail-btn {
+  width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--border);
+  background: var(--card); color: var(--text); font-size: 1.05rem; cursor: pointer;
+  transition: .2s; display: grid; place-items: center;
+}
+.rail-btn:hover { background: var(--grad); color: #fff; border-color: transparent; }
+
+/* ===== Profile photo + hero polish ===== */
+.avatar-ph { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+.avatar-btn:has(img) { padding: 0; overflow: hidden; }
+.profile-hero {
+  margin: 2px 0 14px; padding: 20px 16px 16px; border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 45, 170, .16), rgba(255, 122, 0, .14));
+  border: 1px solid rgba(255, 45, 170, .25);
+}
+.ppi { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ===== Google button perfectly centered ===== */
+.g-btn-slot > div { margin: 0 auto !important; }
