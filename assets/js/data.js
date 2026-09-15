@@ -14,6 +14,20 @@ var SITE = {
   ]
 };
 
+/* ============================================================
+   AUTH & EMAIL COLLECTION — fill these 3 to activate
+   (step-by-step setup: /AUTH-GUIDE.md)
+   1) sheetUrl       → your Google Apps Script web app URL (…/exec)
+   2) googleClientId → Google Cloud Console (ends .apps.googleusercontent.com)
+   3) fbAppId        → Meta for Developers App ID (numbers only)
+   Leave "" empty to keep that login method hidden.
+   ============================================================ */
+var AUTH_CONFIG = {
+  sheetUrl: "https://script.google.com/macros/s/AKfycbwWZQyM-KgQcapysDkiju8Uk6upd3MZROXF5BU-QaA2RHn_XkyMvjJKhAtlmjneGIt_/exec",
+  googleClientId: "212033639328-iqbjtddt28gpq2euuq61cilp4pb2fqcj.apps.googleusercontent.com",
+  fbAppId: "1474580381159042"
+};
+
 var CATEGORIES = [
   { id: "trending",     name: "Trending",              icon: "⚡", desc: "The prompts everyone is creating with right now" },
   { id: "popular",      name: "Popular",               icon: "🔥", desc: "Most-copied templates loved by the community" },
