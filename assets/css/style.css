@@ -948,3 +948,81 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 
 /* ===== Google button perfectly centered ===== */
 .g-btn-slot > div { margin: 0 auto !important; }
+
+/* ===== Top This Week: coverflow carousel ===== */
+.cflow { position: relative; margin: 4px 0 6px; --cfw: min(76vw, 300px); }
+@media (min-width: 1024px) { .cflow { --cfw: 322px; } }
+.cf-track { position: relative; height: calc(var(--cfw) * 1.42); }
+.cf-item {
+  position: absolute; left: 50%; top: 0; width: var(--cfw);
+  transition: transform .55s cubic-bezier(.22,.9,.3,1), opacity .45s, filter .45s;
+  will-change: transform; filter: saturate(.72) brightness(.8);
+}
+.cf-item.active { filter: none; }
+.cf-item .card { pointer-events: auto; }
+.cf-item .card-info { opacity: 0; transition: opacity .3s; }
+.cf-item.active .card-info { opacity: 1; }
+.cf-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; }
+.cf-dots { display: flex; gap: 7px; }
+.cf-dot {
+  width: 8px; height: 8px; border-radius: 999px; border: 0; padding: 0;
+  background: var(--border); cursor: pointer; transition: all .25s;
+}
+.cf-dot.on { width: 22px; background: var(--grad); }
+
+/* ===== Profile: cover photo + random spin ring + pride level + avatar fit ===== */
+.profile-hero { position: relative; overflow: hidden; }
+.profile-hero .pf-ring, .profile-hero .ph-info { position: relative; z-index: 2; }
+.pf-ring::before {
+  background: var(--ring-grad, conic-gradient(from 0deg, #ff2daa, #ff7a00, #ffd36e, #ff2daa));
+  animation: ringSpin var(--ring-dur, 3.2s) linear infinite var(--ring-dir, normal);
+}
+.pf-ring .profile-avatar { border: 3px solid var(--pf-mask, var(--card)); box-shadow: none; overflow: hidden; }
+.has-cover { --pf-mask: #1a1428; border-color: transparent; }
+.cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.cover-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(9,8,15,.30), rgba(9,8,15,.74)); }
+.cover-edit {
+  position: absolute; top: 10px; right: 10px; z-index: 3;
+  display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+  font-size: .66rem; font-weight: 700; color: #fff; font-family: inherit;
+  background: rgba(10,9,18,.62); border: 1px solid rgba(255,255,255,.28);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-radius: 999px; padding: 5px 11px; transition: .2s;
+}
+.cover-edit:hover { background: rgba(255,45,170,.8); border-color: transparent; }
+.cover-edit svg { width: 12px; height: 12px; }
+.profile-avatar.big { width: 74px; height: 74px; font-size: 1.8rem; cursor: pointer; position: relative; padding: 0; }
+.av-fill {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; transform: scale(1.5); filter: blur(13px) brightness(.6) saturate(1.35);
+}
+.av-main { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; border-radius: 50%; display: block; }
+.av-edit {
+  position: absolute; right: -3px; bottom: -3px; z-index: 4; pointer-events: none;
+  width: 23px; height: 23px; border-radius: 50%;
+  background: var(--grad); color: #fff; display: grid; place-items: center;
+  box-shadow: 0 0 0 2.5px var(--pf-mask, var(--card));
+}
+.av-edit svg { width: 11px; height: 11px; }
+.ph-info { min-width: 0; flex: 1; }
+.pill-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 7px; }
+.tier-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .7rem; font-weight: 800; color: var(--tc);
+  background: color-mix(in srgb, var(--tc) 13%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tc) 36%, transparent);
+  border-radius: 999px; padding: 4px 11px;
+}
+.lvl-wrap { margin-top: 9px; }
+.lvl-bar { height: 6px; border-radius: 999px; background: rgba(127,127,150,.2); overflow: hidden; }
+.lvl-bar i { display: block; height: 100%; border-radius: 999px; background: var(--grad); transition: width .6s ease; }
+.lvl-txt { display: block; margin-top: 4px; font-size: .64rem; font-weight: 700; color: var(--muted); }
+.has-cover h2 { text-shadow: 0 1px 10px rgba(0,0,0,.6); }
+.has-cover .ph-info p { color: rgba(255,255,255,.82); text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+.has-cover .lvl-txt { color: rgba(255,255,255,.7); }
+.has-cover .lvl-bar { background: rgba(255,255,255,.24); }
+
+/* footer social: placeholder (link not added yet) */
+.fs-btn.soon { opacity: .5; cursor: pointer; }
+.fs-btn.soon:hover { opacity: 1; }
+.fs-row { row-gap: 10px; }
