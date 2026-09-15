@@ -111,6 +111,54 @@ var OPTS = {
 
 /* category ids must exist in CATEGORIES above */
 var PROMPTS = [
+   ,
+{
+  id: "misty-forest-vow",
+  title: "Misty Forest Vow",
+  img: "assets/img/misty-forest-vow.jpg",
+  cats: ["trending", "couple", "wedding"],
+  uses: 9400,
+  likes: 1080,
+  isNew: true,
+  tagline: "Desaturated mist wraps a ghosted embrace above a couple walking hand in hand.",
+  prompt: "Cinematic vertical double-exposure portrait of a romantic couple, same face as the uploaded reference image: she wears an olive-green kurta with ornate pendant, he a sage shirt and denim, as a giant desaturated close-up of foreheads touching melts into cool teal forest fog above their hand-in-hand walk. Soft overcast diffusion, 85mm prime lens, f/1.4 shallow depth of field, subtle film grain, moody ambient mist. Giant white brush-script headline [CUSTOM TEXT] with dry-brush texture floats mid-frame while script [YOUR NAMES] anchors the base. Keep the facial features exactly the same as the reference image. Ratio 4:5.",
+  tags: ["save the date", "double exposure", "misty forest", "brush script", "teal monochrome", "overcast light", "couple walk", "cinematic wedding"],
+  about: "A ghosted forehead-touch close-up towering over a shy hand-in-hand walk gives mobile viewers intimacy at two scales in one frame. The desaturated teal mist and oversized brush script read as quiet cinematic devotion, ideal for save-the-date countdowns and engagement announcements.",
+  how: "Identity is locked in the opening clause so both the monochrome overlay and the color walk layer inherit one face geometry. [CUSTOM TEXT] and [YOUR NAMES] sit inside the typography clause, so swapping them re-renders lettering without disturbing the fog depth map or the cool grade.",
+  tools: "Use Google Gemini or ChatGPT image mode with the couple's photo attached as reference; in Midjourney add --cref with a high --cw value to keep both faces identical across the two layers.",
+  steps: [
+    "Upload a clear reference photo of the couple.",
+    "Paste the prompt and replace [CUSTOM TEXT] and [YOUR NAMES].",
+    "Generate at 4:5 ratio and check the overlay stays monochrome above the color walk.",
+    "Rescue tip: If the mist swallows the couple, add: 'full-body couple at 100 percent opacity, crisp against the fog.'"
+  ],
+  variations: [
+    "Shift the fog to warm amber dawn light for a golden-hour countdown.",
+    "Swap the forest for a rain-soaked old-town street with muted umbrella silhouettes.",
+    "Add a small serif countdown line above the names for wedding teasers.",
+    "Render the giant overlay as a charcoal sketch floating over the color photograph."
+  ],
+  mistakes: [
+    "Don't let the overlay close-up render in full color; fix with 'upper portrait desaturated to soft monochrome at 45 percent opacity.'",
+    "Avoid harsh flash on the walking couple; fix with 'soft overcast diffusion and a gentle rim light from the mist.'",
+    "Don't accept melted script lettering; fix by regenerating with 'clean readable brush-script typography, correct spelling.'"
+  ],
+  custom: ["outfit", "bg", "lighting", "mood", "fx", "ratio"],
+  customOptions: {
+    outfit: [
+      ["Olive Kurta Set", "Outfit: olive-green cotton kurta with checkered dupatta and ornate silver pendant."],
+      ["Sage Shirt Denim", "Outfit: sage green button-up shirt with relaxed blue denim jeans."],
+      ["Ivory Sherwani Pair", "Outfit: ivory embroidered sherwani with a matching pastel bridal lehenga."],
+      ["Earth Tone Saree", "Outfit: earth-tone handloom saree with minimal gold jewelry."]
+    ],
+    bg: [
+      ["Foggy Birch Forest", "Background: fog-drenched birch forest path in desaturated teal with bare trunks fading into mist."],
+      ["Misty Tea Garden", "Background: misty tea garden rows at dawn with soft green haze over quiet slopes."],
+      ["Rainy Brick Lane", "Background: rain-slicked old brick lane with soft grey fog and muted umbrellas."],
+      ["Winter River Bank", "Background: quiet winter river bank wrapped in pale morning fog and cool blue light."]
+    ]
+  }
+}
   {
     id: "durga-puja-grace",
     title: "Durga Puja Grace",
