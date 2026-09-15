@@ -124,6 +124,38 @@
     return `<button class="avatar-btn logged" data-open-auth aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
   }
 
+
+  /* ---------- profile pride: level tiers + random ring themes ---------- */
+  var LEVEL_TIERS = [
+    { name: "Rookie",      icon: "\u{1F331}", min: 0,   c: "#9ca3af" },
+    { name: "Explorer",    icon: "\u26A1",    min: 15,  c: "#5eead4" },
+    { name: "Creator",     icon: "\u{1F3A8}", min: 45,  c: "#fbbf24" },
+    { name: "Trendsetter", icon: "\u{1F525}", min: 100, c: "#fb7185" },
+    { name: "Pro",         icon: "\u{1F48E}", min: 200, c: "#7dd3fc" },
+    { name: "Legend",      icon: "\u{1F451}", min: 400, c: "#ff2daa" }
+  ];
+  function levelInfo() {
+    var score = savedList().length * 2 + likeCount() * 2 + totalCopiesMade() * 3 + streak() * 5;
+    var tier = LEVEL_TIERS[0], next = null;
+    for (var i = 0; i < LEVEL_TIERS.length; i++) {
+      if (score >= LEVEL_TIERS[i].min) tier = LEVEL_TIERS[i];
+      else { next = LEVEL_TIERS[i]; break; }
+    }
+    var pct = next ? Math.min(100, Math.round(((score - tier.min) / (next.min - tier.min)) * 100)) : 100;
+    return { tier: tier, next: next, score: score, pct: pct, toGo: next ? next.min - score : 0 };
+  }
+  var RING_THEMES = [
+    { grad: "conic-gradient(from 0deg,#ff2daa,#ff7a00,#ffd36e,#ff2daa)", dur: "3.2s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg,#22d3ee,#6366f1,#a855f7,#22d3ee)", dur: "2.8s", dir: "reverse" },
+    { grad: "conic-gradient(from 0deg,#34d399 0 42%,transparent 42% 50%,#3b82f6 50% 92%,transparent 92% 100%)", dur: "1.9s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg,transparent 0 60%,#f472b6 78%,#fde68a 90%,#ffffff 94%,transparent 95%)", dur: "1.6s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg,#fde047,#22c55e,#14b8a6,#fde047)", dur: "4.4s", dir: "reverse" },
+    { grad: "conic-gradient(from 0deg,#f43f5e 0 24%,transparent 24% 34%,#fb923c 34% 58%,transparent 58% 68%,#e879f9 68% 92%,transparent 92% 100%)", dur: "2.4s", dir: "reverse" }
+  ];
+  function camIcon() {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3.2l1.8-2.7h6l1.8 2.7H20v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>';
+  }
+
   function buildAuthChrome() {
     const ov = document.createElement("div");
     ov.className = "auth-overlay";
@@ -227,16 +259,32 @@
       const u = currentUser();
       const memberSince = new Date(u.created).toLocaleDateString("en-GB", { month: "short", year: "numeric" });
       const st = streak();
+      const ph = avatarPhoto();
+      const cover = store.get("cover:" + u.email, "");
+      const lv = levelInfo();
+      const R = RING_THEMES[(Math.random() * RING_THEMES.length) | 0] || RING_THEMES[0];
       ov.innerHTML = `
         <div class="auth-card" role="dialog" aria-modal="true" aria-label="Profile">
           <div class="sheet-handle"></div>
           <div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button></div>
-          <div class="profile-hero">
-            <span class="pf-ring"><span class="profile-avatar">${avatarPhoto() ? `<img class="avatar-ph big" src="${avatarPhoto()}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</span></span>
-            <div>
+          <div class="profile-hero${cover ? " has-cover" : ""}">
+            ${cover ? `<img class="cover-img" src="${cover}" alt=""><span class="cover-veil"></span>` : ""}
+            <button class="cover-edit" id="coverTap" aria-label="${cover ? "Change" : "Add"} cover photo">${camIcon()}<span>${cover ? "Edit cover" : "Add cover"}</span></button>
+            <span class="pf-ring" style="--ring-grad:${R.grad}; --ring-dur:${R.dur}; --ring-dir:${R.dir}">
+              <button type="button" class="profile-avatar big" id="avatarTap" aria-label="Change profile photo">${ph ? `<img class="av-fill" aria-hidden="true" src="${ph}" alt=""><img class="av-main" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>
+              <span class="av-edit" aria-hidden="true">${camIcon()}</span>
+            </span>
+            <div class="ph-info">
               <h2>${esc(u.name)}</h2>
               <p>${esc(u.email)} · since ${memberSince}</p>
-              <span class="streak-pill">🔥 ${st} day${st === 1 ? "" : "s"} streak</span>
+              <div class="pill-row">
+                <span class="streak-pill">🔥 ${st} day${st === 1 ? "" : "s"} streak</span>
+                <span class="tier-pill" style="--tc:${lv.tier.c}">${lv.tier.icon} ${lv.tier.name}</span>
+              </div>
+              <div class="lvl-wrap">
+                <div class="lvl-bar"><i style="width:${lv.pct}%"></i></div>
+                <span class="lvl-txt">${lv.next ? `${lv.toGo} pts to ${lv.next.icon} ${lv.next.name}` : "🏆 Max level reached"} · ${lv.score} pts</span>
+              </div>
             </div>
           </div>
           <div class="p-stats">
@@ -246,10 +294,13 @@
           </div>
           <div class="p-actions">
             <a class="p-action" href="saved.html">${I.bookmark} My saved prompts <span class="right">${I.right}</span></a>
-            <button class="p-action" id="photoBtn">📷 ${avatarPhoto() ? "Change profile photo" : "Add profile photo"} <span class="right">${I.right}</span></button>
-            ${avatarPhoto() ? `<button class="p-action" id="photoRemove">🗑️ Remove photo <span class="right">${I.right}</span></button>` : ""}
+            <button class="p-action" id="photoBtn">${camIcon()} ${ph ? "Change profile photo" : "Add profile photo"} <span class="right">${I.right}</span></button>
+            ${ph ? `<button class="p-action" id="photoRemove">🗑️ Remove photo <span class="right">${I.right}</span></button>` : ""}
+            <button class="p-action" id="coverRow">🖼️ ${cover ? "Change cover photo" : "Add cover photo"} <span class="right">${I.right}</span></button>
+            ${cover ? `<button class="p-action" id="coverRemove">🗑️ Remove cover <span class="right">${I.right}</span></button>` : ""}
             <button class="p-action" id="nameBtn">✏️ Edit display name <span class="right">${I.right}</span></button>
             <input type="file" id="photoInput" accept="image/*" hidden>
+            <input type="file" id="coverInput" accept="image/*" hidden>
             <button class="p-action install" id="installAction" style="display:none">${I.download} Install app on this device <span class="right">${I.right}</span></button>
             <button class="p-action danger" id="logoutBtn">${I.logout} Log out</button>
           </div>
@@ -260,16 +311,24 @@
       $("#logoutBtn", ov).addEventListener("click", () => {
         logout(); close(); refreshAvatar(); toast("Logged out. See you soon!");
       });
-      $("#photoBtn", ov).addEventListener("click", () => $("#photoInput", ov).click());
-      $("#photoInput", ov).addEventListener("change", (e) => {
+      const photoInput = $("#photoInput", ov), coverInput = $("#coverInput", ov);
+      const pick = (key, doneMsg) => (e) => {
         const f = e.target.files[0]; if (!f) return;
         if (f.size > 2500000) { toast("Photo too large — pick one under 2.5MB"); return; }
         const rd = new FileReader();
-        rd.onload = () => { store.set("avatar:" + u.email, rd.result); renderProfile(); refreshAvatar(); toast("Profile photo updated! 📸"); };
+        rd.onload = () => { store.set(key + u.email, rd.result); renderProfile(); refreshAvatar(); toast(doneMsg); };
         rd.readAsDataURL(f);
-      });
+      };
+      $("#photoBtn", ov).addEventListener("click", () => photoInput.click());
+      $("#avatarTap", ov).addEventListener("click", () => photoInput.click());
+      photoInput.addEventListener("change", pick("avatar:", "Profile photo updated! 📸"));
+      $("#coverTap", ov).addEventListener("click", () => coverInput.click());
+      $("#coverRow", ov).addEventListener("click", () => coverInput.click());
+      coverInput.addEventListener("change", pick("cover:", "Cover photo updated! 🖼️"));
       const pr = $("#photoRemove", ov);
       if (pr) pr.addEventListener("click", () => { store.set("avatar:" + u.email, ""); renderProfile(); refreshAvatar(); toast("Profile photo removed"); });
+      const cr = $("#coverRemove", ov);
+      if (cr) cr.addEventListener("click", () => { store.set("cover:" + u.email, ""); renderProfile(); toast("Cover photo removed"); });
       $("#nameBtn", ov).addEventListener("click", () => {
         const nn = prompt("Your display name:", u.name);
         if (nn && nn.trim().length >= 2) { const list = users(); list[u.email].name = nn.trim(); store.set("users", list); renderProfile(); refreshAvatar(); toast("Name updated! ✏️"); }
@@ -280,7 +339,6 @@
         ia.addEventListener("click", async () => { const f = window.__chitroInstall; window.__chitroInstall = null; f.prompt(); await f.userChoice; close(); });
       }
     }
-
     document.addEventListener("click", (e) => {
       if (e.target.closest("[data-open-auth]")) {
         e.preventDefault();
@@ -491,17 +549,8 @@
       if (typeof startPotdTimer === "function") startPotdTimer();
     }
 
-    /* Top This Week — leaderboard scored by copies + likes, scrollable rail */
-    const week = [...PROMPTS].map((p) => ({ p, s: getUses(p) + getLikes(p) * 3 }))
-      .sort((a, b) => b.s - a.s).slice(0, 8).map((x) => x.p);
-    const rail = $("#top3");
-    rail.innerHTML = week.map((p, i) => cardHTML(p, { rank: i + 1, copyIcon: true })).join("");
-    watchReveals(rail);
-    if (!$("#railPrev")) {
-      rail.insertAdjacentHTML("afterend", `<div class="rail-nav"><button class="rail-btn" id="railPrev" aria-label="Scroll back">←</button><button class="rail-btn" id="railNext" aria-label="Scroll more">→</button></div>`);
-      $("#railPrev").addEventListener("click", () => rail.scrollBy({ left: -rail.clientWidth * 0.8, behavior: "smooth" }));
-      $("#railNext").addEventListener("click", () => rail.scrollBy({ left: rail.clientWidth * 0.8, behavior: "smooth" }));
-    }
+    /* Top This Week — center-highlight coverflow carousel (leaderboard) */
+    if (typeof buildWeekCarousel === "function") buildWeekCarousel();
 
     /* Recently viewed */
     const recent = store.get("recent", []).map(byId).filter(Boolean);
@@ -959,24 +1008,36 @@
 
   /* ---------- footer social icons (links from data.js → SOCIAL) ---------- */
   function injectSocials() {
-    if (typeof SOCIAL === "undefined") return;
     const META = {
       facebook: { label: "Facebook", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>' },
       instagram: { label: "Instagram", svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor" stroke="none"/></svg>' },
       youtube: { label: "YouTube", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.4c-.3-1-1-1.7-2-2C19.2 6 12 6 12 6s-7.2 0-9 .4c-1 .3-1.7 1-2 2C.6 10 .5 12 .5 12s0 2 .5 3.6c.3 1 1 1.7 2 2 1.8.4 9 .4 9 .4s7.2 0 9-.4c1-.3 1.7-1 2-2 .4-1.6.5-3.6.5-3.6s-.1-2-.5-3.6zM9.7 15.1V8.9l6.2 3.1-6.2 3.1z"/></svg>' },
       x: { label: "X (Twitter)", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.4l-5.8-7.6-6.7 7.6H.4l8.7-9.9L0 1.2h7.6l5.3 7 6-7zm-1.3 17h2L6.6 3.3H4.4L17.6 18.2z"/></svg>' },
-      telegram: { label: "Telegram", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.9 3.6 20.3 20.6c-.3 1.2-1 1.5-2 1L12.9 18l-2.6 2.5c-.3.3-.5.5-1.1.5l.4-5.4L19.7 5.9c.4-.4-.1-.6-.6-.2L6.9 14 1.5 12.3C.3 12 .3 11.1 1.6 10.6L22.5 2.1c1-.3 1.8.3 1.4 1.5z"/></svg>' }
+      whatsapp: { label: "WhatsApp", svg: I.whatsapp },
+      telegram: { label: "Telegram", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.9 3.6 20.3 20.6c-.3 1.2-1 1.5-2 1L12.9 18l-2.6 2.5c-.3.3-.5.5-1.1.5l.4-5.4L19.7 5.9c.4-.4-.1-.6-.6-.2L6.9 14 1.5 12.3C.3 12 .3 11.1 1.6 10.6L22.5 2.1c1-.3 1.8.3 1.4 1.5z"/></svg>' },
+      tiktok: { label: "TikTok", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>' },
+      pinterest: { label: "Pinterest", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.39 18.592.026 11.985.026L12.017 0z"/></svg>' },
+      linkedin: { label: "LinkedIn", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>' }
     };
-    const links = Object.keys(META).filter((k) => SOCIAL[k] && /^https?:\/\//.test(SOCIAL[k]));
-    if (!links.length) return;
-    const host = document.querySelector(".site-footer .footer-grid > div:first-child") || document.querySelector("footer");
+    const ORDER = ["facebook", "instagram", "youtube", "x", "whatsapp", "telegram", "tiktok", "pinterest", "linkedin"];
+    const conf = (typeof SOCIAL !== "undefined" && SOCIAL) || {};
+    const host = document.querySelector(".site-footer .footer-grid > div:first-child") || document.querySelector(".site-footer");
     if (!host) return;
+    const brand = host.querySelector(".brand");
+    if (brand) brand.setAttribute("href", "https://tezofystudio.github.io/tezofy/index.html");
+    const tag = host.querySelector(".muted");
+    if (tag) tag.textContent = "The easiest way to create stunning AI portraits — discover, customize and copy prompts that actually work.";
+    const old = host.querySelector(".footer-social"); if (old) old.remove();
     host.insertAdjacentHTML("beforeend",
       `<div class="footer-social"><span class="fs-label">Follow ${SITE.name}</span><div class="fs-row">` +
-      links.map((k) => `<a class="fs-btn fs-${k}" href="${esc(SOCIAL[k])}" target="_blank" rel="noopener" aria-label="${META[k].label}">${META[k].svg}</a>`).join("") +
-      `</div></div>`);
+      ORDER.map((k) => {
+        const url = /^https?:\/\//.test(conf[k] || "") ? conf[k] : "";
+        return url
+          ? `<a class="fs-btn fs-${k}" href="${esc(url)}" target="_blank" rel="noopener" aria-label="${META[k].label}">${META[k].svg}</a>`
+          : `<button type="button" class="fs-btn fs-${k} soon" data-soc-soon="${META[k].label}" aria-label="${META[k].label} (link coming soon)">${META[k].svg}</button>`;
+      }).join("") + `</div></div>`);
+    $$(".fs-btn.soon", host).forEach((b) => b.addEventListener("click", () => toast(b.dataset.socSoon + " link coming soon ✨")));
   }
-
   /* ---------- dark / light theme ---------- */
   function applyStoredTheme() {
     try { document.documentElement.dataset.theme = JSON.parse(localStorage.getItem("chitro:theme") || '"dark"'); }
@@ -1025,6 +1086,55 @@
       el.textContent = `🕛 New prompt in ${Math.floor(m / 36e5)}h ${Math.floor((m % 36e5) / 6e4)}m`;
     };
     tick(); setInterval(tick, 60000);
+  }
+
+  /* ---------- Top This Week: coverflow carousel ---------- */
+  function buildWeekCarousel() {
+    const rail = $("#top3"); if (!rail) return;
+    const week = [...PROMPTS].map((p) => ({ p, s: getUses(p) + getLikes(p) * 3 }))
+      .sort((a, b) => b.s - a.s).slice(0, 8).map((x) => x.p);
+    rail.className = "cflow";
+    rail.innerHTML = '<div class="cf-track">' +
+      week.map((p, i) => `<div class="cf-item${i === 0 ? " active" : ""}" data-i="${i}">${cardHTML(p, { rank: i + 1, copyIcon: true })}</div>`).join("") +
+      "</div>";
+    const items = $$(".cf-item", rail), n = items.length;
+    let cur = 0, hovering = false, downX = null;
+    rail.insertAdjacentHTML("afterend",
+      `<div class="cf-nav"><button class="rail-btn" id="cfPrev" aria-label="Back">←</button><div class="cf-dots">${week.map((_, j) => `<button class="cf-dot" data-j="${j}" aria-label="Card ${j + 1}"></button>`).join("")}</div><button class="rail-btn" id="cfNext" aria-label="Next">→</button></div>`);
+    const nav = rail.nextElementSibling;
+    function render() {
+      items.forEach((el, j) => {
+        let off = j - cur;
+        if (off > n / 2) off -= n;
+        if (off < -n / 2) off += n;
+        const ao = Math.abs(off);
+        el.style.transform = `translateX(calc(-50% + ${off * 72}%)) scale(${ao === 0 ? 1 : ao === 1 ? .8 : .62})`;
+        el.style.opacity = ao > 2 ? 0 : ao === 2 ? .45 : ao === 1 ? .8 : 1;
+        el.style.zIndex = String(10 - ao);
+        el.style.pointerEvents = ao > 2 ? "none" : "";
+        el.classList.toggle("active", off === 0);
+      });
+      $$(".cf-dot", nav).forEach((d, j) => d.classList.toggle("on", j === cur));
+    }
+    function go(j) { cur = (j + n) % n; render(); }
+    $("#cfPrev", nav).addEventListener("click", () => go(cur - 1));
+    $("#cfNext", nav).addEventListener("click", () => go(cur + 1));
+    $$(".cf-dot", nav).forEach((d) => d.addEventListener("click", () => go(Number(d.dataset.j))));
+    items.forEach((el) => el.addEventListener("click", (e) => {
+      if (!el.classList.contains("active")) { e.preventDefault(); go(Number(el.dataset.i)); }
+    }));
+    rail.addEventListener("pointerdown", (e) => { downX = e.clientX; });
+    rail.addEventListener("pointerup", (e) => {
+      if (downX === null) return;
+      const dx = e.clientX - downX;
+      if (Math.abs(dx) > 42) { go(cur + (dx < 0 ? 1 : -1)); e.preventDefault(); }
+      downX = null;
+    });
+    rail.addEventListener("pointerenter", () => { hovering = true; });
+    rail.addEventListener("pointerleave", () => { hovering = false; downX = null; });
+    setInterval(() => { if (!hovering && document.visibilityState === "visible") go(cur + 1); }, 5200);
+    go(0);
+    watchReveals(rail);
   }
 
   /* ---------- boot (idempotent) ---------- */
