@@ -111,7 +111,55 @@ var OPTS = {
 
 /* category ids must exist in CATEGORIES above */
 var PROMPTS = [
-
+   
+{
+  id: "golden-hour-love-story",
+  title: "Golden Hour Love Story",
+  img: "assets/img/golden-hour-love-story.jpg",
+  cats: ["trending", "couple", "cinematic"],
+  uses: 12800,
+  likes: 1540,
+  isNew: true,
+  tagline: "Amber sunset light bathes a dreamy double-exposure love story in floating autumn leaves.",
+  prompt: "Cinematic vertical double-exposure portrait of a romantic couple, same face as the uploaded reference image: a giant dreamy close-up dissolves into a honey-amber sunset sky while the full-body pair embraces on a golden field with drifting maple leaves. He wears a tailored [OUTFIT COLOR] suit, she a flowing rust-red gown with soft satin sheen. Warm volumetric backlight rims their hair, 85mm prime lens, f/1.4 shallow depth of field, subtle film grain, moody ambient haze. A hand-lettered white brush-script headline [CUSTOM TEXT] with dry-brush texture and lifted glow arcs across the lower third. Keep the facial features exactly the same as the reference image. Ratio 4:5.",
+  tags: ["couple poster", "double exposure", "sunset romance", "brush script", "amber grading", "volumetric light", "autumn leaves", "cinematic portrait"],
+  about: "This layered template stacks a giant emotional close-up over a sharp full-body embrace, giving mobile viewers two love moments in one scroll-stopping frame. The honey-amber grade, drifting leaves and brush-script headline read instantly as a cinematic love story, perfect for engagements, anniversaries and song-style title cards.",
+  how: "The prompt locks facial identity in the first clause so the diffusion model anchors both exposure layers to one face geometry before composing the sky dissolve. Bracketed tokens sit in low-conflict positions, so swapping [OUTFIT COLOR] or [CUSTOM TEXT] restyles wardrobe and headline without breaking the face lock, depth map or golden-hour grade.",
+  tools: "Generate with Google Gemini or ChatGPT image mode using the couple photo as reference upload; in Midjourney, pair the same prompt with --cref and a high --cw value to hold both faces steady.",
+  steps: [
+    "Upload a sharp, evenly lit reference photo of the couple.",
+    "Paste the prompt and replace [OUTFIT COLOR] and [CUSTOM TEXT].",
+    "Generate at 4:5 ratio and confirm both layers share one sky.",
+    "Rescue tip: If faces drift between layers, add: 'identical facial identity in both portrait layers.'"
+  ],
+  variations: [
+    "Swap the amber field for a misty teal forest with desaturated cool grading.",
+    "Replace maple leaves with rose petals and shift the palette to deep crimson.",
+    "Change the headline to a bold condensed sans title with a small script subtitle.",
+    "Render the entire poster as a soft watercolor painting with splash and splatter edges."
+  ],
+  mistakes: [
+    "Don't let the ghost overlay overpower the couple; fix with 'overlay portrait at 40 percent opacity, edges fully dissolved into sky.'",
+    "Avoid flat midday light that kills the romance; fix with 'golden-hour volumetric backlight and rim light on hair and shoulders.'",
+    "Don't ship warped lettering; fix by regenerating with 'clean readable brush-script typography with correct spelling.'"
+  ],
+  custom: ["outfit", "bg", "lighting", "mood", "fx", "ratio"],
+  customOptions: {
+    outfit: [
+      ["Rust Red Gown", "Outfit: flowing rust-red evening gown with soft satin sheen."],
+      ["Classic Charcoal Suit", "Outfit: tailored charcoal black suit with crisp white shirt."],
+      ["Mint Bridal Set", "Outfit: pastel mint sherwani and matching embroidered lehenga with pearl details."],
+      ["Teal Gold Lehenga", "Outfit: teal and gold bridal lehenga with zari embroidery and sheer dupatta."]
+    ],
+    bg: [
+      ["Amber Field", "Background: open golden grass field under a honey-amber sunset sky with drifting maple leaves."],
+      ["Misty Forest", "Background: fog-drenched forest path in desaturated teal with soft morning mist."],
+      ["Rose Watercolor", "Background: dreamy pink watercolor wash with paint splashes and soft paper texture."],
+      ["City Dusk Bokeh", "Background: blurred city skyline at dusk with warm bokeh lights and gentle haze."]
+    ]
+  }
+},
+   
 {
   id: "misty-forest-vow",
   title: "Misty Forest Vow",
