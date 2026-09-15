@@ -573,6 +573,8 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 }
 .opt-chip.active::before { content: "✓ "; font-weight: 800; }
 .prompt-count { font-size: .68rem; color: var(--muted-2); margin-top: 10px; text-align: right; }
+.paste-into { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border); font-size: .76rem; color: var(--muted); text-align: center; }
+.paste-into a { font-weight: 700; background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
 
 /* ---------- Prompt of the Day ---------- */
 .potd {
@@ -746,3 +748,21 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
   .auth-card .sheet-handle { display: none; }
   .potd-body { padding: 26px; }
 }
+
+/* ===== Social auth (Google / Facebook) ===== */
+.social-row { display: flex; flex-direction: column; gap: 10px; margin: 6px 0 2px; }
+.g-btn-slot { display: flex; justify-content: center; min-height: 44px; }
+.g-btn-slot:empty { min-height: 0; }
+.social-btn {
+  width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 44px; border-radius: 999px; border: 0; cursor: pointer;
+  font: inherit; font-weight: 600; color: #fff; background: #1877f2;
+  transition: transform .15s ease, filter .15s ease;
+}
+.social-btn.fb:hover { filter: brightness(1.08); }
+.social-btn:active { transform: scale(.98); }
+.auth-divider {
+  display: flex; align-items: center; gap: 12px; margin: 18px 0 4px;
+  color: var(--muted-2); font-size: .78rem; text-transform: uppercase; letter-spacing: .08em;
+}
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }

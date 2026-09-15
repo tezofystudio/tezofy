@@ -9,7 +9,8 @@
 
   var CFG = (typeof AUTH_CONFIG !== "undefined") ? AUTH_CONFIG : {};
 
-  /* -------- 1. TEMP-MAIL SHIELD -------- */
+  /* -------- 1. TEMP-MAIL SHIELD ------------------------------------------
+     Signup থামিয়ে দেয় যদি ইমেইলটা disposable/temp-mail সার্ভিসের হয়। */
   var BLOCKED_DOMAINS = [
     "mailinator.com", "tempmail.com", "temp-mail.org", "temp-mail.io", "temp-mail.de",
     "10minutemail.com", "10minutemail.net", "guerrillamail.com", "guerrillamail.net",
@@ -33,7 +34,8 @@
     return false;
   }
 
-  /* -------- 2. EMAIL COLLECTOR → GOOGLE SHEET -------- */
+  /* -------- 2. EMAIL COLLECTOR → GOOGLE SHEET ---------------------------- */
+  /* Fire-and-forget: সাইট কখনোই এই রিকোয়েস্টের জন্য আটকে থাকে না। */
   function collect(entry) {
     if (!CFG.sheetUrl) return;
     try {
@@ -48,7 +50,8 @@
     } catch (e) {}
   }
 
-  /* -------- 3. GOOGLE SIGN-IN -------- */
+  /* -------- 3. GOOGLE SIGN-IN --------------------------------------------
+     অফিসিয়াল Google বাটন রেন্ডার করে; সফল হলে {name,email,provider:"google"} */
   var gsiLoading = false;
   function googleConfigured() { return !!CFG.googleClientId; }
 
@@ -81,7 +84,7 @@
     return true;
   }
 
-  /* -------- 4. FACEBOOK LOGIN -------- */
+  /* -------- 4. FACEBOOK LOGIN -------------------------------------------- */
   var fbLoading = false;
   function fbReady() { return !!CFG.fbAppId; }
 

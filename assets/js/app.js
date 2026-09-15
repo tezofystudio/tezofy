@@ -42,6 +42,7 @@
     copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>',
     check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
     share: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>',
+    whatsapp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 01-12.4 7.5L3 21l2-5.4A8.5 8.5 0 1121 11.5z"/><path d="M9 9.8c0 3.4 2.8 6.2 6.2 6.2l1.6-1.6-2-1.3-1 .7a4.6 4.6 0 01-1.8-1.8l.7-1-1.3-2z" fill="currentColor" stroke="none"/></svg>',
     left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>',
     right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
     close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
@@ -133,6 +134,25 @@
 
     window.__chitroOpenAuth = open;
 
+    function socialHTML() {
+      if (!window.CloudAuth || !CloudAuth.socialEnabled()) return "";
+      var buttons = "";
+      if (CloudAuth.googleConfigured()) buttons += '<div id="gBtn" class="g-btn-slot"></div>';
+      if (CloudAuth.fbReady()) buttons += '<button type="button" class="social-btn fb" id="fbBtn"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg><span>Continue with Facebook</span></button>';
+      return '<div class="social-row">' + buttons + '</div><div class="auth-divider"><span>or with email</span></div>';
+    }
+
+    function socialSuccess(u) {
+      var list = users();
+      if (!list[u.email]) list[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
+      store.set("users", list);
+      store.set("session", u.email);
+      CloudAuth.collect({ name: u.name, email: u.email, provider: u.provider, page: location.pathname });
+      close();
+      refreshAvatar();
+      toast("Welcome, " + u.name.split(" ")[0] + "! 🎉");
+    }
+
     function renderAuth(mode = "login") {
       ov.innerHTML = `
         <div class="auth-card" role="dialog" aria-modal="true" aria-label="Account">
@@ -143,6 +163,7 @@
             <h2>Welcome to ${SITE.name}</h2>
             <p>Save prompts, track your copies & keep your streak — free forever.</p>
           </div>
+          ${socialHTML()}
           <div class="auth-tabs">
             <button class="${mode === "login" ? "active" : ""}" data-tab="login">Log In</button>
             <button class="${mode === "signup" ? "active" : ""}" data-tab="signup">Sign Up</button>
@@ -155,7 +176,7 @@
             <button class="btn auth-submit" type="submit">${mode === "signup" ? "Create Free Account" : "Log In"}</button>
           </form>
           <button class="guest-link" data-close-auth>Continue as guest for now →</button>
-          <p class="auth-note">🔒 Accounts are stored privately on this device in this free version.<br>Cloud sync arrives with our premium update.</p>
+          <p class="auth-note">🔒 Free forever. Your password never leaves this device —<br>we only keep your name & email to send new-prompt updates.</p>
         </div>`;
 
       $$("[data-tab]", ov).forEach((b) => b.addEventListener("click", () => renderAuth(b.dataset.tab)));
@@ -173,16 +194,28 @@
         if (mode === "signup") {
           const name = ($("#aName", ov).value || "").trim();
           if (name.length < 2) return fail("Please tell us your name.");
+          if (window.CloudAuth && CloudAuth.isDisposable(email)) return fail("Temporary email addresses aren't allowed — please use your real email (Gmail is perfect).");
           const r = signup(name, email, pass);
           if (r.err) return fail(r.err);
+          if (window.CloudAuth) CloudAuth.collect({ name, email, provider: "email", page: location.pathname });
           close(); refreshAvatar(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
         } else {
           const r = login(email, pass);
           if (r.err) return fail(r.err);
           const u = currentUser();
+          if (window.CloudAuth) CloudAuth.collect({ name: u.name, email, provider: "email", page: location.pathname });
           close(); refreshAvatar(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
         }
       });
+
+      if (window.CloudAuth && CloudAuth.socialEnabled()) {
+        CloudAuth.googleRender($("#gBtn", ov), socialSuccess);
+        var fbBtn = $("#fbBtn", ov);
+        if (fbBtn) fbBtn.addEventListener("click", function () {
+          var errEl = $("#authError", ov);
+          CloudAuth.fbLogin(socialSuccess, function (m) { errEl.textContent = m; errEl.classList.add("show"); });
+        });
+      }
     }
 
     function renderProfile() {
@@ -647,6 +680,7 @@
         <div class="detail-actions">
           <button class="action-btn ${isSaved(p.id) ? "on" : ""}" id="saveBtn" aria-label="Save prompt">${I.bookmark}<span>${isSaved(p.id) ? "Saved" : "Save"}</span></button>
           <button class="action-btn" id="shareBtn" aria-label="Share prompt">${I.share}<span>Share</span></button>
+          <button class="action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">${I.whatsapp}</button>
         </div>
       </div>
       <div class="detail-layout">
@@ -673,6 +707,11 @@
               <div id="customizeHost"></div>
               <button class="btn big-copy" id="bigCopy">${I.copy}<span>Copy Prompt</span></button>
               <div class="prompt-count" id="promptCount"></div>
+              <div class="paste-into">Then paste into:&nbsp;
+                <a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini ↗</a> ·
+                <a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT ↗</a> ·
+                <a href="https://www.meta.ai/" target="_blank" rel="noopener">Meta AI ↗</a>
+              </div>
             </div>
           </div>
 
@@ -798,6 +837,11 @@
       const data = { title: document.title, text: `${p.title} — free AI image prompt on ${SITE.name}`, url: location.href };
       if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
       else copyText(location.href, () => toast("Link copied to clipboard"));
+    });
+
+    $("#waBtn").addEventListener("click", () => {
+      const text = `${p.title} — free AI image prompt on ${SITE.name} 🎨 ${location.href}`;
+      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
 
     watchReveals();
