@@ -1137,6 +1137,71 @@
     watchReveals(rail);
   }
 
+
+  /* ---------- Remote prompts (Google Sheets CMS — no GitHub needed) ---------- */
+  function rpList(v) { return Array.isArray(v) ? v.filter(Boolean) : String(v || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean); }
+  function rpNormalize(r) {
+    if (!r || !r.title || !r.img || !r.prompt) return null;
+    return {
+      id: /^rp-/.test(String(r.id)) ? String(r.id) : "rp-" + String(r.id),
+      title: String(r.title).slice(0, 140),
+      tagline: r.tagline || "Free AI image prompt — copy & customize on TEZOFY.",
+      img: String(r.img),
+      cats: rpList(r.cats),
+      tags: rpList(r.tags),
+      prompt: String(r.prompt),
+      about: r.about || (String(r.title) + " — a TEZOFY community prompt, free to copy and customize."),
+      how: r.how || "Copy this prompt, paste it into your AI tool, replace any bracketed [DETAILS] with your own and generate. Use the customize chips to restyle it instantly.",
+      tools: r.tools || "Works beautifully with Gemini, ChatGPT, Meta AI, Copilot and Midjourney.",
+      steps: (Array.isArray(r.steps) && r.steps.length) ? r.steps : ["Copy the full prompt below.", "Paste it into your AI image tool (Gemini / ChatGPT / Meta AI).", "Replace bracketed details with your own, then generate & download."],
+      variations: (Array.isArray(r.variations) && r.variations.length) ? r.variations : ["Change the outfit, background or lighting words to restyle it.", "Add \u201Ccinematic lighting\u201D or \u201C85mm portrait lens\u201D for a pro finish."],
+      mistakes: (Array.isArray(r.mistakes) && r.mistakes.length) ? r.mistakes : ["Leaving [BRACKETED] parts unchanged.", "Asking for text in the image without a clear style."],
+      uses: +r.uses || 0,
+      likes: +r.likes || 0,
+      membersOnly: !!r.membersOnly,
+      isNew: !!r.isNew
+    };
+  }
+  function applyRemoteData(data) {
+    if (!data) return false;
+    var i, added = 0;
+    for (i = PROMPTS.length - 1; i >= 0; i--) if (PROMPTS[i]._remote) PROMPTS.splice(i, 1);
+    (data.cats || []).forEach(function (c) {
+      if (!c || !c.id) return;
+      if (!CATEGORIES.some(function (x) { return x.id === c.id; }))
+        CATEGORIES.push({ id: String(c.id), name: c.name || String(c.id), icon: c.icon || "\u2728", desc: c.desc || "Community category" });
+    });
+    (data.prompts || []).forEach(function (r) {
+      var p = rpNormalize(r);
+      if (!p) return;
+      p._remote = true;
+      if (PROMPTS.some(function (x) { return x.id === p.id; })) return;
+      PROMPTS.push(p); added++;
+    });
+    return added;
+  }
+  function initRemotePrompts() {
+    try {
+      if (typeof AUTH_CONFIG === "undefined" || !AUTH_CONFIG.sheetUrl) return;
+      var cached = store.get("remoteData", null);
+      if (cached) applyRemoteData(cached);            // instant first paint from cache
+      var last = store.get("remoteSyncTs", 0) || 0;
+      if (Date.now() - last < 15 * 60000) return;      // re-check every 15 min
+      fetch(String(AUTH_CONFIG.sheetUrl) + "?action=prompts&t=" + Date.now())
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (!data || !Array.isArray(data.prompts)) return;
+          store.set("remoteSyncTs", Date.now());
+          if (JSON.stringify(cached || null) !== JSON.stringify(data)) {
+            store.set("remoteData", data);
+            applyRemoteData(data);
+            if (window.__chitroRerender) window.__chitroRerender();
+          }
+        })
+        .catch(function () {});
+    } catch (e) {}
+  }
+
   /* ---------- boot (idempotent) ---------- */
   let booted = false;
   function boot() {
@@ -1150,6 +1215,7 @@
     brandLogoSwap();
     injectSocials();
     bindQuickActions();
+    initRemotePrompts();
     const rerenderPage = () => ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
     window.__chitroRerender = rerenderPage;
     rerenderPage();
