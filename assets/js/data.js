@@ -14,6 +14,7 @@ var SITE = {
   ]
 };
 
+
 /* ============================================================
    AUTH & EMAIL COLLECTION — fill these 3 to activate
    (step-by-step setup: /AUTH-GUIDE.md)
