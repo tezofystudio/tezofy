@@ -1,5 +1,5 @@
 /* TEZOFY service worker — offline-friendly static cache */
-const CACHE = "tezofy-v2";
+const CACHE = "tezofy-v4";
 const CORE = [
   "./",
   "./index.html",
@@ -12,6 +12,7 @@ const CORE = [
   "./assets/css/style.css",
   "./assets/js/data.js",
   "./assets/js/app.js",
+  "./assets/js/auth-cloud.js",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png"
