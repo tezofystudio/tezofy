@@ -74,7 +74,7 @@
         if (!w2) { setTimeout(draw, 80); return; }
         google.accounts.id.renderButton(container, {
           theme: "outline", size: "large", width: Math.min(w2, 400),
-          text: "continue_with", shape: "pill", logo_alignment: "left"
+          text: "continue_with", shape: "pill", logo_alignment: "center"
         });
       })();
     }

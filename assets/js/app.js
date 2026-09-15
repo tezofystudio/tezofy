@@ -116,11 +116,12 @@
     return n;
   }
 
+  function avatarPhoto() { const s = session(); return s ? store.get("avatar:" + s, "") : ""; }
   function avatarHTML() {
     const u = currentUser();
-    return u
-      ? `<button class="avatar-btn logged" data-open-auth aria-label="Profile">${esc(u.name.trim()[0].toUpperCase())}</button>`
-      : `<button class="avatar-btn" data-open-auth aria-label="Sign in">${I.user}</button>`;
+    if (!u) return `<button class="avatar-btn" data-open-auth aria-label="Sign in">${I.user}</button>`;
+    const ph = avatarPhoto();
+    return `<button class="avatar-btn logged" data-open-auth aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
   }
 
   function buildAuthChrome() {
@@ -231,7 +232,7 @@
           <div class="sheet-handle"></div>
           <div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button></div>
           <div class="profile-hero">
-            <span class="pf-ring"><span class="profile-avatar">${esc(u.name.trim()[0].toUpperCase())}</span></span>
+            <span class="pf-ring"><span class="profile-avatar">${avatarPhoto() ? `<img class="avatar-ph big" src="${avatarPhoto()}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</span></span>
             <div>
               <h2>${esc(u.name)}</h2>
               <p>${esc(u.email)} · since ${memberSince}</p>
@@ -245,6 +246,10 @@
           </div>
           <div class="p-actions">
             <a class="p-action" href="saved.html">${I.bookmark} My saved prompts <span class="right">${I.right}</span></a>
+            <button class="p-action" id="photoBtn">📷 ${avatarPhoto() ? "Change profile photo" : "Add profile photo"} <span class="right">${I.right}</span></button>
+            ${avatarPhoto() ? `<button class="p-action" id="photoRemove">🗑️ Remove photo <span class="right">${I.right}</span></button>` : ""}
+            <button class="p-action" id="nameBtn">✏️ Edit display name <span class="right">${I.right}</span></button>
+            <input type="file" id="photoInput" accept="image/*" hidden>
             <button class="p-action install" id="installAction" style="display:none">${I.download} Install app on this device <span class="right">${I.right}</span></button>
             <button class="p-action danger" id="logoutBtn">${I.logout} Log out</button>
           </div>
@@ -254,6 +259,20 @@
       ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
       $("#logoutBtn", ov).addEventListener("click", () => {
         logout(); close(); refreshAvatar(); toast("Logged out. See you soon!");
+      });
+      $("#photoBtn", ov).addEventListener("click", () => $("#photoInput", ov).click());
+      $("#photoInput", ov).addEventListener("change", (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        if (f.size > 2500000) { toast("Photo too large — pick one under 2.5MB"); return; }
+        const rd = new FileReader();
+        rd.onload = () => { store.set("avatar:" + u.email, rd.result); renderProfile(); refreshAvatar(); toast("Profile photo updated! 📸"); };
+        rd.readAsDataURL(f);
+      });
+      const pr = $("#photoRemove", ov);
+      if (pr) pr.addEventListener("click", () => { store.set("avatar:" + u.email, ""); renderProfile(); refreshAvatar(); toast("Profile photo removed"); });
+      $("#nameBtn", ov).addEventListener("click", () => {
+        const nn = prompt("Your display name:", u.name);
+        if (nn && nn.trim().length >= 2) { const list = users(); list[u.email].name = nn.trim(); store.set("users", list); renderProfile(); refreshAvatar(); toast("Name updated! ✏️"); }
       });
       const ia = $("#installAction", ov);
       if (window.__chitroInstall) {
@@ -390,7 +409,8 @@
       <a class="card reveal ${opts.rank === 1 ? "rank-1" : ""}" href="template.html?id=${p.id}">
         <div class="card-img">
           ${badge}
-          <img src="${p.img}" alt="${esc(p.title)} — AI image prompt example" loading="lazy">
+          <img class="fill" aria-hidden="true" src="${p.img}" alt="" loading="lazy">
+          <img class="main" src="${p.img}" alt="${esc(p.title)} — AI image prompt example" loading="lazy">
           <div class="qk">
             <button class="qk-btn ${liked ? "on" : ""}" data-qk="like" data-id="${p.id}" aria-label="Like ${esc(p.title)}">${I.heart}</button>
             <button class="qk-btn" data-qk="copy" data-id="${p.id}" aria-label="Copy prompt">${I.copy}</button>
@@ -448,12 +468,17 @@
     const potdEl = $("#potd");
     if (potdEl) {
       potdEl.innerHTML = `
-        <div class="potd reveal">
+        <div class="potd pro reveal">
           <a class="potd-img" href="template.html?id=${pd.id}"><img src="${pd.img}" alt="${esc(pd.title)}"></a>
           <div class="potd-body">
             <span class="potd-tag">✨ Prompt of the Day</span>
             <h3>${esc(pd.title)}</h3>
             <p>${esc(pd.tagline)}</p>
+            <div class="potd-meta">
+              <span class="pchip">${I.copy} ${fmt(getUses(pd))} copies</span>
+              <span class="pchip">${I.heart} ${fmt(getLikes(pd))} likes</span>
+              <span class="pchip timer" id="potdTimer">🕛 New prompt soon</span>
+            </div>
             <div class="potd-actions">
               <a class="btn" href="template.html?id=${pd.id}">View Prompt ${I.right}</a>
               <button class="copy-mini" id="potdCopy">${I.copy}<span>Copy</span></button>
@@ -463,16 +488,20 @@
       $("#potdCopy").addEventListener("click", () => {
         copyText(pd.prompt, () => { bumpCopies(pd.id); toast("Prompt of the Day copied!"); $("#potdCopy span").textContent = "Copied!"; setTimeout(() => { const b = $("#potdCopy"); if (b) b.querySelector("span").textContent = "Copy"; }, 1500); });
       });
+      if (typeof startPotdTimer === "function") startPotdTimer();
     }
 
-    /* Top 3 podium */
-    const top3 = [...PROMPTS].sort((a, b) => getUses(b) - getUses(a)).slice(0, 3);
-    $("#top3").innerHTML = [
-      cardHTML(top3[1], { rank: 2, copyIcon: true }),
-      cardHTML(top3[0], { rank: 1, copyIcon: true }),
-      cardHTML(top3[2], { rank: 3, copyIcon: true })
-    ].join("");
-    watchReveals($("#top3"));
+    /* Top This Week — leaderboard scored by copies + likes, scrollable rail */
+    const week = [...PROMPTS].map((p) => ({ p, s: getUses(p) + getLikes(p) * 3 }))
+      .sort((a, b) => b.s - a.s).slice(0, 8).map((x) => x.p);
+    const rail = $("#top3");
+    rail.innerHTML = week.map((p, i) => cardHTML(p, { rank: i + 1, copyIcon: true })).join("");
+    watchReveals(rail);
+    if (!$("#railPrev")) {
+      rail.insertAdjacentHTML("afterend", `<div class="rail-nav"><button class="rail-btn" id="railPrev" aria-label="Scroll back">←</button><button class="rail-btn" id="railNext" aria-label="Scroll more">→</button></div>`);
+      $("#railPrev").addEventListener("click", () => rail.scrollBy({ left: -rail.clientWidth * 0.8, behavior: "smooth" }));
+      $("#railNext").addEventListener("click", () => rail.scrollBy({ left: rail.clientWidth * 0.8, behavior: "smooth" }));
+    }
 
     /* Recently viewed */
     const recent = store.get("recent", []).map(byId).filter(Boolean);
@@ -986,6 +1015,16 @@
         toast(m[p.id] ? "Added to favorites ❤️" : "Removed from favorites");
       }
     }, true);
+  }
+
+  /* ---------- POTD countdown ---------- */
+  function startPotdTimer() {
+    const el = $("#potdTimer"); if (!el) return;
+    const tick = () => {
+      const now = Date.now(); const mid = Math.floor(now / DAY) * DAY + DAY; const m = Math.max(0, mid - now);
+      el.textContent = `🕛 New prompt in ${Math.floor(m / 36e5)}h ${Math.floor((m % 36e5) / 6e4)}m`;
+    };
+    tick(); setInterval(tick, 60000);
   }
 
   /* ---------- boot (idempotent) ---------- */
