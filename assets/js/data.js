@@ -111,7 +111,7 @@ var OPTS = {
 
 /* category ids must exist in CATEGORIES above */
 var PROMPTS = [
-   ,
+
 {
   id: "misty-forest-vow",
   title: "Misty Forest Vow",
