@@ -33,7 +33,7 @@
 
   /* ---------- icons ---------- */
   const I = {
-    spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>',
+    spark: '<img src="assets/icons/logo.png" alt="TEZOFY logo">',
     search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
     home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg>',
     grid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/></svg>',
@@ -290,10 +290,13 @@
             ${I.search}<span>Search prompts…</span><kbd>⌘K</kbd>
           </button>
           <button class="icon-btn" data-open-search aria-label="Search">${I.search}</button>
+          <button class="icon-btn theme-btn" id="themeBtn" aria-label="Toggle dark / light mode"></button>
           <span id="avatarHost">${avatarHTML()}</span>
         </div>
       </div>`;
     document.body.prepend(header);
+    const __tb = $("#themeBtn", header);
+    if (__tb) { __tb.innerHTML = themeIcon(document.documentElement.dataset.theme); __tb.addEventListener("click", toggleTheme); }
 
     const bar = document.createElement("nav");
     bar.className = "bottombar";
@@ -382,9 +385,17 @@
       ? `<span class="rank">#${opts.rank}</span>`
       : p.membersOnly ? `<span class="badge badge-pro">🔒 PRO</span>`
       : p.isNew ? `<span class="badge">NEW</span>` : "";
+    const liked = !!likeMap()[p.id];
     return `
       <a class="card reveal ${opts.rank === 1 ? "rank-1" : ""}" href="template.html?id=${p.id}">
-        <div class="card-img">${badge}<img src="${p.img}" alt="${esc(p.title)} — AI image prompt example" loading="lazy"></div>
+        <div class="card-img">
+          ${badge}
+          <img src="${p.img}" alt="${esc(p.title)} — AI image prompt example" loading="lazy">
+          <div class="qk">
+            <button class="qk-btn ${liked ? "on" : ""}" data-qk="like" data-id="${p.id}" aria-label="Like ${esc(p.title)}">${I.heart}</button>
+            <button class="qk-btn" data-qk="copy" data-id="${p.id}" aria-label="Copy prompt">${I.copy}</button>
+          </div>
+        </div>
         <div class="card-info">
           <h3>${esc(p.title)}</h3>
           <p>${opts.copyIcon ? I.copy : I.zap}${fmt(getUses(p))} ${opts.copyIcon ? "Copies" : "Uses"}</p>
@@ -532,6 +543,7 @@
   function pageDiscover() {
     const chips = $("#filterChips");
     const grid = $("#discoverGrid");
+    grid.classList.add("masonry");
     const countEl = $("#discoverCount");
     const cats = CATEGORIES.filter((c) => getCat(c.id).length > 0);
 
@@ -558,6 +570,7 @@
   /* ---------- page: category ---------- */
   function pageCategory() {
     const id = param("c") || "trending";
+    $$(".grid").forEach((g) => g.classList.add("masonry"));
     const cat = CATEGORIES.find((c) => c.id === id);
     const list = getCat(id);
     $("#catTitle").innerHTML = `${cat ? cat.icon + " " : ""}${esc(cat ? cat.name : "Prompts")}`;
@@ -901,6 +914,80 @@
     }
   }
 
+  /* ---------- official brand logo swap (favicon + footer mark) ---------- */
+  function brandLogoSwap() {
+    try {
+      let l = document.querySelector('link[rel="icon"]');
+      if (!l) { l = document.createElement("link"); l.rel = "icon"; document.head.appendChild(l); }
+      l.type = "image/png"; l.href = "assets/icons/favicon.png";
+      $$(".brand-mark").forEach((el) => {
+        const svg = el.querySelector("svg");
+        if (svg) svg.outerHTML = '<img src="assets/icons/logo.png" alt="TEZOFY logo">';
+        if (el.querySelector("img")) el.classList.add("mark-img");
+      });
+    } catch (e) {}
+  }
+
+  /* ---------- footer social icons (links from data.js → SOCIAL) ---------- */
+  function injectSocials() {
+    if (typeof SOCIAL === "undefined") return;
+    const META = {
+      facebook: { label: "Facebook", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>' },
+      instagram: { label: "Instagram", svg: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="17.4" cy="6.6" r="1.3" fill="currentColor" stroke="none"/></svg>' },
+      youtube: { label: "YouTube", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 8.4c-.3-1-1-1.7-2-2C19.2 6 12 6 12 6s-7.2 0-9 .4c-1 .3-1.7 1-2 2C.6 10 .5 12 .5 12s0 2 .5 3.6c.3 1 1 1.7 2 2 1.8.4 9 .4 9 .4s7.2 0 9-.4c1-.3 1.7-1 2-2 .4-1.6.5-3.6.5-3.6s-.1-2-.5-3.6zM9.7 15.1V8.9l6.2 3.1-6.2 3.1z"/></svg>' },
+      x: { label: "X (Twitter)", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.2h3.7l-8.1 9.3L24 22.8h-7.4l-5.8-7.6-6.7 7.6H.4l8.7-9.9L0 1.2h7.6l5.3 7 6-7zm-1.3 17h2L6.6 3.3H4.4L17.6 18.2z"/></svg>' },
+      telegram: { label: "Telegram", svg: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.9 3.6 20.3 20.6c-.3 1.2-1 1.5-2 1L12.9 18l-2.6 2.5c-.3.3-.5.5-1.1.5l.4-5.4L19.7 5.9c.4-.4-.1-.6-.6-.2L6.9 14 1.5 12.3C.3 12 .3 11.1 1.6 10.6L22.5 2.1c1-.3 1.8.3 1.4 1.5z"/></svg>' }
+    };
+    const links = Object.keys(META).filter((k) => SOCIAL[k] && /^https?:\/\//.test(SOCIAL[k]));
+    if (!links.length) return;
+    const host = document.querySelector(".site-footer .footer-grid > div:first-child") || document.querySelector("footer");
+    if (!host) return;
+    host.insertAdjacentHTML("beforeend",
+      `<div class="footer-social"><span class="fs-label">Follow ${SITE.name}</span><div class="fs-row">` +
+      links.map((k) => `<a class="fs-btn fs-${k}" href="${esc(SOCIAL[k])}" target="_blank" rel="noopener" aria-label="${META[k].label}">${META[k].svg}</a>`).join("") +
+      `</div></div>`);
+  }
+
+  /* ---------- dark / light theme ---------- */
+  function applyStoredTheme() {
+    try { document.documentElement.dataset.theme = JSON.parse(localStorage.getItem("chitro:theme") || '"dark"'); }
+    catch (e) { document.documentElement.dataset.theme = "dark"; }
+  }
+  function themeIcon(mode) {
+    return mode === "light"
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>';
+  }
+  function toggleTheme() {
+    const next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("chitro:theme", JSON.stringify(next)); } catch (e) {}
+    const tb = $("#themeBtn"); if (tb) tb.innerHTML = themeIcon(next);
+    toast(next === "light" ? "☀️ Light mode on" : "🌙 Dark mode on");
+  }
+
+  /* ---------- quick card actions (hover like / copy) ---------- */
+  let __qkBound = false;
+  function bindQuickActions() {
+    if (__qkBound) return; __qkBound = true;
+    document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-qk]");
+      if (!b) return;
+      e.preventDefault(); e.stopPropagation();
+      const p = byId(b.dataset.id); if (!p) return;
+      if (b.dataset.qk === "copy") {
+        if (p.membersOnly && !currentUser()) { if (window.__chitroOpenAuth) window.__chitroOpenAuth(); return; }
+        copyText(p.prompt, () => toast("Prompt copied! Now paste it into Gemini ✨"));
+      } else if (b.dataset.qk === "like") {
+        const m = likeMap();
+        if (m[p.id]) { delete m[p.id]; } else { m[p.id] = true; }
+        store.set("likes", m);
+        b.classList.toggle("on", !!m[p.id]);
+        toast(m[p.id] ? "Added to favorites ❤️" : "Removed from favorites");
+      }
+    }, true);
+  }
+
   /* ---------- boot (idempotent) ---------- */
   let booted = false;
   function boot() {
@@ -909,7 +996,11 @@
     recordVisit();
     registerSW();
     const page = document.body.dataset.page || "home";
+    applyStoredTheme();
     buildChrome(page);
+    brandLogoSwap();
+    injectSocials();
+    bindQuickActions();
     const rerenderPage = () => ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
     window.__chitroRerender = rerenderPage;
     rerenderPage();
