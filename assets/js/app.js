@@ -142,6 +142,8 @@
       return '<div class="social-row">' + buttons + '</div><div class="auth-divider"><span>or with email</span></div>';
     }
 
+    function unlockRefresh() { setTimeout(() => { if ($(".lock-overlay") && window.__chitroRerender) window.__chitroRerender(); }, 300); }
+
     function socialSuccess(u) {
       var list = users();
       if (!list[u.email]) list[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
@@ -150,6 +152,7 @@
       CloudAuth.collect({ name: u.name, email: u.email, provider: u.provider, page: location.pathname });
       close();
       refreshAvatar();
+      unlockRefresh();
       toast("Welcome, " + u.name.split(" ")[0] + "! 🎉");
     }
 
@@ -161,7 +164,8 @@
           <div class="auth-head">
             <span class="brand-mark">${I.spark}</span>
             <h2>Welcome to ${SITE.name}</h2>
-            <p>Save prompts, track your copies & keep your streak — free forever.</p>
+            <span class="brand-eyebrow">✦ Premium AI Prompt Studio</span>
+            <p>Save prompts, unlock members-only designs & keep your streak — free forever.</p>
           </div>
           ${socialHTML()}
           <div class="auth-tabs">
@@ -198,13 +202,13 @@
           const r = signup(name, email, pass);
           if (r.err) return fail(r.err);
           if (window.CloudAuth) CloudAuth.collect({ name, email, provider: "email", page: location.pathname });
-          close(); refreshAvatar(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
+          close(); refreshAvatar(); unlockRefresh(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
         } else {
           const r = login(email, pass);
           if (r.err) return fail(r.err);
           const u = currentUser();
           if (window.CloudAuth) CloudAuth.collect({ name: u.name, email, provider: "email", page: location.pathname });
-          close(); refreshAvatar(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+          close(); refreshAvatar(); unlockRefresh(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
         }
       });
 
@@ -227,7 +231,7 @@
           <div class="sheet-handle"></div>
           <div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button></div>
           <div class="profile-hero">
-            <span class="profile-avatar">${esc(u.name.trim()[0].toUpperCase())}</span>
+            <span class="pf-ring"><span class="profile-avatar">${esc(u.name.trim()[0].toUpperCase())}</span></span>
             <div>
               <h2>${esc(u.name)}</h2>
               <p>${esc(u.email)} · since ${memberSince}</p>
@@ -376,6 +380,7 @@
   function cardHTML(p, opts = {}) {
     const badge = opts.rank
       ? `<span class="rank">#${opts.rank}</span>`
+      : p.membersOnly ? `<span class="badge badge-pro">🔒 PRO</span>`
       : p.isNew ? `<span class="badge">NEW</span>` : "";
     return `
       <a class="card reveal ${opts.rank === 1 ? "rank-1" : ""}" href="template.html?id=${p.id}">
@@ -791,6 +796,21 @@
     buildCustomizer(p, $("#customizeHost"), ({ adds: a, ratio: r }) => { adds = a; ratioOverride = r; renderPrompt(); });
     renderPrompt();
 
+    /* 🔒 members-only gate: guests see a blurred preview + unlock card */
+    if (p.membersOnly && !currentUser()) {
+      const inner = $(".prompt-inner");
+      if (inner) {
+        inner.classList.add("locked");
+        inner.insertAdjacentHTML("beforeend",
+          `<div class="lock-overlay"><div class="lock-card">
+             <span class="lock-badge">🔒 Members Only</span>
+             <h3>Unlock this premium prompt</h3>
+             <p>Create your free ${SITE.name} account to view, customize & copy member-exclusive prompt designs.</p>
+             <button class="btn unlock-btn" data-open-auth>Unlock Free — 10 seconds ${I.right}</button>
+           </div></div>`);
+      }
+    }
+
     $("#backBtn").addEventListener("click", () => {
       if (history.length > 1) history.back();
       else location.href = "index.html";
@@ -890,7 +910,9 @@
     registerSW();
     const page = document.body.dataset.page || "home";
     buildChrome(page);
-    ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
+    const rerenderPage = () => ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
+    window.__chitroRerender = rerenderPage;
+    rerenderPage();
     watchReveals();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
