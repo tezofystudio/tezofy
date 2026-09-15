@@ -23,9 +23,9 @@ var SITE = {
    Leave "" empty to keep that login method hidden.
    ============================================================ */
 var AUTH_CONFIG = {
-  sheetUrl: "",
-  googleClientId: "",
-  fbAppId: ""
+  sheetUrl: "https://script.google.com/macros/s/AKfycbwWZQyM-KgQcapysDkiju8Uk6upd3MZROXF5BU-QaA2RHn_XkyMvjJKhAtlmjneGIt_/exec",
+  googleClientId: "212033639328-iqbjtddt28gpq2euuq61cilp4pb2fqcj.apps.googleusercontent.com",
+  fbAppId: "1474580381159042"
 };
 
 var CATEGORIES = [
