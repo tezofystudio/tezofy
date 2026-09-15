@@ -7,6 +7,78 @@
 <title>TEZOFY Studio Console</title>
 <link rel="icon" href="assets/icons/favicon.png">
 <link rel="stylesheet" href="assets/css/style.css">
+<style>
+/* --- Studio Console styles (inline so the panel never breaks from stale cache) --- */
+.adm-wrap { max-width: 860px; margin: 0 auto; padding: 22px 16px 60px; }
+.adm-gate { min-height: 82vh; display: grid; place-items: center; }
+.adm-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 26px 22px; }
+.gate-card { max-width: 380px; width: 100%; text-align: center; }
+.gate-logo { width: 56px; height: 56px; border-radius: 14px; margin-bottom: 10px; }
+.gate-card h1 { font-size: 1.3rem; margin-bottom: 8px; }
+.gate-card input { width: 100%; margin: 14px 0 10px; text-align: center; }
+.adm-muted { color: var(--muted); font-size: .82rem; line-height: 1.55; }
+.adm-muted.small { font-size: .7rem; }
+.adm-error { color: #fb7185; font-size: .78rem; font-weight: 600; min-height: 1em; margin-top: 8px; }
+.adm-ok { color: #34d399; font-size: .78rem; font-weight: 600; margin-top: 8px; }
+.adm-btn { justify-content: center; margin-top: 4px; }
+.adm-btn.sm { padding: 8px 18px; font-size: .8rem; }
+.adm-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.adm-title { display: flex; align-items: center; gap: 11px; }
+.adm-title img { width: 40px; height: 40px; border-radius: 11px; }
+.adm-title h1 { font-size: 1.12rem; }
+.adm-head-actions { display: flex; gap: 9px; align-items: center; }
+.adm-link { font-size: .82rem; font-weight: 700; color: var(--brand-2, #ff7a00); }
+.adm-ghost {
+  background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 10px; padding: 8px 14px; font-size: .8rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: .2s;
+}
+.adm-ghost:hover { border-color: var(--border-soft); background: var(--border-soft); }
+.adm-ghost.xs { padding: 5px 10px; font-size: .72rem; border-radius: 8px; }
+.adm-ghost.danger { color: #fb7185; }
+.adm-tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+.adm-tab {
+  background: var(--card); border: 1px solid var(--border); color: var(--muted);
+  border-radius: 999px; padding: 9px 18px; font-size: .84rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: .2s;
+}
+.adm-tab.on { background: var(--grad); color: #fff; border-color: transparent; }
+.adm-panel h2 { font-size: 1.02rem; margin-bottom: 6px; }
+.adm-row { display: flex; gap: 10px; align-items: center; margin-top: 10px; flex-wrap: wrap; }
+.adm-row.between { justify-content: space-between; margin: 0 0 12px; }
+.adm-list { display: grid; gap: 9px; }
+.adm-empty { text-align: center; color: var(--muted); font-size: .86rem; line-height: 1.7; padding: 34px 16px; border: 1.5px dashed var(--border); border-radius: 16px; }
+.adm-item { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 9px 12px; }
+.adm-item.slim { padding: 7px 12px; }
+.adm-item img { width: 52px; height: 52px; border-radius: 10px; object-fit: cover; flex: none; background: var(--card-2); }
+.adm-catic { font-size: 1.4rem; width: 40px; text-align: center; flex: none; }
+.adm-item-body { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.adm-item-body b { font-size: .88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.adm-item-actions { display: flex; gap: 6px; flex: none; }
+.adm-form { display: grid; gap: 12px; }
+.adm-form label { display: grid; gap: 6px; font-size: .76rem; font-weight: 700; }
+.adm-form input[type="text"], .adm-form input[type="url"], .adm-form input[type="number"], .adm-form input[type="password"], .adm-form textarea, .adm-gate input {
+  background: var(--card-2); border: 1px solid var(--border); color: var(--text);
+  border-radius: 12px; padding: 11px 13px; font-size: .88rem; font-family: inherit; width: 100%;
+}
+.adm-form textarea { resize: vertical; line-height: 1.55; }
+.adm-label-txt { font-size: .76rem; font-weight: 700; margin-bottom: -4px; }
+.adm-imgpick { display: flex; gap: 12px; align-items: flex-start; }
+.adm-imgpick img { width: 84px; height: 84px; border-radius: 12px; object-fit: cover; flex: none; border: 1px solid var(--border); }
+.adm-imgpick .grow { flex: 1; display: grid; gap: 8px; }
+.adm-grid2 { display: grid; gap: 12px; grid-template-columns: 1fr; }
+.adm-grid3 { display: grid; gap: 12px; grid-template-columns: 1fr; margin-bottom: 12px; }
+@media (min-width: 640px) { .adm-grid2 { grid-template-columns: 1fr 1fr; } .adm-grid3 { grid-template-columns: 1.2fr .6fr 1fr; } }
+.adm-catbox { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.adm-check {
+  display: flex !important; align-items: center; gap: 8px; font-size: .8rem !important; font-weight: 600 !important;
+  background: var(--card-2); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; cursor: pointer;
+}
+.adm-check input { accent-color: #ff2daa; width: 15px; height: 15px; }
+.adm-flags { display: flex; gap: 10px; flex-wrap: wrap; }
+.adm-flags .adm-check { flex: 1; min-width: 190px; }
+.adm-catform { margin-top: 16px; }
+.adm-catform h3 { font-size: .92rem; margin-bottom: 12px; }
+.adm-foot { text-align: center; color: var(--muted-2); font-size: .7rem; margin-top: 34px; }
+</style>
 </head>
 <body>
 <div class="adm-wrap">
