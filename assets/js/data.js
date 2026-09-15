@@ -158,7 +158,7 @@ var PROMPTS = [
       ["Winter River Bank", "Background: quiet winter river bank wrapped in pale morning fog and cool blue light."]
     ]
   }
-}
+},
   {
     id: "durga-puja-grace",
     title: "Durga Puja Grace",
