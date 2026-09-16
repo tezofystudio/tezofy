@@ -123,7 +123,26 @@
 .pv-og img { width: 100%; aspect-ratio: 1200/630; object-fit: cover; display: block; }
 .pv-note { font-size: .72rem; color: var(--muted); font-weight: 700; }
 
-</style>
+
+/* ---------- v2.3 · share-page publisher + OG manager ---------- */
+.adm-gh{margin:10px 0 14px;border:1px dashed #3a3b48;border-radius:14px;padding:10px 12px;background:rgba(255,255,255,.02)}
+.adm-gh>summary{cursor:pointer;font-weight:800;font-size:14px;color:#e2e8f0;list-style:none}
+.adm-gh>summary::-webkit-details-marker{display:none}
+.adm-gh>summary:before{content:"▸ ";color:#ff8ac6}
+.adm-gh[open]>summary:before{content:"▾ "}
+.adm-gh .adm-row{margin-top:8px}
+#ogModal{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(4,6,12,.78);backdrop-filter:blur(5px)}
+#ogModal[hidden]{display:none}
+.ogm-card{width:min(720px,96vw);max-height:92vh;overflow:auto;background:#12131b;border:1px solid #2c2d3c;border-radius:18px;padding:16px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.ogm-card h3{margin:0 0 10px;font-size:16px}
+.ogm-media{border-radius:12px;overflow:hidden;border:1px solid #2c2d3c;background:#0b0c12;margin-bottom:10px}
+.ogm-media img{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover}
+.ogm-empty{padding:34px 16px;text-align:center;color:#9aa3b2;font-size:13.5px}
+.ogm-state{font-size:13px;margin:6px 0 12px;color:#cbd5e1}
+.ogm-state.ok{color:#4ade80}.ogm-state.bad{color:#f87171}
+.ogm-actions{display:flex;flex-wrap:wrap;gap:8px}
+.ogm-x{float:right;background:none;border:none;color:#9aa3b2;font-size:18px;cursor:pointer}
+</style></style>
 </head>
 <body>
 <div class="adm-wrap">
@@ -220,6 +239,16 @@
           </div>
         </div>
 
+        <details class="adm-gh" id="ghBox">
+<summary>🌐 Share-Page Publisher (GitHub) — Messenger/WhatsApp-এ OG কার্ড আনতে</summary>
+<p class="adm-muted small" style="margin:8px 0 0">প্রতিটা প্রম্পট পাবলিশ হলেই সাইটেই একটি <b>স্ট্যাটিক শেয়ার-পেইজ</b> বানিয়ে দেয় (<code>share/rp-...</code>) — Messenger crawlers ওটাই পছন্দ করে। একবার সেটআপ: GitHub classic token (scope: <b>repo</b>) + আপনার repository নাম। দুটোই এই ডিভাইসে লোকালি সেভ হয়।</p>
+<div class="adm-row">
+<div class="grow"><input id="ghTok" type="password" autocomplete="off" placeholder="ghp_xxxxxxxx — GitHub personal access token"></div>
+<div class="grow"><input id="ghRepo" type="text" placeholder="owner/repo — e.g. sumon98/tezofy"></div>
+<button class="adm-ghost" id="ghSave" type="button">Save GitHub</button>
+</div>
+<p class="adm-muted small" id="ghState" style="margin:8px 0 2px"></p>
+</details>
         <div class="adm-label-txt">Share card <span class="adm-muted small">(1200×630 link preview for Messenger/WhatsApp — auto-generated or your own artwork)</span></div>
         <div class="adm-imgpick">
           <img id="fOgPrev" src="" alt="" style="display:none; aspect-ratio:1200/630; object-fit:cover">
@@ -299,6 +328,20 @@
   </div>
 </div>
 
+<div id="ogModal" hidden>
+<div class="ogm-card">
+<button class="ogm-x" id="ogmX" type="button" aria-label="close">✕</button>
+<h3>🖼 Share card — <span id="ogmTitle"></span></h3>
+<div class="ogm-media" id="ogmMedia"></div>
+<div class="ogm-state" id="ogmState"></div>
+<div class="ogm-actions">
+<button class="adm-ghost sm" id="ogmCopy" type="button">📋 Copy share link</button>
+<a class="adm-ghost sm" id="ogmOpen" href="#" target="_blank" rel="noopener">↗ Open link</a>
+<button class="adm-ghost sm" id="ogmEdit" type="button">✏️ Edit in form</button>
+<button class="btn adm-btn sm" id="ogmPub" type="button">🌐 Publish / Repair share page</button>
+</div>
+</div>
+</div>
 <script src="assets/js/data.js"></script>
 <script>
 (function () {
@@ -432,9 +475,9 @@
       return '<div class="adm-item">' +
         '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.opacity=.25">' +
         '<div class="adm-item-body"><b>' + esc(p.title) + '</b>' +
-        '<span class="adm-muted small">' + (rpIds(p.cats).map(catLabel).join(" · ") || "no category") + (p.membersOnly ? " · 🔒" : "") + '</span></div>' +
+        '<span class="adm-muted small">' + (rpIds(p.cats).map(catLabel).join(" · ") || "no category") + (p.membersOnly ? " · 🔒" : "") + (p.og ? ' · <span title="share card ready" style="color:#4ade80">🖼 OG ✓</span>' : ' · <span title="no share card" style="color:#f87171">🖼 OG ✗</span>') + '</span></div>' +
         '<div class="adm-item-actions">' +
-        '<a class="adm-ghost xs" href="template.html?id=rp-' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">View</a>' +
+        '<a class="adm-ghost xs" href="template.html?id=rp-' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">View</a>' + '<button class="adm-ghost xs" data-ogman="' + esc(p.id) + '">🖼 OG</button>' +
         '<button class="adm-ghost xs" data-edit="' + esc(p.id) + '">✏️ Edit</button>' +
         '<button class="adm-ghost xs danger" data-del="' + esc(p.id) + '">🗑</button>' +
         '</div></div>';
@@ -523,6 +566,7 @@
       if (!r || !r.ok) { $("#formErr").textContent = "❌ " + ((r && r.error) || "Save failed"); return; }
       $("#formOk").textContent = "✅ Saved! Live on the site within 15 min (or instantly after Ctrl+Shift+R). ID: rp-" + r.id;
       toast("Prompt saved 🎉");
+      maybePublishAfterSave(p);
       fillForm(null);
       setTab("prompts");
       loadAll();
@@ -559,8 +603,8 @@
     var key = "";
     try { key = localStorage.getItem("tezofyImgbbKey") || ""; } catch (e) {}
     if (key) {
-      return uploadToImgbb(base64, name).then(function (url) {
-        if (url) done(url);
+      return uploadToImgbb(base64, name).then(function (res) {
+        if (res && res.url) done(res.url);
         else viaDrive();
       }).catch(viaDrive);
     }
@@ -608,9 +652,16 @@
     fd.append("image", base64);
     if (name) fd.append("name", String(name).replace(/\.jpe?g$/i, ""));
     return fetch("https://api.imgbb.com/1/upload", { method: "POST", body: fd })
-      .then(function (r) { return r.json(); })
-      .then(function (j) { return (j && j.success && j.data && j.data.url) ? j.data.url : null; })
-      .catch(function () { return null; });
+      .then(function (r) { return r.json().catch(function () { return null; }); })
+      .then(function (j) {
+        if (j && j.success && j.data) {
+          var d = j.data;
+          var direct = (d.image && d.image.url) || d.display_url || d.url;
+          if (direct) return { url: direct };
+        }
+        return { err: (j && j.error && j.error.message) ? j.error.message : "ImgBB upload rejected" };
+      })
+      .catch(function () { return { err: "ImgBB unreachable" }; });
   }
 
   function pickCrop() {
@@ -652,14 +703,21 @@
           .then(function (r) {
             if (r && r.ok && r.url) return { url: r.url, via: "Drive" };
             throw new Error((r && r.error) || "upload failed");
+          })
+          .catch(function (e) {
+            if (/fetch|network/i.test(e && e.message || "")) {
+              throw new Error("server script crashed — deploy Code.gs v2.1 to see why (usually Drive storage full)");
+            }
+            throw e;
           });
       };
       var key = "";
       try { key = localStorage.getItem("tezofyImgbbKey") || ""; } catch (e) {}
       if (key) {
-        uploadToImgbb(base64, fname).then(function (url) {
-          if (url) { done({ url: url, via: "ImgBB ☁️" }); return; }
-          tryDrive().then(done).catch(function (e) { fail("ImgBB failed; Drive: " + e.message); });
+        uploadToImgbb(base64, fname).then(function (res) {
+          if (res && res.url) { done({ url: res.url, via: "ImgBB ☁️" }); return; }
+          var ie = (res && res.err) || "ImgBB failed";
+          tryDrive().then(done).catch(function (e) { fail(ie + "; Drive: " + e.message); });
         });
       } else {
         tryDrive().then(done).catch(function (e) {
@@ -668,6 +726,96 @@
       }
     }).catch(function (e) { st.textContent = "❌ " + ((e && e.message) || "read error"); });
   }
+
+  /* ---------- 🌐 v2.3 · static share-page publisher + OG manager ---------- */
+  function ghCfg() { try { return JSON.parse(localStorage.getItem("tezofyGh") || "{}"); } catch (e) { return {}; } }
+  function ghSaveCfg(c) { try { localStorage.setItem("tezofyGh", JSON.stringify(c)); } catch (e) {} }
+  function siteBase() { return location.origin + location.pathname.replace(/[^/]*$/, ""); }
+  function shareDir(rid) { return "share/rp-" + encodeURIComponent(rid) + "/"; }
+  function shareStaticUrl(rid) { return siteBase() + shareDir(rid); }
+  function shareFallbackUrl(p) {
+    return API ? (String(API) + "?action=share&id=rp-" + encodeURIComponent(p.id)) : (siteBase() + "template.html?id=rp-" + encodeURIComponent(p.id));
+  }
+  function sharePageHTML(pr, rid) {
+    var base = siteBase();
+    var page = base + "template.html?id=rp-" + encodeURIComponent(rid);
+    var img = pr.og || pr.img || "";
+    if (img && !/^(https?:)?\/\//.test(img)) img = base + String(img).replace(/^\/?/, "");
+    var t = (pr.title || "TEZOFY Prompt") + " — free AI image prompt on TEZOFY";
+    var d = pr.tagline || "Copy the prompt, customize it & create stunning AI images — free on TEZOFY.";
+    function m(name, prop, val) { return "<meta " + (prop ? "property" : "name") + "='" + name + "' content=\"" + String(val).replace(/"/g, "&quot;").replace(/</g, "&lt;") + "\">"; }
+    return "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'>"
+      + "<title>" + t.replace(/</g, "&lt;") + "</title>"
+      + m("description", 0, d)
+      + "<link rel='canonical' href='" + page + "'>"
+      + m("og:title", 1, t) + m("og:description", 1, d) + m("og:type", 1, "website")
+      + m("og:url", 1, base + shareDir(rid)) + m("og:site_name", 1, "TEZOFY")
+      + m("og:image", 1, img) + m("og:image:secure_url", 1, img)
+      + m("og:image:width", 1, 1200) + m("og:image:height", 1, 630)
+      + m("twitter:card", 0, "summary_large_image") + m("twitter:title", 0, t) + m("twitter:description", 0, d) + m("twitter:image", 0, img)
+      + "<meta http-equiv='refresh' content='0;url=" + page + "'>"
+      + "<style>body{margin:0;background:#09090b;color:#fafafa;font-family:sans-serif;display:grid;place-items:center;min-height:100vh;text-align:center}.s{width:42px;height:42px;border-radius:50%;border:4px solid #2a2a33;border-top-color:#ff2daa;animation:r .9s linear infinite;margin:0 auto 14px}@keyframes r{to{transform:rotate(360deg)}}a{color:#ff8ac6;font-weight:700}</style>"
+      + "</head><body><div><div class='s'></div><h1 style='font-size:1.15rem;margin:0 20px 8px'>" + t.replace(/</g, "&lt;") + "</h1><p>Opening on TEZOFY… <a href='" + page + "'>Tap here</a></p></div><script>location.replace(" + JSON.stringify(page) + ");</" + "script></body></html>";
+  }
+  function ghPublishSharePage(pr) {
+    var g = ghCfg();
+    if (!g.tok || !g.repo) return Promise.resolve({ err: "GitHub token/repo not set — open 🌐 Share-Page Publisher above" });
+    var rid = pr.id; var path = shareDir(rid) + "index.html";
+    var api = "https://api.github.com/repos/" + g.repo + "/contents/" + path.split("/").map(encodeURIComponent).join("/");
+    var heads = { "Authorization": "Bearer " + g.tok, "Accept": "application/vnd.github+json" };
+    return fetch(api, { headers: heads }).then(function (r1) {
+      if (r1.ok) return r1.json();
+      if (r1.status === 404) return null;
+      return r1.json().then(function (j) { throw new Error((j && j.message) || ("HTTP " + r1.status)); });
+    }).then(function (ex) {
+      var sha = ex && ex.sha ? ex.sha : null;
+      var html = sharePageHTML(pr, rid);
+      var b64 = btoa(unescape(encodeURIComponent(html)));
+      var body = { message: "share page: rp-" + rid, content: b64 };
+      if (sha) body.sha = sha;
+      return fetch(api, { method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, heads), body: JSON.stringify(body) });
+    }).then(function (r2) {
+      if (r2.ok || r2.status === 201) return { url: shareStaticUrl(rid) };
+      return r2.json().then(function (j) { return { err: (j && j.message) || ("HTTP " + r2.status) }; });
+    }).catch(function (e) { return { err: "network: " + (e && e.message || e) }; });
+  }
+  function maybePublishAfterSave(pr) {
+    if (!pr) return;
+    var g = ghCfg();
+    if (!g.tok || !g.repo) return; // silent — static share optional
+    if (!pr.og) { toast("ℹ️ no share card yet — generate one for OG previews"); return; }
+    toast("🌐 publishing share page…");
+    ghPublishSharePage(pr).then(function (res) {
+      if (res && res.url) toast("✨ share page live (~1 min): " + res.url);
+      else toast("⚠️ share page failed: " + ((res && res.err) || "?"));
+    });
+  }
+  /* ---- OG manager modal ---- */
+  var OGCTX = null;
+  function ogmFind(id) {
+    var raw = String(id);
+    var p = (DATA.prompts || []).filter(function (x) { return String(x.id) === raw; })[0];
+    return p || null;
+  }
+  function openOgManager(id) {
+    var p = ogmFind(id); if (!p) return;
+    OGCTX = p;
+    $("#ogmTitle").textContent = p.title;
+    var media = $("#ogmMedia");
+    if (p.og) media.innerHTML = '<img src="' + esc(p.og) + '" alt="share card">';
+    else media.innerHTML = '<div class="ogm-empty">এই প্রম্পটে এখনো share card নেই 😅<br>✏️ Edit করে ✨ Auto-generate / 📤 Upload করুন।</div>';
+    var st = $("#ogmState"); st.className = "ogm-state"; st.textContent = "ⓘ শেয়ার-পেইজ যাচাই হচ্ছে…";
+    $("#ogmPub").disabled = !p.og;
+    fetch(shareStaticUrl(p.id), { method: "HEAD", cache: "no-store" }).then(function (r) {
+      if (r.ok) { st.className = "ogm-state ok"; st.textContent = "🟢 static share page LIVE — " + shareStaticUrl(p.id); $("#ogmOpen").href = shareStaticUrl(p.id); }
+      else { st.className = "ogm-state bad"; st.textContent = "🔴 static page নেই — নিচে 🌐 Publish চাপুন (Messenger এখন Apps Script fallback-এ যাবে)"; $("#ogmOpen").href = shareFallbackUrl(p); }
+    }).catch(function () {
+      st.className = "ogm-state bad"; st.textContent = "🔴 যাচাই যায়নি — fallback link ব্যবহৃত হবে";
+      $("#ogmOpen").href = shareFallbackUrl(p);
+    });
+    $("#ogModal").hidden = false;
+  }
+  function closeOgManager() { $("#ogModal").hidden = true; OGCTX = null; }
 
   /* ---------- ✨ OG share-card generator (1200×630, TEZOFY style) ---------- */
   function rr(x, a, b, w, h, r) {
@@ -887,6 +1035,60 @@
   $("#parseBtn").addEventListener("click", parsePromptCode);
   $("#fOg").addEventListener("input", prevOg);
   $("#ogAuto").addEventListener("click", generateOgCard);
+  /* my photo — GitHub publisher settings */
+  (function bootGh() {
+    var g = ghCfg();
+    var guess = { owner: "", repo: "" };
+    if (/\.github\.io$/.test(location.hostname)) {
+      guess.owner = location.hostname.split(".")[0];
+      guess.repo = location.pathname.split("/").filter(Boolean)[0] || (guess.owner + ".github.io");
+    }
+    $("#ghRepo").placeholder = "owner/repo" + (guess.repo ? " — e.g. " + guess.owner + "/" + guess.repo : "");
+    if (g.tok) $("#ghTok").value = g.tok;
+    if (g.repo) $("#ghRepo").value = g.repo;
+    if (g.tok && g.repo) $("#ghState").textContent = "✅ GitHub publisher ready — " + g.repo;
+  })();
+  $("#ghSave").addEventListener("click", function () {
+    var c = { tok: $("#ghTok").value.trim(), repo: $("#ghRepo").value.trim().replace(/^\/+|\/+$/g, "") };
+    ghSaveCfg(c);
+    $("#ghState").textContent = (c.tok && c.repo) ? ("✅ saved — publish-এর পর শেয়ার-পেইজ অটো-বানানো হবে") : "⚠️ দুটো ঘরই পূরণ করুন";
+  });
+  /* OG manager */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ogman]");
+    if (b) openOgManager(b.getAttribute("data-ogman"));
+  });
+  $("#ogmX").addEventListener("click", closeOgManager);
+  $("#ogModal").addEventListener("click", function (e) { if (e.target === e.currentTarget) closeOgManager(); });
+  $("#ogmCopy").addEventListener("click", function () {
+    if (!OGCTX) return;
+    var u = $("#ogmOpen").href;
+    if (navigator.clipboard) navigator.clipboard.writeText(u); 
+    toast("📋 link copied!");
+  });
+  $("#ogmEdit").addEventListener("click", function () {
+    if (!OGCTX) return;
+    var btn = document.querySelector('[data-edit="' + OGCTX.id + '"]');
+    closeOgManager();
+    if (btn) btn.click();
+  });
+  $("#ogmPub").addEventListener("click", function () {
+    if (!OGCTX) return;
+    var st = $("#ogmState"); st.className = "ogm-state"; st.textContent = "🌐 publishing…";
+    this.disabled = true;
+    var self = this;
+    ghPublishSharePage(OGCTX).then(function (res) {
+      self.disabled = false;
+      if (res && res.url) {
+        st.className = "ogm-state ok";
+        st.textContent = "🟢 LIVE (~1 min): " + res.url;
+        $("#ogmOpen").href = res.url;
+      } else {
+        st.className = "ogm-state bad";
+        st.textContent = "⚠️ " + ((res && res.err) || "failed");
+      }
+    });
+  });
   $("#ogUpload").addEventListener("click", function () { $("#fOgFile").click(); });
   $("#fOgFile").addEventListener("change", function (e) {
     var f = e.target.files[0]; e.target.value = "";
