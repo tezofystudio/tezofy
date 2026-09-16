@@ -36,8 +36,12 @@
     const base = location.origin + location.pathname.replace(/[^/]*$/, "");
     if (!p._remote && typeof OG_PAGES !== "undefined" && OG_PAGES.indexOf(p.id) !== -1)
       return base + "share/" + p.id + "/";
-    if (p._remote && typeof AUTH_CONFIG !== "undefined" && AUTH_CONFIG.sheetUrl)
+    if (p._remote && typeof AUTH_CONFIG !== "undefined" && AUTH_CONFIG.sheetUrl) {
+      var hasPage = p.ogpage === 1 || p.ogpage === "1" || p.ogpage === true;
+      if (hasPage)
+        return base + "share/rp-" + encodeURIComponent(String(p.id).replace(/^rp-/, "")) + "/";
       return String(AUTH_CONFIG.sheetUrl) + "?action=share&id=" + encodeURIComponent(p.id);
+    }
     return base + "template.html?id=" + encodeURIComponent(p.id);
   }
 
@@ -46,8 +50,10 @@
     return new Promise(function (res) {
       var fallback = shareUrlFor(p);
       if (!p._remote) return res(fallback);
+      var raw = String(p.id).replace(/^rp-/, "");
       var base = location.origin + location.pathname.replace(/[^/]*$/, "");
-      var u = base + "share/rp-" + encodeURIComponent(p.id) + "/";
+      var u = base + "share/rp-" + encodeURIComponent(raw) + "/";
+      if (p.ogpage === 1 || p.ogpage === "1" || p.ogpage === true) return res(u);
       var settled = false;
       var t = setTimeout(function () { if (!settled) { settled = true; res(fallback); } }, 1600);
       try {
@@ -811,7 +817,7 @@
         </div>
       </div>
       <div class="detail-layout">
-        <div class="detail-img reveal"><img src="${p.img}" alt="${esc(p.title)} — AI generated example image"></div>
+        <div class="detail-img reveal"><img class="fill" aria-hidden="true" src="${p.img}" alt=""><img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image"></div>
         <div>
           <div class="detail-head reveal">
             <h1>${esc(p.title)}</h1>
