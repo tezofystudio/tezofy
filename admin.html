@@ -142,7 +142,15 @@
 .ogm-state.ok{color:#4ade80}.ogm-state.bad{color:#f87171}
 .ogm-actions{display:flex;flex-wrap:wrap;gap:8px}
 .ogm-x{float:right;background:none;border:none;color:#9aa3b2;font-size:18px;cursor:pointer}
-</style></style>
+
+/* ---------- v2.4 · pv scroll + animated og border ---------- */
+.pv-body{min-height:0;-webkit-overflow-scrolling:touch}
+@property --ogA{syntax:"<angle>";inherits:false;initial-value:0deg}
+.og-anim{--ogA:0deg;padding:3px;border-radius:14px;background:conic-gradient(from var(--ogA),hsl(var(--ogH,318),95%,62%),hsl(calc(var(--ogH,318) + 120),95%,62%),hsl(calc(var(--ogH,318) + 240),95%,62%),hsl(var(--ogH,318),95%,62%));animation:ogSpin 5s linear infinite;box-sizing:border-box}
+.og-anim img{display:block;width:100%;border-radius:11px}
+@keyframes ogSpin{to{--ogA:360deg}}
+#fOgPrev{border-radius:14px}
+</style></style></style>
 </head>
 <body>
 <div class="adm-wrap">
@@ -802,8 +810,14 @@
     OGCTX = p;
     $("#ogmTitle").textContent = p.title;
     var media = $("#ogmMedia");
-    if (p.og) media.innerHTML = '<img src="' + esc(p.og) + '" alt="share card">';
-    else media.innerHTML = '<div class="ogm-empty">এই প্রম্পটে এখনো share card নেই 😅<br>✏️ Edit করে ✨ Auto-generate / 📤 Upload করুন।</div>';
+    if (p.og) {
+      media.style.setProperty("--ogH", Math.floor(Math.random() * 360));
+      media.classList.add("og-anim");
+      media.innerHTML = '<img src="' + esc(p.og) + '" alt="share card">';
+    } else {
+      media.classList.remove("og-anim");
+      media.innerHTML = '<div class="ogm-empty">এই প্রম্পটে এখনো share card নেই 😅<br>✏️ Edit করে ✨ Auto-generate / 📤 Upload করুন।</div>';
+    }
     var st = $("#ogmState"); st.className = "ogm-state"; st.textContent = "ⓘ শেয়ার-পেইজ যাচাই হচ্ছে…";
     $("#ogmPub").disabled = !p.og;
     fetch(shareStaticUrl(p.id), { method: "HEAD", cache: "no-store" }).then(function (r) {
@@ -910,13 +924,33 @@
         x.fillText("TEZOFY", 64, 560);
         x.fillStyle = "#9696a2"; x.font = "400 27px Arial, sans-serif";
         x.fillText("· free AI image prompts", 268, 560);
-        /* hero image right */
+        /* hero right — v2.4: blurred backdrop + ORIGINAL-ratio fit + random gradient frame */
         var hx = 1200 - 64 - 470, hy = 56, hw = 470, hh = 520;
+        var hueA = Math.floor(Math.random() * 360), hueB = (hueA + 120) % 360;
         x.save(); rr(x, hx, hy, hw, hh, 28); x.clip();
         if (hero) {
-          var s = Math.max(hw / hero.width, hh / hero.height);
-          var dw = hero.width * s, dh = hero.height * s;
-          x.drawImage(hero, hx + (hw - dw) / 2, hy + (hh - dh) / 2, dw, dh);
+          /* blurred cinematic fill — 9:16, 1:1, 16:9 সব রেশিওতেই পূর্ণ পটভূমি */
+          var sb = Math.max(hw / hero.width, hh / hero.height) * 1.12;
+          var dbw = hero.width * sb, dbh = hero.height * sb;
+          try { x.filter = "blur(16px) brightness(.52) saturate(1.18)"; } catch (fe) {}
+          x.drawImage(hero, hx + (hw - dbw) / 2, hy + (hh - dbh) / 2, dbw, dbh);
+          try { x.filter = "none"; } catch (fe2) {}
+          /* original image, true aspect ratio, perfectly centered */
+          var sf = Math.min((hw - 40) / hero.width, (hh - 40) / hero.height);
+          var dw = hero.width * sf, dh = hero.height * sf;
+          var dx = hx + (hw - dw) / 2, dy = hy + (hh - dh) / 2;
+          x.shadowColor = "rgba(0,0,0,.55)"; x.shadowBlur = 34; x.shadowOffsetY = 8;
+          x.save(); rr(x, dx, dy, dw, dh, 18); x.clip();
+          x.drawImage(hero, dx, dy, dw, dh);
+          x.restore();
+          x.shadowColor = "transparent"; x.shadowBlur = 0; x.shadowOffsetY = 0;
+          /* random gradient frame hugging the original-size image */
+          var fg = x.createLinearGradient(dx, dy, dx + dw, dy + dh);
+          fg.addColorStop(0, "hsl(" + hueA + ",95%,62%)");
+          fg.addColorStop(1, "hsl(" + hueB + ",95%,62%)");
+          x.strokeStyle = fg; x.lineWidth = 5;
+          rr(x, dx, dy, dw, dh, 18); x.stroke();
+          try { var pvimg = $("#fOgPrev"); if (pvimg) pvimg.style.setProperty("--ogH", hueA); } catch (pe) {}
         } else placeholder();
         function placeholder() {
           var pg = x.createLinearGradient(hx, hy, hx + hw, hy + hh);
@@ -1005,7 +1039,7 @@
     if (p.tagline) L.push('<div class="tline">' + esc(p.tagline) + '</div>');
     L.push('<div class="tcode">' + esc(p.prompt).replace(/\n/g, "<br>") + '</div>');
     L.push('<div class="tbtns"><span class="tbt1">📋 Copy Prompt</span>' + (toks ? '<span class="tbt2">✨ Customize Now · ' + toks + ' fields' + (p.membersOnly ? ' · 🔒 members' : '') + '</span>' : '') + '</div></div>');
-    if (p.og) L.push('<div class="pv-note">3 · Share card (Messenger/WhatsApp):</div><div class="pv-og"><img src="' + esc(p.og) + '" alt=""></div>');
+    if (p.og) L.push('<div class="pv-note">3 · Share card (Messenger/WhatsApp):</div><div class="pv-og og-anim" style="--ogH:' + Math.floor(Math.random() * 360) + '"><img src="' + esc(p.og) + '" alt=""></div>');
     $("#pvBody").innerHTML = L.join("");
     $("#pvModal").style.display = "flex";
   }
