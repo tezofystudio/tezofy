@@ -1,0 +1,2 @@
+/* Generated: built-in prompts that have a rich-share page (share/<id>/) */
+var OG_PAGES = ["durga-puja-grace", "eid-crescent-night", "ganpati-blessing", "diwali-diya-glow", "monsoon-chai", "retro-film-selfie", "golden-hour-couple", "birthday-confetti", "vintage-70s-couple", "purple-noir", "bridal-royal", "executive-navy", "ceo-presence", "golden-letter-art", "anime-blossom", "tea-garden-sunrise", "noir-cufflink", "neon-alley", "emerald-saree", "monsoon-window"];

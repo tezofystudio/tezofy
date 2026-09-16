@@ -31,6 +31,16 @@
   const catName = (id) => (CATEGORIES.find((c) => c.id === id) || {}).name || id;
   const param = (k) => new URLSearchParams(location.search).get(k);
 
+  /* ---------- rich-share URL (per-prompt OG page when available) ---------- */
+  function shareUrlFor(p) {
+    const base = location.origin + location.pathname.replace(/[^/]*$/, "");
+    if (!p._remote && typeof OG_PAGES !== "undefined" && OG_PAGES.indexOf(p.id) !== -1)
+      return base + "share/" + p.id + "/";
+    if (p._remote && typeof AUTH_CONFIG !== "undefined" && AUTH_CONFIG.sheetUrl)
+      return String(AUTH_CONFIG.sheetUrl) + "?action=share&id=" + encodeURIComponent(p.id);
+    return base + "template.html?id=" + encodeURIComponent(p.id);
+  }
+
   /* ---------- icons ---------- */
   const I = {
     spark: '<img src="assets/icons/logo.png" alt="TEZOFY logo">',
@@ -799,8 +809,14 @@
                 <button class="copy-btn" id="copyBtn">${I.copy}<span>Copy</span></button>
               </div>
               <div class="prompt-text" id="promptText"></div>
-              <div class="customizer" id="textTokens"></div>
-              <div id="customizeHost"></div>
+              <div class="cust-gate" id="custGate">
+                <button type="button" class="cust-now" id="custNow"><span class="cn-bd" aria-hidden="true"></span><span class="cn-in">✨ Customize Now</span></button>
+                <p class="cust-sub">Outfit · background · lighting · ratio — free after quick sign-up</p>
+              </div>
+              <div id="custPanel" hidden>
+                <div class="customizer" id="textTokens"></div>
+                <div id="customizeHost"></div>
+              </div>
               <button class="btn big-copy" id="bigCopy">${I.copy}<span>Copy Prompt</span></button>
               <div class="prompt-count" id="promptCount"></div>
               <div class="paste-into">Then paste into:&nbsp;
@@ -887,6 +903,27 @@
     buildCustomizer(p, $("#customizeHost"), ({ adds: a, ratio: r }) => { adds = a; ratioOverride = r; renderPrompt(); });
     renderPrompt();
 
+    /* ✨ Customize Now gate: members open the panel, guests sign up first */
+    const custGate = $("#custGate"), custPanel = $("#custPanel");
+    const hasCustomize = tokens.length > 0 || !!$("#customizeHost .opt-group");
+    if (!hasCustomize) { custGate.style.display = "none"; }
+    else {
+      const RR = RING_THEMES[(Math.random() * RING_THEMES.length) | 0] || RING_THEMES[0];
+      const custNow = $("#custNow");
+      custNow.style.setProperty("--ring-grad", RR.grad);
+      custNow.style.setProperty("--ring-dur", RR.dur);
+      custNow.style.setProperty("--ring-dir", RR.dir);
+      custNow.addEventListener("click", () => {
+        if (!currentUser()) {
+          toast("Sign up free to unlock customization ✨");
+          if (window.__chitroOpenAuth) window.__chitroOpenAuth();
+          return;
+        }
+        custPanel.hidden = false;
+        custGate.style.display = "none";
+      });
+    }
+
     /* 🔒 members-only gate: guests see a blurred preview + unlock card */
     if (p.membersOnly && !currentUser()) {
       const inner = $(".prompt-inner");
@@ -945,13 +982,14 @@
     });
 
     $("#shareBtn").addEventListener("click", async () => {
-      const data = { title: document.title, text: `${p.title} — free AI image prompt on ${SITE.name}`, url: location.href };
+      const shareUrl = shareUrlFor(p);
+      const data = { title: document.title, text: `${p.title} — free AI image prompt on ${SITE.name}`, url: shareUrl };
       if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
-      else copyText(location.href, () => toast("Link copied to clipboard"));
+      else copyText(shareUrl, () => toast("Link copied to clipboard"));
     });
 
     $("#waBtn").addEventListener("click", () => {
-      const text = `${p.title} — free AI image prompt on ${SITE.name} 🎨 ${location.href}`;
+      const text = `${p.title} — free AI image prompt on ${SITE.name} 🎨 ${shareUrlFor(p)}`;
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
 
@@ -1159,7 +1197,9 @@
       uses: +r.uses || 0,
       likes: +r.likes || 0,
       membersOnly: !!r.membersOnly,
-      isNew: !!r.isNew
+      isNew: !!r.isNew,
+      custom: Array.isArray(r.custom) ? r.custom : undefined,
+      customOptions: (r.customOptions && typeof r.customOptions === "object") ? r.customOptions : undefined
     };
   }
   function applyRemoteData(data) {
