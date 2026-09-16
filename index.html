@@ -40,8 +40,38 @@
   <meta name="apple-mobile-web-app-title" content="TEZOFY">
   <link rel="apple-touch-icon" href="assets/icons/icon-180.png">
   <link rel="stylesheet" href="assets/css/style.css">
+
+<style id="ds-css">
+.ds-ov{position:fixed;inset:0;z-index:9999;background:#07090e;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:15px;transition:opacity .5s ease}
+.ds-logo{position:relative;width:86px;height:86px;display:flex;align-items:center;justify-content:center}
+.ds-logo img{width:78px;height:78px;border-radius:20px;box-shadow:0 14px 42px rgba(255,45,170,.35);animation:dsPulse 1.5s ease-in-out infinite}
+.ds-logo:before{content:"";position:absolute;inset:-6px;border-radius:26px;border:2px solid rgba(255,122,0,.55);animation:dsRing 1.5s ease-out infinite}
+@keyframes dsPulse{50%{transform:scale(1.07)}}
+@keyframes dsRing{0%{transform:scale(.85);opacity:1}100%{transform:scale(1.45);opacity:0}}
+.ds-msg{color:#f8fafc;font-weight:800;font-size:15px;letter-spacing:.02em;text-align:center;padding:0 24px}
+.ds-sub{color:#94a3b8;font-size:12.5px}
+.ds-strip{width:min(430px,92vw);overflow:hidden;border-radius:14px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.ds-track{display:flex;gap:10px;width:max-content;animation:dsScroll 16s linear infinite}
+.ds-track img{width:80px;height:100px;object-fit:cover;border-radius:10px;opacity:.92}
+@keyframes dsScroll{to{transform:translateX(-50%)}}
+.ds-bar{width:min(220px,60vw);height:4px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.ds-bar span{display:block;height:100%;width:38%;border-radius:inherit;background:linear-gradient(90deg,#ff2daa,#ff7a00);animation:dsLoad 1.15s ease-in-out infinite}
+@keyframes dsLoad{0%{transform:translateX(-115%)}100%{transform:translateX(370%)}}
+.ds-ov.ds-bye{opacity:0;pointer-events:none}
+</style>
 </head>
 <body data-page="home">
+<div class="ds-ov" id="dsOv" aria-hidden="true">
+  <div class="ds-logo"><img src="assets/icons/icon-512.png" alt="TEZOFY"></div>
+  <div class="ds-msg">✨ Crafting your premium prompt universe…</div>
+  <div class="ds-sub">সেরা AI প্রম্পটগুলো সাজানো হচ্ছে — শুধু আপনার জন্য 💛</div>
+  <div class="ds-strip"><div class="ds-track">
+    <img src="assets/img/durga-puja.jpg" alt=""><img src="assets/img/bridal-glow.jpg" alt=""><img src="assets/img/neon-alley.jpg" alt=""><img src="assets/img/golden-couple.jpg" alt=""><img src="assets/img/saree-elegance.jpg" alt=""><img src="assets/img/retro-selfie.jpg" alt=""><img src="assets/img/anime-dreamer.jpg" alt=""><img src="assets/img/diwali-diya.jpg" alt="">
+    <img src="assets/img/durga-puja.jpg" alt=""><img src="assets/img/bridal-glow.jpg" alt=""><img src="assets/img/neon-alley.jpg" alt=""><img src="assets/img/golden-couple.jpg" alt=""><img src="assets/img/saree-elegance.jpg" alt=""><img src="assets/img/retro-selfie.jpg" alt=""><img src="assets/img/anime-dreamer.jpg" alt=""><img src="assets/img/diwali-diya.jpg" alt="">
+  </div></div>
+  <div class="ds-bar"><span></span></div>
+</div>
+
 
   <main class="wrap">
     <!-- Hero -->
@@ -199,5 +229,21 @@
   <script src="assets/js/auth-cloud.js"></script>
   <script src="assets/js/og-pages.js"></script>
   <script src="assets/js/app.js"></script>
+
+<script>
+(function () {
+  var ov = document.getElementById("dsOv");
+  if (!ov) return;
+  try { if (sessionStorage.getItem("tzSplash")) { ov.parentNode.removeChild(ov); return; } sessionStorage.setItem("tzSplash", "1"); } catch (e) {}
+  var done = false;
+  function bye() {
+    if (done) return; done = true;
+    ov.classList.add("ds-bye");
+    setTimeout(function () { if (ov.parentNode) ov.parentNode.removeChild(ov); }, 600);
+  }
+  window.addEventListener("load", function () { setTimeout(bye, 1500); });
+  setTimeout(bye, 2900); // hard cap: never block the site
+})();
+</script>
 </body>
 </html>

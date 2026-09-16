@@ -1,5 +1,5 @@
 /* TEZOFY service worker — offline-friendly static cache */
-const CACHE = "tezofy-v17";
+const CACHE = "tezofy-v19";
 const CORE = [
   "./",
   "./index.html",
