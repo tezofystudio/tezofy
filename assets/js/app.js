@@ -983,13 +983,13 @@
 
     $("#shareBtn").addEventListener("click", async () => {
       const shareUrl = shareUrlFor(p);
-      const data = { title: document.title, text: `${p.title} — free AI image prompt on ${SITE.name}`, url: shareUrl };
+      const data = { title: p.title, url: shareUrl }; // link-only bubble → the OG card does the talking
       if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
       else copyText(shareUrl, () => toast("Link copied to clipboard"));
     });
 
     $("#waBtn").addEventListener("click", () => {
-      const text = `${p.title} — free AI image prompt on ${SITE.name} 🎨 ${shareUrlFor(p)}`;
+      const text = shareUrlFor(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
 
