@@ -1097,3 +1097,33 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 .adm-catform { margin-top: 16px; }
 .adm-catform h3 { font-size: .92rem; margin-bottom: 12px; }
 .adm-foot { text-align: center; color: var(--muted-2); font-size: .7rem; margin-top: 34px; }
+
+/* ===== Mobile hardening: fluid at ANY width, no clipping, no iOS auto-zoom ===== */
+html { overflow-x: hidden; overflow-x: clip; }
+body { overflow-x: hidden; overflow-x: clip; }
+input, textarea, select { font-size: 16px !important; } /* stops iOS/Android focus zoom-jump */
+* { -webkit-tap-highlight-color: transparent; }
+.hero h1 { overflow-wrap: break-word; }
+.toast { max-width: calc(100vw - 36px); white-space: normal; text-align: center; line-height: 1.4; }
+
+@media (max-width: 560px) {
+  /* Prompt of the Day: banner-style on phones */
+  .potd { flex-direction: column; }
+  .potd-img { width: 100%; max-width: none; }
+  .potd-img img { aspect-ratio: 16/10; }
+  .potd-body { padding: 16px; }
+
+  /* tighter, cleaner small-screen hero */
+  .hero { padding-top: 34px; }
+  .hero h1 { font-size: clamp(1.75rem, 8vw, 2.4rem); }
+  .hero-badge { font-size: .68rem; padding: 5px 11px; max-width: 100%; white-space: normal; line-height: 1.35; }
+  .section-head h2 { font-size: 1.08rem; }
+  .section { margin-top: 36px; }
+  .auth-card { padding: 12px 16px 24px; }
+  .profile-hero { flex-wrap: wrap; }
+  .detail-top { gap: 8px; }
+  .detail-actions .action-btn span { font-size: 0; }             /* icon-only pills on small phones */
+  .detail-actions .action-btn span:empty { display: none; }
+  .detail-actions .action-btn { padding: 9px 13px; gap: 0; }
+  .adm-item-actions { flex-wrap: wrap; justify-content: flex-end; }
+}
