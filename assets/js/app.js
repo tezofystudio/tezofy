@@ -41,6 +41,27 @@
     return base + "template.html?id=" + encodeURIComponent(p.id);
   }
 
+  /* ---------- og-friendly resolver: static share page first (Messenger loves static) ---------- */
+  function resolveShareUrl(p) {
+    return new Promise(function (res) {
+      var fallback = shareUrlFor(p);
+      if (!p._remote) return res(fallback);
+      var base = location.origin + location.pathname.replace(/[^/]*$/, "");
+      var u = base + "share/rp-" + encodeURIComponent(p.id) + "/";
+      var settled = false;
+      var t = setTimeout(function () { if (!settled) { settled = true; res(fallback); } }, 1600);
+      try {
+        fetch(u, { method: "HEAD", cache: "no-store" }).then(function (r) {
+          if (settled) return; settled = true; clearTimeout(t);
+          res(r.ok ? u : fallback);
+        }).catch(function () {
+          if (settled) return; settled = true; clearTimeout(t);
+          res(fallback);
+        });
+      } catch (e) { if (!settled) { settled = true; clearTimeout(t); res(fallback); } }
+    });
+  }
+
   /* ---------- icons ---------- */
   const I = {
     spark: '<img src="assets/icons/logo.png" alt="TEZOFY logo">',
@@ -982,14 +1003,14 @@
     });
 
     $("#shareBtn").addEventListener("click", async () => {
-      const shareUrl = shareUrlFor(p);
+      const shareUrl = await resolveShareUrl(p);
       const data = { title: p.title, url: shareUrl }; // link-only bubble → the OG card does the talking
       if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
       else copyText(shareUrl, () => toast("Link copied to clipboard"));
     });
 
-    $("#waBtn").addEventListener("click", () => {
-      const text = shareUrlFor(p); // clean link-only → WhatsApp renders the big preview card under it
+    $("#waBtn").addEventListener("click", async () => {
+      const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
 
