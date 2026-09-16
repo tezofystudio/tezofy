@@ -794,10 +794,24 @@
     if (!pr.og) { toast("ℹ️ no share card yet — generate one for OG previews"); return; }
     toast("🌐 publishing share page…");
     ghPublishSharePage(pr).then(function (res) {
-      if (res && res.url) toast("✨ share page live (~1 min): " + res.url);
-      else toast("⚠️ share page failed: " + ((res && res.err) || "?"));
+      if (res && res.url) {
+        toast("✨ share page live (~1 min): " + res.url);
+        ogpageMark(pr);
+      } else toast("⚠️ share page failed: " + ((res && res.err) || "?"));
     });
   }
+  function ogpageMark(pr) {
+    try {
+      var upd = Object.assign({}, pr, { ogpage: 1 });
+      apiSend({ action: "save", prompt: upd }).then(function (r) {
+        if (r && r.ok) try {
+          var hit = (DATA.prompts || []).filter(function (x) { return String(x.id) === String(pr.id); })[0];
+          if (hit) hit.ogpage = 1;
+        } catch (ee) {}
+      });
+    } catch (e) {}
+  }
+
   /* ---- OG manager modal ---- */
   var OGCTX = null;
   function ogmFind(id) {
@@ -1117,6 +1131,7 @@
         st.className = "ogm-state ok";
         st.textContent = "🟢 LIVE (~1 min): " + res.url;
         $("#ogmOpen").href = res.url;
+        ogpageMark(OGCTX);
       } else {
         st.className = "ogm-state bad";
         st.textContent = "⚠️ " + ((res && res.err) || "failed");
