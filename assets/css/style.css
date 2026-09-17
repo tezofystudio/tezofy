@@ -870,13 +870,14 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 }
 
 /* ===== Pinterest masonry + flush cards + quick actions + light mode ===== */
-.masonry { columns: 2; column-gap: 13px; }
-.masonry > .card { break-inside: avoid; margin-bottom: 13px; }
-@media (min-width: 640px)  { .masonry { columns: 3; column-gap: 15px; } .masonry > .card { margin-bottom: 15px; } }
-@media (min-width: 1024px) { .masonry { columns: 4; } }
-@media (min-width: 1360px) { .masonry { columns: 5; } }
-.masonry .card-img { aspect-ratio: auto; }
-.masonry .card-img img { height: auto; }
+/* v2.5 GRIDFORGE — was Pinterest masonry (ragged gaps); now uniform grid, one fixed ratio */
+.masonry { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; align-items: start; }
+.masonry > .card { margin-bottom: 0; }
+@media (min-width: 640px)  { .masonry { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
+@media (min-width: 1024px) { .masonry { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1360px) { .masonry { grid-template-columns: repeat(5, 1fr); } }
+.masonry .card-img { aspect-ratio: 4/5; }
+.masonry .card-img img { height: 100%; }
 
 .card { background: transparent; border: 0; box-shadow: none; }
 .card:hover { border-color: transparent; box-shadow: none; transform: translateY(-2px); }
@@ -912,8 +913,7 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 /* ===== No-crop blurred fill (any ratio image, never cut) ===== */
 .card-img .fill { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.25); filter: blur(24px) brightness(.55); }
 .card-img .main { position: relative; width: 100%; height: 100%; object-fit: contain; }
-.masonry .card-img .fill { display: none; }
-.masonry .card-img .main { position: static; height: auto; object-fit: cover; }
+.masonry .card-img .main { position: relative; height: 100%; object-fit: cover; }
 .card:hover .card-img .fill { transform: scale(1.32); }
 
 /* ===== Template image bigger on desktop ===== */
@@ -1173,3 +1173,18 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 /* members-only lock covers the customize gate too */
 .prompt-inner.locked .cust-gate,
 .prompt-inner.locked #custPanel { filter: blur(9px); pointer-events: none; user-select: none; }
+
+/* ===== v2.5 — animated random gradient border around prompt hero ===== */
+@property --ogA { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.hero-ring {
+  position: relative; z-index: 1; display: block; height: 100%; box-sizing: border-box;
+  padding: 3px; border-radius: 20px;
+  background: conic-gradient(from var(--ogA, 0deg),
+    hsl(var(--ogH, 318), 95%, 62%), hsl(calc(var(--ogH, 318) + 120), 95%, 62%),
+    hsl(calc(var(--ogH, 318) + 240), 95%, 62%), hsl(var(--ogH, 318), 95%, 62%));
+  animation: ogSpin 5.5s linear infinite;
+  filter: drop-shadow(0 10px 28px hsl(var(--ogH, 318) 95% 60% / .22));
+  transition: filter .4s ease;
+}
+.hero-ring:hover { filter: drop-shadow(0 14px 34px hsl(var(--ogH, 318) 95% 60% / .38)); }
+@keyframes ogSpin { to { --ogA: 360deg; } }
