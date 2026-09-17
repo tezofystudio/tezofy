@@ -215,6 +215,11 @@
     function unlockRefresh() { setTimeout(() => { if ($(".lock-overlay") && window.__chitroRerender) window.__chitroRerender(); }, 300); }
 
     function socialSuccess(u) {
+      /* ⛔ v2.6: টেম্প-মেইল বট-সাইনআপ চারদিকেই ব্লক (social path-এও) */
+      if (window.CloudAuth && CloudAuth.isDisposable(u.email)) {
+        toast("Temporary email addresses aren't allowed — please sign in with your real Gmail 🚫");
+        return;
+      }
       var list = users();
       if (!list[u.email]) list[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
       store.set("users", list);
@@ -817,7 +822,7 @@
         </div>
       </div>
       <div class="detail-layout">
-        <div class="detail-img reveal"><img class="fill" aria-hidden="true" src="${p.img}" alt=""><img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image"></div>
+        <div class="detail-img reveal"><img class="fill" aria-hidden="true" src="${p.img}" alt=""><span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}"><img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image"></span></div>
         <div>
           <div class="detail-head reveal">
             <h1>${esc(p.title)}</h1>

@@ -41,6 +41,7 @@
     try {
       entry.date = new Date().toISOString();
       entry.site = location.host;
+      if (!entry.action) entry.action = "register"; // 👥 Users ট্যাবে নোঙর (v2.6)
       fetch(CFG.sheetUrl, {
         method: "POST",
         mode: "no-cors",
