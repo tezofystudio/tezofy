@@ -262,16 +262,19 @@
           <form id="authForm" novalidate>
             ${mode === "signup" ? `<div class="field"><label for="aName">Your Name</label><input id="aName" type="text" placeholder="e.g. Rahim Ahmed" autocomplete="name"></div>` : ""}
             <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
-            <div class="field"><label for="aPass">Password</label><input id="aPass" type="password" placeholder="${mode === "signup" ? "Minimum 4 characters" : "Your password"}" autocomplete="${mode === "signup" ? "new-password" : "current-password"}"></div>
+            <div class="field"><label for="aPass">Password</label><input id="aPass" type="password" placeholder="${mode === "signup" ? "6+ chars: letter + number" : "Your password"}" autocomplete="${mode === "signup" ? "new-password" : "current-password"}"></div>
             <div class="auth-error" id="authError"></div>
             <button class="btn auth-submit" type="submit">${mode === "signup" ? "Create Free Account" : "Log In"}</button>
           </form>
+          ${mode === "login" ? '<button type="button" class="guest-link" id="forgotLink">🔑 Forgot password? →</button>' : ""}
           <button class="guest-link" data-close-auth>Continue as guest for now →</button>
-          <p class="auth-note">🔒 Free forever. Your password never leaves this device —<br>we only keep your name & email to send new-prompt updates.</p>
+          <p class="auth-note">🔒 Free forever. Every email is verified with a one-time code —<br>we only keep an encrypted password hash, never your actual password.</p>
         </div>`;
 
       $$("[data-tab]", ov).forEach((b) => b.addEventListener("click", () => renderAuth(b.dataset.tab)));
       $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
+      var fg = $("#forgotLink", ov);
+      if (fg) fg.addEventListener("click", () => renderForgotStep(($("#aEmail", ov).value || "").trim().toLowerCase()));
       ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
 
       $("#authForm", ov).addEventListener("submit", (e) => {
@@ -280,41 +283,60 @@
         const pass = $("#aPass", ov).value || "";
         const errEl = $("#authError", ov);
         const fail = (m) => { errEl.textContent = m; errEl.classList.add("show"); };
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail("Please enter a valid email address.");
-        if (pass.length < 4) return fail("Password must be at least 4 characters.");
+        const EMAIL_RX = /^[a-z0-9.!#$%&'*+\/?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
+        if (!EMAIL_RX.test(email) || email.length > 100) return fail("Please enter a valid real email address (e.g. name@gmail.com).");
+        if (!pass) return fail("Please enter your password.");
+
+        /* 🔑 সাইনআপ — OTP ভেরিফিকেশন ছাড়া সম্পন্নই হবে না */
         if (mode === "signup") {
           const name = ($("#aName", ov).value || "").trim();
-          if (name.length < 2) return fail("Please tell us your name.");
+          if (name.length < 3) return fail("Please write your full name (at least 3 letters).");
+          if (/[\d<>{}]/.test(name)) return fail("Name shouldn't contain numbers or symbols.");
+          if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(pass)) return fail("Password must be 6+ characters with a letter and a number.");
           if (window.CloudAuth && CloudAuth.isDisposable(email)) return fail("Temporary email addresses aren't allowed — please use your real email (Gmail is perfect).");
-          const commitSignup = () => {
-            const r = signup(name, email, pass);
-            if (r.err) return fail(r.err);
-            if (window.CloudAuth) CloudAuth.collect({ name, email, provider: "email", page: location.pathname });
-            close(); refreshAvatar(); unlockRefresh(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
+          const begin = () => {
+            errEl.classList.remove("show");
+            CloudAuth.cmd({ action: "otp", kind: "signup", email: email, name: name }).then((res) => {
+              if (!res || !res.ok) return fail((res && res.error) || "Something went wrong — please try again.");
+              renderOtpStep({ purpose: "signup", email: email, name: name, pass: pass });
+            });
           };
           if (window.CloudAuth && CloudAuth.check) {
             return CloudAuth.check(email).then((res) => {
               if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
-              commitSignup();
+              begin();
             });
           }
-          return commitSignup();
-        } else {
-          const commitLogin = () => {
-            const r = login(email, pass);
-            if (r.err) return fail(r.err);
-            const u = currentUser();
-            if (window.CloudAuth) CloudAuth.collect({ name: u.name, email, provider: "email", page: location.pathname });
-            close(); refreshAvatar(); unlockRefresh(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
-          };
-          if (window.CloudAuth && CloudAuth.check) {
-            return CloudAuth.check(email).then((res) => {
-              if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
-              commitLogin();
-            });
-          }
-          return commitLogin();
+          return begin();
         }
+
+        /* 🔓 লগইন — ডিভাইস হিসাব না মিললে সার্ভার হিসাব মেলাই */
+        const localTry = login(email, pass);
+        const afterOk = (nm) => {
+          const u = currentUser();
+          if (window.CloudAuth) CloudAuth.collect({ name: (u && u.name) || nm || email, email, provider: "email", page: location.pathname });
+          close(); refreshAvatar(); unlockRefresh(); toast("Welcome back, " + ((((u && u.name) || nm || "").split(" ")[0]) || "friend") + "! 👋");
+        };
+        const doLogin = () => {
+          if (localTry.ok) return afterOk();
+          if (!(window.CloudAuth && CloudAuth.cmd && CloudAuth.hashPass)) return fail(localTry.err || "Email or password doesn't match our records.");
+          CloudAuth.hashPass(email, pass).then((ph) =>
+            CloudAuth.cmd({ action: "login", email: email, ph: ph }).then((res) => {
+              if (!res || !res.ok) return fail((res && res.error) || "Email or password doesn't match our records.");
+              const list = users();
+              list[email] = { name: res.name || email.split("@")[0], email: email, pass: hash(pass), created: Date.now(), via: "email" };
+              store.set("users", list); store.set("session", email);
+              afterOk(res.name);
+            })
+          );
+        };
+        if (window.CloudAuth && CloudAuth.check) {
+          return CloudAuth.check(email).then((res) => {
+            if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
+            doLogin();
+          });
+        }
+        return doLogin();
       });
 
       if (window.CloudAuth && CloudAuth.socialEnabled()) {
@@ -325,6 +347,150 @@
           CloudAuth.fbLogin(socialSuccess, function (m) { errEl.textContent = m; errEl.classList.add("show"); });
         });
       }
+    }
+
+    /* ---------- 🔢 v2.9 GATEKEEPER: OTP স্টেপ / ফরগেট / নতুন পাসওয়ার্ড ---------- */
+    function escH(sx) { return String(sx == null ? "" : sx).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m])); }
+
+    function otpCard(title, sub, inner) {
+      return `
+        <div class="auth-card" role="dialog" aria-modal="true">
+          <div class="sheet-handle"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <button class="icon-btn" id="otpBack" aria-label="Back">←</button>
+            <button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button>
+          </div>
+          <div class="auth-head">
+            <h2>${title}</h2>
+            <p>${sub}</p>
+          </div>
+          ${inner}
+        </div>`;
+    }
+
+    function renderOtpStep(ctx) {
+      const isSignup = ctx.purpose === "signup";
+      ov.innerHTML = otpCard(
+        isSignup ? "Check your inbox 📬" : "Reset code sent 📬",
+        "We sent a 6-digit code to <b>" + escH(ctx.email) + "</b> —<br>ইনবক্সে না পেলে স্প্যাম/Junk ফোল্ডারটাও দেখুন।",
+        `<div class="field"><label for="otpCode">৬-ডিজিট কোড</label><input id="otpCode" type="text" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" style="letter-spacing:.5em;text-align:center;font-size:1.3rem"></div>
+         <div class="auth-error" id="otpError"></div>
+         <button class="btn auth-submit" id="otpVerifyBtn">${isSignup ? "Verify & create account" : "Verify code"}</button>
+         <button class="guest-link" id="otpResend" disabled>আবার পাঠান (60s)</button>`
+      );
+      $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
+      $("#otpBack", ov).addEventListener("click", () => { if (isSignup) renderAuth("signup"); else renderForgotStep(ctx.email); });
+      const errEl = $("#otpError", ov);
+      const fail = (m) => { errEl.textContent = m; errEl.classList.add("show"); };
+      let cd = 60;
+      const rsBtn = $("#otpResend", ov);
+      const tick = () => {
+        rsBtn.disabled = cd > 0;
+        rsBtn.textContent = cd > 0 ? "আবার পাঠান (" + cd + "s)" : "🔁 আবার কোড পাঠান";
+        if (cd-- > 0) setTimeout(tick, 1000);
+      };
+      tick();
+      rsBtn.addEventListener("click", () => {
+        if (rsBtn.disabled) return;
+        CloudAuth.cmd({ action: "otp", kind: ctx.purpose, email: ctx.email, name: ctx.name }).then((res) => {
+          if (!res || !res.ok) return fail((res && res.error) || "আবার চেষ্টা করুন");
+          cd = 60; tick(); toast("নতুন কোড পাঠানো হলো 📨");
+        });
+      });
+      const codeEl = $("#otpCode", ov);
+      setTimeout(() => codeEl.focus(), 60);
+      codeEl.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#otpVerifyBtn", ov).click(); } });
+      $("#otpVerifyBtn", ov).addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        const code = (codeEl.value || "").trim();
+        if (!/^\d{6}$/.test(code)) return fail("৬-ডিজিটের কোডটা পুরোটা লিখুন।");
+        btn.disabled = true; btn.textContent = "যাচাই হচ্ছে…";
+        CloudAuth.cmd({ action: "otpverify", email: ctx.email, code: code }).then((res) => {
+          if (!res || !res.ok) {
+            btn.disabled = false;
+            btn.textContent = isSignup ? "Verify & create account" : "Verify code";
+            return fail((res && res.error) || "আবার চেষ্টা করুন");
+          }
+          if (isSignup) finishSignup(ctx);
+          else { ctx.code = code; renderNewPassStep(ctx); }
+        });
+      });
+    }
+
+    function finishSignup(ctx) {
+      const r = signup(ctx.name, ctx.email, ctx.pass);
+      if (r.err) {
+        const l = login(ctx.email, ctx.pass);
+        if (l.err) {
+          renderAuth("login");
+          setTimeout(() => toast("এই ডিভাইসে অ্যাকাউন্ট আছে — লগইন করুন 🙂"), 50);
+          return;
+        }
+      }
+      CloudAuth.hashPass(ctx.email, ctx.pass).then((ph) => {
+        CloudAuth.collect({ name: ctx.name, email: ctx.email, provider: "email", page: location.pathname, ph: ph });
+        close(); refreshAvatar(); unlockRefresh();
+        toast("Verified ✓ Welcome, " + ctx.name.split(" ")[0] + "! 🎉");
+      });
+    }
+
+    function renderForgotStep(preset) {
+      ov.innerHTML = otpCard(
+        "পাসওয়ার্ড ভুলে গেছেন? 🔑",
+        "আপনার অ্যাকাউন্টের ইমেইল দিন — ভেরিফিকেশন রিসেট-কোড পাঠিয়ে দেবো।",
+        `<div class="field"><label for="fgEmail">Email</label><input id="fgEmail" type="email" value="${escH(preset || "")}" placeholder="you@example.com" autocomplete="email"></div>
+         <div class="auth-error" id="fgError"></div>
+         <button class="btn auth-submit" id="fgSend">Send reset code</button>
+         <button class="guest-link" id="fgBack">← Back to login</button>`
+      );
+      $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
+      $("#fgBack", ov).addEventListener("click", () => renderAuth("login"));
+      const errEl = $("#fgError", ov);
+      const fail = (m) => { errEl.textContent = m; errEl.classList.add("show"); };
+      $("#fgSend", ov).addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        const email = ($("#fgEmail", ov).value || "").trim().toLowerCase();
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail("সঠিক ইমেইল ঠিকানা লিখুন।");
+        if (window.CloudAuth && CloudAuth.isDisposable(email)) return fail("টেম্প-মেইল চলবে না — আসল ইমেইল দিন।");
+        btn.disabled = true; btn.textContent = "পাঠানো হচ্ছে…";
+        CloudAuth.cmd({ action: "otp", kind: "reset", email: email }).then((res) => {
+          btn.disabled = false; btn.textContent = "Send reset code";
+          if (!res || !res.ok) return fail((res && res.error) || "আবার চেষ্টা করুন");
+          renderOtpStep({ purpose: "reset", email: email });
+        });
+      });
+    }
+
+    function renderNewPassStep(ctx) {
+      ov.innerHTML = otpCard(
+        "নতুন পাসওয়ার্ড বানান 🛡️",
+        "কোড মিলে গেছে ✓ — এবার নতুন পাসওয়ার্ড সেট করুন।",
+        `<div class="field"><label for="np1">নতুন পাসওয়ার্ড</label><input id="np1" type="password" placeholder="6+ chars: letter + number" autocomplete="new-password"></div>
+         <div class="field"><label for="np2">আবার লিখুন</label><input id="np2" type="password" placeholder="Same password again" autocomplete="new-password"></div>
+         <div class="auth-error" id="npError"></div>
+         <button class="btn auth-submit" id="npSave">Save new password</button>`
+      );
+      $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
+      $("#otpBack", ov).addEventListener("click", () => renderAuth("login"));
+      const errEl = $("#npError", ov);
+      const fail = (m) => { errEl.textContent = m; errEl.classList.add("show"); };
+      $("#npSave", ov).addEventListener("click", (e) => {
+        const btn = e.currentTarget;
+        const p1 = $("#np1", ov).value || "", p2 = $("#np2", ov).value || "";
+        if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(p1)) return fail("পাসওয়ার্ড: কমপক্ষে ৬ অক্ষর — একটা হরফ + একটা সংখ্যা লাগবে।");
+        if (p1 !== p2) return fail("দুইটা পাসওয়ার্ড মিলেনি।");
+        btn.disabled = true; btn.textContent = "সেভ হচ্ছে…";
+        CloudAuth.hashPass(ctx.email, p1).then((ph) =>
+          CloudAuth.cmd({ action: "reset", email: ctx.email, code: ctx.code, ph: ph }).then((res) => {
+            btn.disabled = false; btn.textContent = "Save new password";
+            if (!res || !res.ok) return fail((res && res.error) || "আবার চেষ্টা করুন");
+            const list = users();
+            if (list[ctx.email]) { list[ctx.email].pass = hash(p1); store.set("users", list); }
+            renderAuth("login");
+            setTimeout(() => toast("পাসওয়ার্ড বদলে গেছে ✓ এবার লগইন করুন! 🎉"), 60);
+          })
+        );
+      });
     }
 
     function renderProfile() {
@@ -379,6 +545,8 @@
           <p class="auth-note">Everything stays free — new prompts drop every day. ✨</p>
         </div>`;
       $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
+      var fg = $("#forgotLink", ov);
+      if (fg) fg.addEventListener("click", () => renderForgotStep(($("#aEmail", ov).value || "").trim().toLowerCase()));
       ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
       $("#logoutBtn", ov).addEventListener("click", () => {
         logout(); close(); refreshAvatar(); toast("Logged out. See you soon!");
