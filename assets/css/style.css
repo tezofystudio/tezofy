@@ -432,7 +432,8 @@ input { font-family: inherit; }
   object-fit: contain;
   padding: 10px;
   box-sizing: border-box;
-  filter: drop-shadow(0 18px 40px rgba(0,0,0,.45));
+  /* ✨ UPGRADE: Contour shadow — follows exact image shape, not rounded */
+  box-shadow: 0 18px 40px rgba(0,0,0,.50), 0 6px 16px rgba(0,0,0,.30);
   transition: transform .38s var(--ease-out, ease);
 }
 .detail-img:hover img.main { transform: scale(1.012); }
