@@ -41,14 +41,33 @@
     try {
       entry.date = new Date().toISOString();
       entry.site = location.host;
-      if (!entry.action) entry.action = "register"; // 👥 Users ট্যাবে নোঙর (v2.6)
+      if (!entry.action) entry.action = "register"; // 👥 Users ট্যাবে নোঙর
+      /* 🚦 v2.8 LOCKSTEP: POST + GET দুই লাইনে পাঠাই — যেকোনো এক লাইন খুললেই ডেটা পৌঁছায়! */
+      var body = JSON.stringify(entry);
       fetch(CFG.sheetUrl, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(entry)
+        body: body
       }).catch(function () {});
+      var qs = Object.keys(entry).map(function (k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(String(entry[k]).slice(0, 180));
+      }).join("&");
+      setTimeout(function () {
+        fetch(CFG.sheetUrl + "?" + qs, { mode: "no-cors" }).catch(function () {});
+      }, 420);
     } catch (e) {}
+  }
+
+  /* ⛔ ব্যান-চেক (উত্তর পড়া যায় — নিয়মিত CORS ফেচ, অ্যাডমিনের মতোই) */
+  function check(email) {
+    if (!CFG.sheetUrl) return Promise.resolve({ banned: false });
+    return fetch(CFG.sheetUrl, {
+      method: "POST",
+      redirect: "follow",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "checkban", email: email })
+    }).then(function (r) { return r.json(); }).catch(function () { return { banned: false, offline: true }; });
   }
 
   /* -------- 3. GOOGLE SIGN-IN --------------------------------------------
@@ -128,6 +147,7 @@
     googleRender: googleRender,
     fbReady: fbReady,
     fbLogin: fbLogin,
+    check: check,
     socialEnabled: function () { return googleConfigured() || fbReady(); }
   };
 })();

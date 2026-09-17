@@ -215,11 +215,23 @@
     function unlockRefresh() { setTimeout(() => { if ($(".lock-overlay") && window.__chitroRerender) window.__chitroRerender(); }, 300); }
 
     function socialSuccess(u) {
-      /* ⛔ v2.6: টেম্প-মেইল বট-সাইনআপ চারদিকেই ব্লক (social path-এও) */
+      /* ⛔ টেম্প-মেইল ব্লক (সোশ্যাল পথেও) */
       if (window.CloudAuth && CloudAuth.isDisposable(u.email)) {
         toast("Temporary email addresses aren't allowed — please sign in with your real Gmail 🚫");
         return;
       }
+      /* 🚪 ব্যান-গেট: সার্ভারে ব্যানড হলে এখানেই থামবে (নেট না থাকলে রেজিস্টার-সার্ভার ব্লকই শেষ সীমা) */
+      if (window.CloudAuth && CloudAuth.check) {
+        CloudAuth.check(u.email).then(function (res) {
+          if (res && res.banned) { toast("⛔ This account is banned — please contact support"); return; }
+          doSocialSuccess(u);
+        });
+        return;
+      }
+      doSocialSuccess(u);
+    }
+
+    function doSocialSuccess(u) {
       var list = users();
       if (!list[u.email]) list[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
       store.set("users", list);
@@ -274,16 +286,34 @@
           const name = ($("#aName", ov).value || "").trim();
           if (name.length < 2) return fail("Please tell us your name.");
           if (window.CloudAuth && CloudAuth.isDisposable(email)) return fail("Temporary email addresses aren't allowed — please use your real email (Gmail is perfect).");
-          const r = signup(name, email, pass);
-          if (r.err) return fail(r.err);
-          if (window.CloudAuth) CloudAuth.collect({ name, email, provider: "email", page: location.pathname });
-          close(); refreshAvatar(); unlockRefresh(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
+          const commitSignup = () => {
+            const r = signup(name, email, pass);
+            if (r.err) return fail(r.err);
+            if (window.CloudAuth) CloudAuth.collect({ name, email, provider: "email", page: location.pathname });
+            close(); refreshAvatar(); unlockRefresh(); toast(`Welcome, ${name.split(" ")[0]}! Account created 🎉`);
+          };
+          if (window.CloudAuth && CloudAuth.check) {
+            return CloudAuth.check(email).then((res) => {
+              if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
+              commitSignup();
+            });
+          }
+          return commitSignup();
         } else {
-          const r = login(email, pass);
-          if (r.err) return fail(r.err);
-          const u = currentUser();
-          if (window.CloudAuth) CloudAuth.collect({ name: u.name, email, provider: "email", page: location.pathname });
-          close(); refreshAvatar(); unlockRefresh(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+          const commitLogin = () => {
+            const r = login(email, pass);
+            if (r.err) return fail(r.err);
+            const u = currentUser();
+            if (window.CloudAuth) CloudAuth.collect({ name: u.name, email, provider: "email", page: location.pathname });
+            close(); refreshAvatar(); unlockRefresh(); toast(`Welcome back, ${u.name.split(" ")[0]}! 👋`);
+          };
+          if (window.CloudAuth && CloudAuth.check) {
+            return CloudAuth.check(email).then((res) => {
+              if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
+              commitLogin();
+            });
+          }
+          return commitLogin();
         }
       });
 

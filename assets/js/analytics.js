@@ -14,6 +14,13 @@
   var utm = "";
   try { utm = new URLSearchParams(location.search).get("utm_source") || ""; } catch (e) {}
 
+  /* ডিভাইস-ইউনিক আইডি (ডুপ্লিকেট-ডিডুপের চাবি) */
+  var uid = "";
+  try {
+    uid = localStorage.getItem("tzvid") || "";
+    if (!uid) { uid = "v" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem("tzvid", uid); }
+  } catch (e) { uid = "v" + Math.random().toString(36).slice(2, 10); }
+
   /* 📣 কোন সোশ্যাল সাইট থেকে এলো — fbclid/utm/referrer তিন পথেই শিকার */
   function channel() {
     var ref = "";
@@ -43,6 +50,7 @@
   function send(extra) {
     var payload = Object.assign({
       action: "visit",
+      u: uid,
       ch: channel(),
       path: location.pathname + location.search,
       page: document.title,
@@ -56,6 +64,13 @@
         headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       }).catch(function () {});
+      /* 🚦 GET ব্যাকআপ — ডুপ্লিকেট সার্ভারে uid-ডিডুপে পরিণত */
+      var qs = Object.keys(payload).map(function (k) {
+        return encodeURIComponent(k) + "=" + encodeURIComponent(String(payload[k]).slice(0, 140));
+      }).join("&");
+      setTimeout(function () {
+        fetch(AUTH_CONFIG.sheetUrl + "?" + qs, { mode: "no-cors" }).catch(function () {});
+      }, 500);
     } catch (e) {}
   }
 
