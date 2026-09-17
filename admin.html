@@ -368,9 +368,12 @@ html{scrollbar-gutter:stable}
 <section id="tab-analytics" class="adm-panel" style="display:none">
   <div class="adm-row between">
     <h2>📈 সাইট অ্যানালিটিক্স</h2>
+    <button class="adm-ghost sm" id="statsTest">🧪 পথ-যাচাই টেস্ট</button>
     <button class="btn adm-btn sm" id="statsRefresh">↻ Refresh</button>
   </div>
   <p class="adm-muted small">সাইনআপ ইউজার + ভিজিটর (দেশ·সোর্স·পেজ) — সরাসরি আপনার Google Sheet থেকে। ডেটা চুপচাপ জমা হয় clientside-দিয়ে।</p>
+  <div id="statsTestOut"></div>
+  <p class="adm-muted small" id="statsVer"></p>
   <div class="adm-stats" id="statsBoxes"></div>
   <div class="adm-card"><h3>🌍 দেশ অনুযায়ী ভিজিটর</h3><div id="statsCountries"><p class="adm-muted small">…</p></div></div>
   <div class="adm-card"><h3>🏙️ শহর</h3><div id="statsCities"></div></div>
@@ -1069,7 +1072,13 @@ html{scrollbar-gutter:stable}
       var st = r.stats || {};
       $("#statsBoxes").innerHTML =
         statBox(st.users, "👥 মোট সাইনআপ") + statBox(st.todayUsers, "✨ আজকের সাইনআপ") +
-        statBox(st.visits, "👁 মোট ভিজিট") + statBox(st.visitsToday, "🔥 আজকের ভিজিট");
+        statBox(st.visits, "👁 মোট ভিজিট") + statBox(st.visitsToday, "🔥 আজকের ভিজিট") +
+        statBox(st.uniq || 0, "🧍 ইউনিক ভিজিটর") + statBox(st.uniqToday || 0, "🌤 আজকের ইউনিক");
+      var verEl = $("#statsVer");
+      if (verEl) {
+        if (r.v) { verEl.textContent = "✅ script version: " + r.v; verEl.style.color = "#4ade80"; }
+        else { verEl.textContent = "🚨 পুরনো deployment চলছে! Apps Script-এ নতুন কোড পেস্ট করে New version Deploy করুন — রেজিস্টার/ভিজিট কাজ করবে না।"; verEl.style.color = "#f87171"; }
+      }
       $("#statsCountries").innerHTML = statBars(st.topCountries);
       $("#statsCities").innerHTML = statBars(st.topCities);
       $("#statsChannels").innerHTML = statBars(st.topChannels);
@@ -1159,6 +1168,50 @@ html{scrollbar-gutter:stable}
   $("#saveBtn").addEventListener("click", openPreview);
   $("#pvBack").addEventListener("click", closePreview);
   $("#pvGo").addEventListener("click", function () { closePreview(); savePrompt(); });
+
+  /* ---------- 🧪 ডিপ্লয়-পথ সেলফ-টেস্ট (klikk and see straight truth) ---------- */
+  function diagSend(payload) {
+    if (!API) return;
+    try {
+      var body = JSON.stringify(Object.assign({ key: KEY }, payload));
+      fetch(API, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: body }).catch(function () {});
+      var qs = Object.keys(payload).map(function (k) { return encodeURIComponent(k) + "=" + encodeURIComponent(String(payload[k]).slice(0, 180)); }).join("&");
+      setTimeout(function () { fetch(API + "?" + qs, { mode: "no-cors" }).catch(function () {}); }, 420);
+    } catch (e) {}
+  }
+  function diagRow(ok, title, note) {
+    return "<div class='adm-barline'><span>" + (ok ? "🟢" : "🔴") + " " + title + "</span><span class='adm-muted small' style='text-align:right'>" + note + "</span></div>";
+  }
+  function diagTest() {
+    var out = $("#statsTestOut");
+    out.innerHTML = "<p class='adm-muted small'>🧪 টেস্ট রান করছি…</p>";
+    var tag = "selftest-" + Date.now().toString(36);
+    apiSend({ action: "stats" }).then(function (r0) {
+      if (!r0 || !r0.ok) {
+        out.innerHTML = "<p class='adm-muted small'>❌ <b>stats অ্যাকশন উত্তর দিচ্ছে না — সার্ভারে নতুন কোড deploy হয়নি!</b><br>Apps Script-এ নতুন কোড পেস্ট → Deploy → New version → Deploy করুন, তারপর আবার টেস্ট দিন।</p>";
+        return;
+      }
+      var b0 = r0.stats || {};
+      diagSend({ action: "register", name: "Self Test " + tag, email: tag + "@tezofy.test", provider: "diag", date: new Date().toISOString(), site: location.host });
+      diagSend({ action: "visit", u: "diag-" + tag, path: "/admin-selftest", page: "diag", ref: "debug", ua: "tezofy-diag", ch: "Direct" });
+      setTimeout(function () {
+        apiSend({ action: "stats" }).then(function (r1) {
+          if (!r1 || !r1.ok) { out.innerHTML = "<p class='adm-muted small'>⚠️ দ্বিতীয় stats ডাক পড়ে না — হালকা অপেক্ষা করে আবার চাপুন</p>"; return; }
+          var b1 = r1.stats || {};
+          var okU = (b1.users || 0) > (b0.users || 0);
+          var okV = (b1.visits || 0) > (b0.visits || 0) || (b1.uniq || 0) > (b0.uniq || 0);
+          out.innerHTML =
+            diagRow(okU, "সাইনআপ রেজিস্টার", okU ? "Users ট্যাবে টেস্ট এন্ট্রি চলে গেছে ✅" : "❌ পৌঁছায়নি — ব্রাউজার কনসোল খুলে নেটওয়ার্ক ট্যাব দেখুন") +
+            diagRow(okV, "ভিজিট বিকন", okV ? "Visits ট্যাবে টেস্ট এন্ট্রি চলে গেছে ✅" : "❌ পৌঁছায়নি — নেটওয়ার্ক/Redirect ইস্যু") +
+            "<p class='adm-muted small'>সাইনআপ মার্কার: " + tag + "@tezofy.test — শিট থেকে চাইলে মুছে ফেলুন</p>" +
+            (r1.v ? "<p class='adm-muted small'>✅ script version: " + esc(r1.v) + "</p>" : "<p class='adm-muted small'>🚨 version প্রতিক্রিয়া নেই — পুরনো deployment!</p>");
+          toast("🧪 self-test complete");
+        });
+      }, 2500);
+    });
+  }
+  $("#statsTest").addEventListener("click", diagTest);
+
   $("#statsRefresh").addEventListener("click", renderStats);
   document.addEventListener("click", function (e) {
     var b = e.target.closest("[data-ban]");
