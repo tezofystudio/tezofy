@@ -3,6 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d0f14">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TEZOFY Studio">
+<title>TEZOFY Studio Console 🎛️</title>
+<link rel="manifest" href="manifest.admin.webmanifest">
+<link rel="icon" type="image/png" href="assets/icons/favicon.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
 <meta name="robots" content="noindex,nofollow">
 <title>TEZOFY Studio Console</title>
 <link rel="icon" href="assets/icons/favicon.png">
@@ -150,7 +159,38 @@
 .og-anim img{display:block;width:100%;border-radius:11px}
 @keyframes ogSpin{to{--ogA:360deg}}
 #fOgPrev{border-radius:14px}
-</style></style></style>
+
+/* ---------- v2.6 · analytics tab ---------- */
+.adm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin:12px 0}
+.adm-stat{background:rgba(255,255,255,.04);border:1px solid #2c2d3c;border-radius:14px;padding:14px;text-align:center}
+.adm-stat b{font-size:24px;display:block;background:linear-gradient(90deg,#ff2daa,#ff7a00);-webkit-background-clip:text;background-clip:text;color:transparent}
+.adm-stat span{font-size:11px;color:#9aa3b2}
+.adm-barline{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;margin-top:8px}
+.adm-bar{height:7px;border-radius:99px;background:#22232e;overflow:hidden;margin:4px 0 10px}
+.adm-bar i{display:block;height:100%;background:linear-gradient(90deg,#ff2daa,#ff7a00)}
+
+/* ---------- v2.7 COMMAND · pro installable + mobile polish ---------- */
+html{scrollbar-gutter:stable}
+.adm-tabs{position:sticky;top:0;z-index:40;background:rgba(13,15,20,.92);backdrop-filter:blur(10px);padding:10px 6px;margin:0 -6px 16px -6px;border-bottom:1px solid #22232e;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+.adm-tabs::-webkit-scrollbar{display:none}
+.adm-tab{flex:0 0 auto;border-radius:12px}
+.adm-item{border-radius:14px;transition:border-color .2s,transform .2s}
+.adm-item:hover{border-color:#3c3d4d}
+@media (max-width:700px){
+  body{padding:10px 10px 90px}
+  .adm-item{flex-wrap:wrap;gap:10px}
+  .adm-item img{width:100%;aspect-ratio:16/10;border-radius:10px}
+  .adm-item-actions{width:100%;justify-content:flex-end;gap:6px}
+  .adm-item-actions .adm-ghost{padding:8px 11px;font-size:12px}
+  .ogm-actions{display:grid;grid-template-columns:1fr 1fr}
+  .ogm-actions .adm-ghost,.ogm-actions .btn{width:100%;justify-content:center;text-align:center}
+  #imgTools .adm-row{flex-wrap:wrap}
+  .pv-card{width:100%;max-height:96vh;border-radius:16px 16px 0 0;align-self:flex-end}
+  #ogModal{padding:8px}
+  .adm-grid3{grid-template-columns:1fr}
+  .adm-stats{grid-template-columns:1fr 1fr}
+}
+</style></style></style></style></style>
 </head>
 <body>
 <div class="adm-wrap">
@@ -185,6 +225,7 @@
       <button class="adm-tab on" data-tab="prompts">📝 Prompts</button>
       <button class="adm-tab" data-tab="form">➕ Add / Edit</button>
       <button class="adm-tab" data-tab="cats">🗂️ Categories</button>
+      <button class="adm-tab" data-tab="analytics">📈 Analytics</button>
     </nav>
 
     <!-- PROMPTS LIST -->
@@ -324,6 +365,22 @@
   </div>
 </div>
 
+<section id="tab-analytics" class="adm-panel" style="display:none">
+  <div class="adm-row between">
+    <h2>📈 সাইট অ্যানালিটিক্স</h2>
+    <button class="btn adm-btn sm" id="statsRefresh">↻ Refresh</button>
+  </div>
+  <p class="adm-muted small">সাইনআপ ইউজার + ভিজিটর (দেশ·সোর্স·পেজ) — সরাসরি আপনার Google Sheet থেকে। ডেটা চুপচাপ জমা হয় clientside-দিয়ে।</p>
+  <div class="adm-stats" id="statsBoxes"></div>
+  <div class="adm-card"><h3>🌍 দেশ অনুযায়ী ভিজিটর</h3><div id="statsCountries"><p class="adm-muted small">…</p></div></div>
+  <div class="adm-card"><h3>🏙️ শহর</h3><div id="statsCities"></div></div>
+  <div class="adm-card"><h3>📣 সোশ্যাল মিডিয়া চ্যানেল</h3><div id="statsChannels"><p class="adm-muted small">…</p></div></div>
+  <div class="adm-card"><h3>🔗 ট্রাফিক সোর্স</h3><div id="statsRefs"><p class="adm-muted small">…</p></div></div>
+  <div class="adm-card"><h3>📄 জনপ্রিয় পেজ</h3><div id="statsPages"><p class="adm-muted small">…</p></div></div>
+  <div class="adm-card"><h3>👥 সাম্প্রতিক সাইনআপ</h3><div id="statsUsers"><p class="adm-muted small">…</p></div></div>
+  <div class="adm-card"><h3>🕒 সাম্প্রতিক ভিজিট</h3><div id="statsVisits"><p class="adm-muted small">…</p></div></div>
+</section>
+
 <div class="pv-ov" id="pvModal" style="display:none">
   <div class="pv-card">
     <h3>👁 Post Preview — check everything before it goes live</h3>
@@ -451,6 +508,7 @@
     $$(".adm-tab").forEach(function (b) { b.classList.toggle("on", b.dataset.tab === name); });
     $$(".adm-panel").forEach(function (p) { p.style.display = p.id === "tab-" + name ? "" : "none"; });
     if (name === "cats") renderCats();
+    if (name === "analytics") renderStats();
   }
 
   function loadAll() {
@@ -994,6 +1052,45 @@
     });
   }
 
+  /* ---------- 📈 analytics ---------- */
+  function statBox(n, label) { return "<div class='adm-stat'><b>" + (n == null ? 0 : n) + "</b><span>" + label + "</span></div>"; }
+  function statBars(list) {
+    if (!list || !list.length) return '<p class="adm-muted small">ডেটা জমা হচ্ছে — কয়েকটা ভিজিটের পর এখান নুড়ি ভরে উঠবে 📊</p>';
+    var max = list[0].count || 1;
+    return list.map(function (x) {
+      return "<div class='adm-barline'><span>" + esc(x.name) + "</span><b>" + x.count + "</b></div>" +
+        "<div class='adm-bar'><i style='width:" + Math.max(4, Math.round(x.count / max * 100)) + "%'></i></div>";
+    }).join("");
+  }
+  function renderStats() {
+    $("#statsBoxes").innerHTML = '<p class="adm-muted small">লোড হচ্ছে…</p>';
+    apiSend({ action: "stats" }).then(function (r) {
+      if (!r || !r.ok) { $("#statsBoxes").innerHTML = "<p class='adm-muted small'>❌ " + esc((r && r.error) || "failed — Apps Script-এ নতুন কোড ডিপ্লয় করেছেন তো?") + "</p>"; return; }
+      var st = r.stats || {};
+      $("#statsBoxes").innerHTML =
+        statBox(st.users, "👥 মোট সাইনআপ") + statBox(st.todayUsers, "✨ আজকের সাইনআপ") +
+        statBox(st.visits, "👁 মোট ভিজিট") + statBox(st.visitsToday, "🔥 আজকের ভিজিট");
+      $("#statsCountries").innerHTML = statBars(st.topCountries);
+      $("#statsCities").innerHTML = statBars(st.topCities);
+      $("#statsChannels").innerHTML = statBars(st.topChannels);
+      $("#statsRefs").innerHTML = statBars(st.topRefs);
+      $("#statsPages").innerHTML = statBars(st.topPages);
+      var banList = (r.banned || []).map(function (e) { return String(e).toLowerCase(); });
+      $("#statsUsers").innerHTML = (r.recentUsers || []).map(function (u) {
+        var isBn = banList.indexOf(String(u.email).toLowerCase()) !== -1;
+        return "<div class='adm-barline' style='align-items:flex-start'><span>👤 <b>" + esc(u.name || u.email) + "</b>" +
+          (isBn ? " <span style='color:#f87171' title='banned'>⛔ banned</span>" : "") +
+          "<br><span class='adm-muted small'>" + esc(u.email) + "</span></span>" +
+          "<span class='adm-muted small' style='text-align:right'>" + esc(u.provider || "") + "<br>" + esc(String(u.firstSeen).slice(0, 10)) +
+          "<br><button class='adm-ghost xs' data-ban='" + esc(u.email) + "' data-state='" + (isBn ? "1" : "0") + "' type='button'>" + (isBn ? "✅ Unban" : "🚫 Ban") + "</button></span></div>";
+      }).join("") || '<p class="adm-muted small">এখনো কোনো সাইনআপ ধরা পড়েনি — কোনো টেস্ট সাইন-ইন করলেই আসবে 🧪</p>';
+      $("#statsVisits").innerHTML = (r.recentVisits || []).map(function (v) {
+        return "<div class='adm-barline'><span>" + esc((v.cc ? v.cc + " " : "") + (v.ct || v.c || "🌍")) + "</span><span class='adm-muted small'>" +
+          esc(v.p || "/") + " · " + esc(v.rf) + "</span></div>";
+      }).join("") || '<p class="adm-muted small">প্রথম ভিজিটের অপেক্ষায়… 🧘</p>';
+    }).catch(function () { $("#statsBoxes").innerHTML = "<p class='adm-muted small'>❌ network</p>"; });
+  }
+
   /* ---------- categories ---------- */
   function renderCats() {
     var el = $("#cList");
@@ -1062,6 +1159,19 @@
   $("#saveBtn").addEventListener("click", openPreview);
   $("#pvBack").addEventListener("click", closePreview);
   $("#pvGo").addEventListener("click", function () { closePreview(); savePrompt(); });
+  $("#statsRefresh").addEventListener("click", renderStats);
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-ban]");
+    if (!b) return;
+    var email = b.getAttribute("data-ban");
+    var act = b.getAttribute("data-state") === "1" ? "unbanuser" : "banuser";
+    b.disabled = true; b.textContent = "…";
+    apiSend({ action: act, email: email }).then(function (r) {
+      b.disabled = false;
+      if (r && r.ok) { toast(act === "banuser" ? "⛔ " + email + " banned" : "✅ " + email + " unbanned"); renderStats(); }
+      else { toast("❌ " + ((r && r.error) || "failed")); b.textContent = act === "banuser" ? "🚫 Ban" : "✅ Unban"; }
+    });
+  });
 
   /* ImgBB key + crop chips wiring */
   (function () {
