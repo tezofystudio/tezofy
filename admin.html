@@ -1088,6 +1088,7 @@ html{scrollbar-gutter:stable}
       $("#statsUsers").innerHTML = (r.recentUsers || []).map(function (u) {
         var isBn = banList.indexOf(String(u.email).toLowerCase()) !== -1;
         return "<div class='adm-barline' style='align-items:flex-start'><span>👤 <b>" + esc(u.name || u.email) + "</b>" +
+          (u.verified === "yes" ? " <span style='color:#4ade80' title='ইমেইল ভেরিফাইড ✓'>✓</span>" : "") +
           (isBn ? " <span style='color:#f87171' title='banned'>⛔ banned</span>" : "") +
           "<br><span class='adm-muted small'>" + esc(u.email) + "</span></span>" +
           "<span class='adm-muted small' style='text-align:right'>" + esc(u.provider || "") + "<br>" + esc(String(u.firstSeen).slice(0, 10)) +
