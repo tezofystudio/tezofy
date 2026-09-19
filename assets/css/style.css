@@ -940,11 +940,14 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 @media (min-width: 1024px) { .detail-layout { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 40px; } }
 
 /* ===== Light mode: header / brand / inputs readable ===== */
-:root[data-theme="light"] .site-header { background: rgba(255, 255, 255, .85); }
-:root[data-theme="light"] .bottombar { background: rgba(255, 255, 255, .94); }
-:root[data-theme="light"] .brand { color: var(--text); }
-:root[data-theme="light"] .header-search-pill { background: var(--card); color: var(--muted); }
-:root[data-theme="light"] input, :root[data-theme="light"] textarea, :root[data-theme="light"] select { background: var(--card); color: var(--text); }
+:root[data-theme="light"] .prompt-inner { background: #121218; }
+:root[data-theme="light"] .prompt-head h2 { color: #b8b8cc; }
+:root[data-theme="light"] .prompt-text { background: #1a1a24; border-color: rgba(255,255,255,.14); color: #ececf5; }
+:root[data-theme="light"] .prompt-text mark { background: rgba(255,45,170,.32); color: #ffd4ee; }
+:root[data-theme="light"] .prompt-count { color: #a2a2b5; }
+:root[data-theme="light"] .paste-into { color: #a2a2b5; }
+:root[data-theme="light"] .cust-sub { color: #a2a2b5; }
+:root[data-theme="light"] .meta-chip.cat-chip { color: #b31574; background: rgba(255,45,170,.08); border-color: rgba(255,45,170,.30); }
 
 /* ===== Prompt of the Day — pro edition ===== */
 .potd.pro {
@@ -1198,7 +1201,7 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 @property --ogA { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .hero-ring {
   position: relative; z-index: 1; display: block; height: 100%; box-sizing: border-box;
-  padding: 0.7px; border-radius: 20px;
+  padding: 0px; border-radius: 20px;
   background: conic-gradient(from var(--ogA, 0deg),
     hsl(var(--ogH, 318), 95%, 62%), hsl(calc(var(--ogH, 318) + 120), 95%, 62%),
     hsl(calc(var(--ogH, 318) + 240), 95%, 62%), hsl(var(--ogH, 318), 95%, 62%));
