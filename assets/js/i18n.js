@@ -31,7 +31,7 @@
     "💬 Send Feedback": ["💬 মতামত পাঠান", "💬 प्रतिक्रिया भेजें"],
 
     /* ===== ফুটার/ন্যাভ ===== */
-    "Explore": ["আর্কষণ", "एक्सप्लोर"],
+    "Explore": ["এক্সপ্লোর", "एक्सप्लोर"],
     "Resources": ["রিসোর্স", "संसाधन"],
     "Explore Free Templates": ["ফ্রি টেমপ্লেট এক্সপ্লোর করুন", "फ़्री टेम्पलेट एक्सप्लोर करें"],
     "All Prompts": ["সব প্রম্পট", "सभी प्रॉम्प्ट"],
@@ -91,6 +91,28 @@
     "Creator": ["ক্রিয়েটর", "क्रिएटर"],
     "Trendsetter": ["ট্রেন্ডসেটার", "ट्रेंडसेटर"],
     "Legend": ["লেজেন্ড", "लेजेंड"],
+
+    /* ===== ডিটেইল-পেজ (template.html) স্ট্যাটিক শিরোনাম/বাটন ===== */
+    "About this prompt": ["এই প্রম্পট সম্পর্কে", "इस प्रॉम्प्ट के बारे में"],
+    "How this prompt works": ["এই প্রম্পট কীভাবে কাজ করে", "यह प्रॉम्प्ट कैसे काम करता है"],
+    "Which tool to use": ["কোন টুল ব্যবহার করবেন", "कौन सा टूल इस्तेमाल करें"],
+    "Step by step": ["ধাপে ধাপে", "स्टेप बाय स्टेप"],
+    "Try changing": ["এগুলো বদলে দেখুন", "इन्हें बदलकर देखें"],
+    "Common mistakes": ["সাধারণ ভুলগুলো", "आम गलतियाँ"],
+    "In this image": ["এই ছবিতে", "इस तस्वीर में"],
+    "Related prompts": ["সংশ্লিষ্ট প্রম্পট", "मिलते-जुलते प्रॉम्प्ट"],
+    "Copy Prompt": ["প্রম্পট কপি করুন", "प्रॉम्प्ट कॉपी करें"],
+    "Then paste into:": ["তারপর এখানে পেস্ট করুন:", "फिर यहाँ पेस्ट करें:"],
+    "Explore All": ["সব এক্সপ্লোর করুন", "सब एक्सप्लोर करें"],
+    "Discover": ["ডিসকভার", "डिस्कवर"],
+    "copies": ["কপি", "कॉपियाँ"],
+    "likes": ["লাইক", "लाइक"],
+    "Share": ["শেয়ার করুন", "शेयर करें"],
+    "Prompt": ["প্রম্পট", "प्रॉम्प्ट"],
+    "Toggle dark / light mode": ["ডার্ক / লাইট মোড বদলান", "डार्क / लाइट मोड बदलें"],
+    "AI Image Prompt Library": ["AI ইমেজ প্রম্পট লাইব্রেরি", "AI इमेज प्रॉम्प्ट लाइब्रेरी"],
+    "Create Stunning AI Portraits": ["দারুণ AI পোর্ট্রেট বানান", "शानदार AI पोर्ट्रेट बनाएं"],
+    "Discover & copy premium AI image prompts. Create beautiful portraits with one tap — no prompt-engineering skills needed.": ["প্রিমিয়াম AI ইমেজ প্রম্পট খুঁজুন ও কপি করুন — এক ট্যাপে সুন্দর পোর্ট্রেট, প্রম্পট-ইঞ্জিনিয়ারিং জানার দরকার নেই।", "प्रीमियम AI इमेज प्रॉम्प्ट खोजें और कॉपी करें — एक टैप में सुंदर पोर्ट्रेट, बिना प्रॉम्प्ट इंजीनियरिंग के।"],
 
     /* ===== অথ-মডাল (সিদ্ধ/লগইন) ===== */
     "Sign Up": ["সাইন আপ", "साइन अप"],
@@ -300,7 +322,7 @@
     }
   };
 
-  /* ---------- 🌐 ভাষা-বাছাই বাটন (ফ্লোটিং) ---------- */
+  /* ---------- 🌐 ভাষা-বাছাই বাটন — হেডারে মাউন্ট, না-পেলে ফ্লোটিং ফলব্যাক ---------- */
   var st = document.createElement("style");
   st.textContent =
     "#tzLangFab{position:fixed;right:14px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9000;" +
@@ -308,14 +330,15 @@
     "background:linear-gradient(135deg,#ff5fa2,#ff8a3d);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;" +
     "box-shadow:0 6px 22px rgba(255,95,162,.45);transition:transform .15s ease}" +
     "#tzLangFab:hover{transform:scale(1.08)}" +
-    "#tzLangMenu{position:fixed;right:14px;bottom:calc(150px + env(safe-area-inset-bottom,0px));z-index:9001;display:none;" +
+    ".tz-lang-btn{font-size:16px !important;line-height:1}" +
+    "#tzLangMenu{position:fixed;z-index:9001;display:none;" +
     "background:#17172a;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5)}" +
     "#tzLangMenu.open{display:block}" +
     "#tzLangMenu button{display:flex;gap:9px;align-items:center;width:100%;background:none;border:0;color:#eee;" +
     "padding:10px 14px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;text-align:left;white-space:nowrap}" +
     "#tzLangMenu button:hover{background:rgba(255,255,255,.08)}" +
     "#tzLangMenu button.on{color:#ff7ec2;font-weight:700}" +
-    "@media(min-width:760px){#tzLangFab{bottom:20px}#tzLangMenu{bottom:74px}}";
+    "@media(min-width:760px){#tzLangFab{bottom:20px}}";
   document.head.appendChild(st);
 
   var NAMES = { en: "English", bn: "বাংলা", hi: "हिन्दी" };
@@ -331,16 +354,41 @@
     if (l === cur) b.className = "on";
     b.addEventListener("click", function () {
       localStorage.setItem(LS_LANG, l);
-      location.reload();                                               // নতুন ভাষায় পেজ ফেরত — মিনিমাল-লো, মেপেস নিখুঁত
+      location.reload();                                               // নতুন ভাষায় পেজ ফেরত — নিখুঁত, ঝামেলা-মুক্ত
     });
     menu.appendChild(b);
   });
-  fab.addEventListener("click", function () { menu.classList.toggle("open"); });
+  /* বাটনের নিচে ঝুলন্ত মেনু — হেডারে হোক বা ফ্লোটে, একই কোডপথ */
+  function placeMenu() {
+    var r = fab.getBoundingClientRect();
+    menu.style.top = (r.bottom + 8) + "px";
+    menu.style.right = Math.max(10, window.innerWidth - r.right) + "px";
+    menu.style.bottom = "auto";
+  }
+  fab.addEventListener("click", function (e) {
+    e.stopPropagation();
+    if (!menu.classList.contains("open")) placeMenu();
+    menu.classList.toggle("open");
+  });
   document.addEventListener("click", function (e) {
     if (!menu.contains(e.target) && e.target !== fab) menu.classList.remove("open");
   });
-  document.body.appendChild(fab);
-  document.body.appendChild(menu);
+
+  /* app.js হেডারটা জেনোরেট করে — কয়েকবার ধৈর্য ধরে ট্রাই, না পেলে ফ্লোটিং ফলব্যাক */
+  function tryMount(tries) {
+    var host = document.querySelector(".header-actions");
+    if (host) {
+      fab.className = "icon-btn tz-lang-btn";                            // আপনার হেডার-আইকনের মতোই লুক
+      var themeBtn = host.querySelector("#themeBtn");
+      host.insertBefore(fab, themeBtn || null);                          // 🔍 🌐 ☀ 👤 — এই ক্রমে বসবে
+      document.body.appendChild(menu);
+      return;
+    }
+    if (tries < 25) return setTimeout(function () { tryMount(tries + 1); }, 300);
+    document.body.appendChild(fab);                                      // নিরাপদ ফলব্যাক
+    document.body.appendChild(menu);
+  }
+  tryMount(0);
 
   /* हिन्दी বাছলে Devanagari ফন্ট লোড (না থাকলেও সিস্টেম-ফন্টে চলে) */
   if (cur === "hi") {

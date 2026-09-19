@@ -93,7 +93,7 @@
   }
 
   /* ---------- 🧭 টার্গেট-এলাকা (কার্ড/সার্চ/ডিটেইল/চিপ — প্রম্পট-বডি নয়!) ---------- */
-  var SEL_NOW = ".chip, .cat-chip, .detail-head h1, .detail-head .sub";   // অল্পসংখ্যক — সঙ্গে সঙ্গে অনুবাদ
+  var SEL_NOW = ".chip, .cat-chip, .detail-head h1, .detail-head .sub, .prose p, .prose ol li, .prose ul li";   // অল্পসংখ্যক — সঙ্গে সঙ্গে অনুবাদ
   var SEL_CARD = ".card .card-info h3, .result-row h4";                   // অনেক — স্ক্রলে চোখে পড়লেই অনুবাদ
 
   var io = new IntersectionObserver(function (ents) {
