@@ -1201,7 +1201,7 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 @property --ogA { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
 .hero-ring {
   position: relative; z-index: 1; display: block; height: 100%; box-sizing: border-box;
-  padding: 0px; border-radius: 20px;
+  padding: 0px; border-radius: 0px;
   background: conic-gradient(from var(--ogA, 0deg),
     hsl(var(--ogH, 318), 95%, 62%), hsl(calc(var(--ogH, 318) + 120), 95%, 62%),
     hsl(calc(var(--ogH, 318) + 240), 95%, 62%), hsl(var(--ogH, 318), 95%, 62%));
