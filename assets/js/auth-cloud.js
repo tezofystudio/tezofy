@@ -35,7 +35,7 @@
       entry.date = new Date().toISOString();
       entry.site = location.host;
       if (!entry.action) entry.action = "register"; // 👥 Users ট্যাবে নোঙর
-      /* 🚦 v2.8 LOCKSTEP: POST + GET দুই লাইনে পাঠাই — যেকোনো এক লাইন খুললেই ডেটা পৌঁছায়! */
+      /* 🚦 v3.0 LOCKSTEP: POST + GET দুই লাইনে পাঠাই — যেকোনো এক লাইন খুললেই ডেটা পৌঁছায়! */
       var body = JSON.stringify(entry);
       fetch(CFG.sheetUrl, {
         method: "POST",
@@ -135,14 +135,14 @@
 
   /* -------- 5. v2.9 GATEKEEPER: JSON কমান্ড ব্রিজ (উত্তর পড়া যায়) -------- */
   function cmd(payload) {
-    if (!CFG.sheetUrl) return Promise.resolve({ ok: false, error: "সার্ভার কনফিগ করা নেই", offline: true });
+    if (!CFG.sheetUrl) return Promise.resolve({ ok: false, error: "Server is not configured", offline: true });
     return fetch(CFG.sheetUrl, {
       method: "POST",
       redirect: "follow",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(payload)
     }).then(function (r) { return r.json(); })
-      .catch(function () { return { ok: false, error: "নেটওয়ার্ক সমস্যা — আবার চেষ্টা করুন", offline: true }; });
+      .catch(function () { return { ok: false, error: "Network issue — please try again", offline: true }; });
   }
 
   /* -------- 6. পাসওয়ার্ড-হ্যাশ (আসল পাসওয়ার্ড কখনো সার্ভারে যায় না) -------- */
