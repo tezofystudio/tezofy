@@ -114,6 +114,13 @@
     "Create Stunning AI Portraits": ["দারুণ AI পোর্ট্রেট বানান", "शानदार AI पोर्ट्रेट बनाएं"],
     "Discover & copy premium AI image prompts. Create beautiful portraits with one tap — no prompt-engineering skills needed.": ["প্রিমিয়াম AI ইমেজ প্রম্পট খুঁজুন ও কপি করুন — এক ট্যাপে সুন্দর পোর্ট্রেট, প্রম্পট-ইঞ্জিনিয়ারিং জানার দরকার নেই।", "प्रीमियम AI इमेज प्रॉम्प्ट खोजें और कॉपी करें — एक टैप में सुंदर पोर्ट्रेट, बिना प्रॉम्प्ट इंजीनियरिंग के।"],
 
+    /* ===== ⚙️ সেটিংস-মেনু ===== */
+    "Night mode": ["নাইট মোড", "नाइट मोड"],
+    "Day mode": ["ডে মোড", "डे मोड"],
+    "tap to switch ↔": ["বদলাতে ট্যাপ ↔", "बदलने को टैप ↔"],
+    "☑ Reduce animations ✨": ["☑ অ্যানিমেশন কমান ✨", "☑ एनीमेशन कम करें ✨"],
+    "☐ Reduce animations ✨": ["☐ অ্যানিমেশন কমান ✨", "☐ एनीमेशन कम करें ✨"],
+    "More settings soon 🚀": ["আরও সেটিংস আসছে 🚀", "और सेटिंग्स जल्दी ही 🚀"],
     /* ===== অথ-মডাল (সিদ্ধ/লগইন) ===== */
     "Sign Up": ["সাইন আপ", "साइन अप"],
     "Log In": ["লগইন", "लॉग इन"],
@@ -322,43 +329,98 @@
     }
   };
 
-  /* ---------- 🌐 ভাষা-বাছাই বাটন — হেডারে মাউন্ট, না-পেলে ফ্লোটিং ফলব্যাক ---------- */
+  /* ---------- ⚙️ সেটিংস-হাব — এক আইকনে থিম + ভাষা + ভবিষ্যত-সেটিংস (প্রোফাইলের পাশে) ---------- */
   var st = document.createElement("style");
   st.textContent =
-    "#tzLangFab{position:fixed;right:14px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9000;" +
+    "#tzSetFab{position:fixed;right:14px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:9000;" +
     "width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.35);cursor:pointer;" +
-    "background:linear-gradient(135deg,#ff5fa2,#ff8a3d);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;" +
+    "background:linear-gradient(135deg,#ff5fa2,#ff8a3d);color:#fff;display:flex;align-items:center;justify-content:center;" +
     "box-shadow:0 6px 22px rgba(255,95,162,.45);transition:transform .15s ease}" +
-    "#tzLangFab:hover{transform:scale(1.08)}" +
-    ".tz-lang-btn{font-size:16px !important;line-height:1}" +
-    "#tzLangMenu{position:fixed;z-index:9001;display:none;" +
-    "background:#17172a;border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:6px;box-shadow:0 10px 30px rgba(0,0,0,.5)}" +
-    "#tzLangMenu.open{display:block}" +
-    "#tzLangMenu button{display:flex;gap:9px;align-items:center;width:100%;background:none;border:0;color:#eee;" +
-    "padding:10px 14px;border-radius:9px;cursor:pointer;font-size:14px;font-family:inherit;text-align:left;white-space:nowrap}" +
-    "#tzLangMenu button:hover{background:rgba(255,255,255,.08)}" +
-    "#tzLangMenu button.on{color:#ff7ec2;font-weight:700}" +
-    "@media(min-width:760px){#tzLangFab{bottom:20px}}";
+    "#tzSetFab:hover{transform:scale(1.08)}" +
+    "#tzSetFab svg{width:20px;height:20px}" +
+    ".tz-set-btn svg{width:16px;height:16px;transition:transform .25s ease}" +
+    ".tz-set-btn.open svg{transform:rotate(45deg)}" +
+    "#tzSetMenu{position:fixed;z-index:9001;display:none;min-width:236px;" +
+    "background:var(--card,#17172a);border:1px solid var(--border,rgba(255,255,255,.14));border-radius:16px;padding:8px;" +
+    "box-shadow:0 14px 40px rgba(0,0,0,.45);color:var(--text,#eee);font-family:inherit}" +
+    "#tzSetMenu.open{display:block}" +
+    "#tzSetMenu .tz-row{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:inherit;" +
+    "padding:11px 12px;border-radius:11px;cursor:pointer;font-size:.9rem;text-align:left;line-height:1.25;font-family:inherit}" +
+    "#tzSetMenu .tz-row:hover{background:rgba(255,95,162,.08)}" +
+    "#tzSetMenu .tz-row.on span:first-child{font-weight:700;color:#ff7ec2}" +
+    "#tzSetMenu .tz-val{margin-left:auto;font-size:.8rem;font-weight:800;color:#ff7ec2;white-space:nowrap}" +
+    "#tzSetMenu .tz-h{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#888);padding:10px 12px 4px}" +
+    "#tzSetMenu .tz-sep{height:1px;background:var(--border,rgba(255,255,255,.1));margin:6px 8px}" +
+    "#tzSetMenu .tz-note{font-size:.68rem;color:var(--muted,#888);padding:6px 12px 8px;text-align:center}" +
+    "html.tz-calm *{animation:none !important;transition:none !important}" +
+    "@media(min-width:760px){#tzSetFab{bottom:20px}}";
   document.head.appendChild(st);
 
+  var GEAR_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
   var NAMES = { en: "English", bn: "বাংলা", hi: "हिन्दी" };
+
   var fab = document.createElement("button");
-  fab.id = "tzLangFab"; fab.type = "button"; fab.title = "Language / ভাষা";
-  fab.setAttribute("aria-label", "Change language");
-  fab.textContent = "🌐";
+  fab.id = "tzSetFab"; fab.type = "button"; fab.title = "Settings / সেটিংস";
+  fab.setAttribute("aria-label", "Open settings");
+  fab.innerHTML = GEAR_SVG;                                             // ⚙️ গিয়ার — ☀/🔍-এর মতোই স্ট্রোক-আইকন
   var menu = document.createElement("div");
-  menu.id = "tzLangMenu"; menu.setAttribute("role", "menu");
-  SUPPORTED.forEach(function (l) {
-    var b = document.createElement("button");
-    b.type = "button"; b.textContent = NAMES[l] + (l === cur ? " ✓" : "");
-    if (l === cur) b.className = "on";
-    b.addEventListener("click", function () {
-      localStorage.setItem(LS_LANG, l);
-      location.reload();                                               // নতুন ভাষায় পেজ ফেরত — নিখুঁত, ঝামেলা-মুক্ত
+  menu.id = "tzSetMenu"; menu.setAttribute("role", "menu");
+
+  function themeIsDark() { return (document.documentElement.dataset.theme || "dark") !== "light"; }
+  function applyCalm() { document.documentElement.classList.toggle("tz-calm", localStorage.getItem("tz_calm") === "1"); }
+  applyCalm();
+
+  /* মেনু প্রতিবার ওপেনের আগে সতেজ রেন্ডার — থিম/ভাষা/টগল সিংকে */
+  function buildMenu() {
+    menu.innerHTML = "";
+    var h1 = document.createElement("div"); h1.className = "tz-h"; h1.textContent = "Appearance / চেহারা";
+    menu.appendChild(h1);
+
+    /* 🌗 থিম রো — আপনার app.js-এর #themeBtn-ই চাপ দেই: কোনো লজিক-ডুপ্লিকেশন নেই */
+    var tRow = document.createElement("button"); tRow.type = "button"; tRow.className = "tz-row";
+    tRow.innerHTML = '<span>' + (themeIsDark() ? "🌙 Night mode" : "☀️ Day mode") + '</span><span class="tz-val">tap to switch ↔</span>';
+    tRow.addEventListener("click", function () {
+      var tb = document.getElementById("themeBtn");
+      if (tb) tb.click();
+      else document.documentElement.dataset.theme = themeIsDark() ? "light" : "dark";
+      setTimeout(buildMenu, 80);
+      setTimeout(function () { try { scan(document.body); } catch (e) {} }, 140);   // থিম-টোস্টও অনুবাদে ধরা হোক
     });
-    menu.appendChild(b);
-  });
-  /* বাটনের নিচে ঝুলন্ত মেনু — হেডারে হোক বা ফ্লোটে, একই কোডপথ */
+    menu.appendChild(tRow);
+
+    var s1 = document.createElement("div"); s1.className = "tz-sep"; menu.appendChild(s1);
+    var h2 = document.createElement("div"); h2.className = "tz-h"; h2.textContent = "Language / ভাষা";
+    menu.appendChild(h2);
+    SUPPORTED.forEach(function (l) {
+      var b = document.createElement("button"); b.type = "button";
+      b.className = "tz-row" + (l === cur ? " on" : "");
+      b.innerHTML = '<span>' + NAMES[l] + '</span>' + (l === cur ? '<span class="tz-val">✓</span>' : "");
+      b.addEventListener("click", function () {
+        localStorage.setItem(LS_LANG, l);
+        location.reload();
+      });
+      menu.appendChild(b);
+    });
+
+    var s2 = document.createElement("div"); s2.className = "tz-sep"; menu.appendChild(s2);
+    var h3 = document.createElement("div"); h3.className = "tz-h"; h3.textContent = "My site / ইউজার-সেটিং";
+    menu.appendChild(h3);
+
+    /* 🧘 নমুনা ইউজার-সেটিং — এখানেই ভবিষ্যতের সেটিং যোগ করবেন (এক লাইনেই রো!) */
+    var calm = localStorage.getItem("tz_calm") === "1";
+    var cRow = document.createElement("button"); cRow.type = "button"; cRow.className = "tz-row";
+    cRow.innerHTML = "<span>" + (calm ? "☑ " : "☐ ") + "Reduce animations ✨</span>";
+    cRow.addEventListener("click", function () {
+      localStorage.setItem("tz_calm", calm ? "0" : "1");
+      applyCalm();
+      buildMenu();
+    });
+    menu.appendChild(cRow);
+
+    var nt = document.createElement("div"); nt.className = "tz-note"; nt.textContent = "More settings soon 🚀";
+    menu.appendChild(nt);
+  }
+
   function placeMenu() {
     var r = fab.getBoundingClientRect();
     menu.style.top = (r.bottom + 8) + "px";
@@ -367,25 +429,29 @@
   }
   fab.addEventListener("click", function (e) {
     e.stopPropagation();
-    if (!menu.classList.contains("open")) placeMenu();
-    menu.classList.toggle("open");
+    if (!menu.classList.contains("open")) { buildMenu(); placeMenu(); }
+    var on = menu.classList.toggle("open");
+    fab.classList.toggle("open", on);
   });
   document.addEventListener("click", function (e) {
-    if (!menu.contains(e.target) && e.target !== fab) menu.classList.remove("open");
+    if (!menu.contains(e.target) && e.target !== fab) { menu.classList.remove("open"); fab.classList.remove("open"); }
   });
 
-  /* app.js হেডারটা জেনোরেট করে — কয়েকবার ধৈর্য ধরে ট্রাই, না পেলে ফ্লোটিং ফলব্যাক */
+  /* app.js হেডারটা জেনোরেট করে — ধৈর্য ধরে ট্রাই; মিললেই প্রোফাইলের পাশে, ☀ আটকে ⚙ সেটিংসে */
   function tryMount(tries) {
     var host = document.querySelector(".header-actions");
     if (host) {
-      fab.className = "icon-btn tz-lang-btn";                            // আপনার হেডার-আইকনের মতোই লুক
-      var themeBtn = host.querySelector("#themeBtn");
-      host.insertBefore(fab, themeBtn || null);                          // 🔍 🌐 ☀ 👤 — এই ক্রমে বসবে
+      fab.removeAttribute("id");                                         // ফ্লোটিং-সিএসএস বিদায় ✅
+      fab.className = "icon-btn tz-set-btn";
+      var anchor = host.querySelector("#avatarHost") || host.querySelector("#themeBtn") || null;
+      host.insertBefore(fab, anchor);                                    // …☀ ⚙️ 👤
+      var tb = host.querySelector("#themeBtn");
+      if (tb) tb.style.display = "none";                                 // স্ট্যান্ডেলোন ☀ লুকান — ক্লিক-লজিক বসে আছে মেনুতে
       document.body.appendChild(menu);
       return;
     }
-    if (tries < 25) return setTimeout(function () { tryMount(tries + 1); }, 300);
-    document.body.appendChild(fab);                                      // নিরাপদ ফলব্যাক
+    if (tries < 30) return setTimeout(function () { tryMount(tries + 1); }, 300);
+    document.body.appendChild(fab);                                      // ফলব্যাক: ফ্লোটিং ⚙️
     document.body.appendChild(menu);
   }
   tryMount(0);
