@@ -1211,3 +1211,7 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 }
 .hero-ring:hover { filter: drop-shadow(0 14px 34px hsl(var(--ogH, 318) 95% 60% / .38)); }
 @keyframes ogSpin { to { --ogA: 360deg; } }
+
+/* ✨ কেন্দ্রের AI বাটন — FAB পপ */
+.bottombar .bb-ai svg { width: 34px; height: 34px; padding: 6px; margin-top: -16px; border-radius: 50%; background: var(--grad); color: #fff; box-shadow: 0 6px 18px rgba(255,45,170,.45); }
+.bottombar .bb-ai span { color: var(--pink); font-weight: 800; }
