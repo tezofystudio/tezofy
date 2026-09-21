@@ -1,11 +1,11 @@
 /* 🎡 TEZOFY Daily Magic Spin — standalone popup engine (no dependencies, site-theme aware)
    ─────────────────────────────────────────────────────────────────────────────
-   ব্যবহার:
+   Usage:
      <script src="assets/js/magic-spin.js" defer></script>
      <script>window.addEventListener("DOMContentLoaded", function () {
-       window.tzSpin && tzSpin.init({ auto: true });   // প্রতিদিন ১বার অটো-পপআপ
+       window.tzSpin && tzSpin.init({ auto: true });   // auto popup once per day
      });</script>
-   ম্যানুয়াল খুলতে (যেকোনো বাটন থেকে): tzSpin.open();
+   Open manually (from any button): tzSpin.open();
    ───────────────────────────────────────────────────────────────────────────── */
 (function () {
   "use strict";
@@ -13,12 +13,12 @@
   var KEY = "tzspin_last";
   var S = { built: false, run: 0, prompt: "", img: "" };
 
-  /* ---------- দিন-গেট: দিনে ১বার ---------- */
+  /* ---------- day gate: once per day ---------- */
   function today() { var d = new Date(); return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate(); }
   function seenToday() { try { return localStorage.getItem(KEY) === today(); } catch (e) { return false; } }
   function markToday() { try { localStorage.setItem(KEY, today()); } catch (e) {} }
 
-  /* ---------- প্রম্পট উৎস: data.js-এর PROMPTS (মূল সাইটে), নয়তো অভ্যন্তরীণ তালিকা ---------- */
+  /* ---------- prompt source: PROMPTS from data.js (main site), else built-in list ---------- */
   var FALLBACK = [
     "Festive night portrait of a young woman in a white saree with red border before a glowing Durga Puja pandal, marigold garlands, golden bokeh, cinematic, 8k",
     "Neon cyberpunk street food vendor in Dhaka rain, glowing reflections, moody cinematic light, 8k",
@@ -40,7 +40,7 @@
     return FALLBACK[Math.floor(Math.random() * FALLBACK.length)];
   }
 
-  /* ---------- স্টাইল (সাইট-ভ্যারিয়েবল-সচেতন, ফলব্যাকসহ) ---------- */
+  /* ---------- styles (site-variable aware, with fallbacks) ---------- */
   var CSS = ""
     + ".ms-ov{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;padding:18px;"
     + "background:rgba(4,4,8,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}"
@@ -83,9 +83,9 @@
     + ".ms-act.primary{background:var(--grad,linear-gradient(135deg,#FF2DAA,#FF7A00));border-color:transparent;color:#fff}"
     + "@media (prefers-reduced-motion:reduce){.ms-wheel,.ms-spin{animation:none}}";
 
-  var REEL_WORDS = ["🎞️ সিনেম্যাটিক পোর্ট্রেট", "👑 রাজকীয় সিংহাসন", "🌧️ বৃষ্টির নিয়ন রাত", "🐉 ফ্যান্টাসি ড্রিম", "🌌 স্পেস-অ্যাডভেঞ্চার", "🎆 উৎসবের আলো", "🧞 জাদুর বাতি", "💫 ড্রিমি পেইন্টিং", "🌸 অ্যানিমে ভাইব", "🎡 ঘুরছে… ঘুরছে…"];
+  var REEL_WORDS = ["🎞️ Cinematic Portrait", "👑 Royal Throne", "🌧️ Neon Rain", "🐉 Fantasy Dream", "🌌 Space Adventure", "🎆 Festival Lights", "🧞 Magic Lamp", "💫 Dreamy Painting", "🌸 Anime Vibe", "🎡 spinning… spinning…"];
 
-  /* ---------- ডোম নির্মাণ ---------- */
+  /* ---------- DOM build ---------- */
   function build() {
     if (S.built) return; S.built = true;
     var st = document.createElement("style"); st.textContent = CSS; document.head.appendChild(st);
@@ -96,8 +96,8 @@
       + '<div class="ms-card">'
       + '<button class="ms-x" id="msX" aria-label="Close">✕</button>'
       + '<div class="ms-head"><span class="ms-badge">🎡 Daily Magic Spin</span>'
-      + "<h3>আজকের ভাগ্য ঘুরিয়ে দেখুন!</h3>"
-      + "<p>এক ট্যাপে এলোমেলো প্রিমিয়াম প্রম্পট + AI-আঁকা ছবি — একদম ফ্রি।</p></div>"
+      + "<h3>Spin today's luck!</h3>"
+      + "<p>One tap — a random premium prompt plus an AI-painted image, totally free.</p></div>"
       + '<div class="ms-body" id="msBody"></div>'
       + "</div>";
     document.body.appendChild(ov);
@@ -106,20 +106,23 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   }
 
-  /* ---------- স্টেজগুলো ---------- */
+  function rscan() { try { if (window.TZI18N && TZI18N.scan) TZI18N.scan(document.getElementById("msOv")); } catch (e) {} }
+
+  /* ---------- stages ---------- */
   function stageInvite() {
     var b = document.getElementById("msBody");
     b.innerHTML = ""
       + '<span class="ms-wheel">🎡</span>'
-      + '<div class="ms-msg">প্রতিদিন একবার — স্পিন করুন, ভাগ্যের প্রম্পট জেনারেট হয়ে যাক!</div>'
-      + '<button class="ms-cta" id="msGo">🎡 স্পিন করুন</button>'
-      + '<button class="ms-skip" id="msSkip">এখন নয়, পরে →</button>';
+      + '<div class="ms-msg">Once a day — spin and let fate forge your prompt!</div>'
+      + '<button class="ms-cta" id="msGo">🎡 Spin Now</button>'
+      + '<button class="ms-skip" id="msSkip">Not now →</button>';
     document.getElementById("msGo").addEventListener("click", spin);
     document.getElementById("msSkip").addEventListener("click", close);
+    rscan();
   }
   function stageReel() {
     var b = document.getElementById("msBody");
-    b.innerHTML = '<div class="ms-reel" id="msReel">🎡 ঘুরছে…</div><div class="ms-msg">✨ ভাগ্য বেছে নিচ্ছে…</div>';
+    b.innerHTML = '<div class="ms-reel" id="msReel">🎡 spinning…</div><div class="ms-msg">✨ Picking your luck…</div>';
     var i = 0;
     var iv = setInterval(function () {
       var r = document.getElementById("msReel");
@@ -130,8 +133,8 @@
   }
   function stageLoading() {
     var b = document.getElementById("msBody");
-    b.innerHTML = '<div class="ms-spin"></div><div class="ms-msg" style="color:var(--pink,#FF2DAA);font-weight:700">🎨 AI আপনার জাদু আঁকছে…</div>'
-      + '<div class="ms-msg">সাধারণত ২০–৬০ সেকেন্ড — এক কাপ চা ☕</div>';
+    b.innerHTML = '<div class="ms-spin"></div><div class="ms-msg" style="color:var(--pink,#FF2DAA);font-weight:700">🎨 AI is painting your magic…</div>'
+      + '<div class="ms-msg">usually 20–60 seconds — one cup of tea ☕</div>';
   }
   function stageResult() {
     var b = document.getElementById("msBody");
@@ -139,35 +142,37 @@
       + '<img class="ms-img" id="msImg" alt="Your magic spin result">'
       + '<div class="ms-cap">🎁 ' + escHtml(S.prompt) + "</div>"
       + '<div class="ms-acts">'
-      + '<button class="ms-act primary" id="msDl">⬇ ডাউনলোড</button>'
+      + '<button class="ms-act primary" id="msDl">⬇ download</button>'
       + '<a class="ms-act" id="msGen" href="#" target="_self">✨ Generate</a>'
       + "</div>"
       + '<div class="ms-acts" style="margin-top:8px">'
-      + '<button class="ms-act" id="msAgain">🔁 আবার স্পিন</button>'
-      + '<button class="ms-act" id="msDone">ভালো লেগেছে! ✕</button>'
+      + '<button class="ms-act" id="msAgain">🔁 Spin again</button>'
+      + '<button class="ms-act" id="msDone">Loved it! ✕</button>'
       + "</div>";
     var im = document.getElementById("msImg"); im.src = S.img;
     document.getElementById("msGen").href = "ai-generator.html?p=" + encodeURIComponent(S.prompt);
     document.getElementById("msDl").addEventListener("click", download);
     document.getElementById("msAgain").addEventListener("click", spin);
     document.getElementById("msDone").addEventListener("click", close);
+    rscan();
   }
   function stageFail() {
     var b = document.getElementById("msBody");
     b.innerHTML = ""
       + '<span class="ms-wheel">😵</span>'
-      + '<div class="ms-msg">ইঞ্জিনটা এখন একটু ব্যস্ত — একটু পরে আবার স্পিন করুন!</div>'
-      + '<button class="ms-cta" id="msRetry">🔁 আবার চেষ্টা</button>'
-      + '<button class="ms-skip" id="msLater">পরে করব →</button>';
+      + '<div class="ms-msg">The engine is a bit busy — spin again in a moment!</div>'
+      + '<button class="ms-cta" id="msRetry">🔁 Try again</button>'
+      + '<button class="ms-skip" id="msLater">Later →</button>';
     document.getElementById("msRetry").addEventListener("click", spin);
     document.getElementById("msLater").addEventListener("click", close);
+    rscan();
   }
 
   function escHtml(s) {
     return (s || "").replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
   }
 
-  /* ---------- স্পিন → ছবি ---------- */
+  /* ---------- spin → image ---------- */
   function spin() {
     var myRun = ++S.run;
     var reel = stageReel();
@@ -178,7 +183,7 @@
       var seed = Math.floor(Math.random() * 999999999);
       S.img = "https://image.pollinations.ai/prompt/" + encodeURIComponent(S.prompt)
         + "?width=896&height=1152&seed=" + seed + "&model=flux&nologo=true&safe=true";
-      stageLoading();
+      stageLoading(); rscan();
       var img = new Image();
       var killer = setTimeout(function () { img.src = ""; if (myRun === S.run) stageFail(); }, 95000);
       img.onload = function () { clearTimeout(killer); if (myRun === S.run) stageResult(); };
@@ -198,7 +203,7 @@
     }).catch(function () { window.open(S.img, "_blank"); });
   }
 
-  /* ---------- খোলা/বন্ধ ---------- */
+  /* ---------- open/close ---------- */
   function open() {
     build();
     if (!document.getElementById("msBody").innerHTML) stageInvite();
@@ -211,11 +216,11 @@
     if (!ov) return;
     ov.classList.remove("open");
     document.body.style.overflow = "";
-    S.run++;                       // চলমান লোড invalidate
-    markToday();                   // স্কিপ করলেও আজ আর নাগ করবে না
+    S.run++;                       // invalidate any in-flight load
+    markToday();                   // skipping also mutes it for today
   }
 
-  /* ---------- পাবলিক API ---------- */
+  /* ---------- public API ---------- */
   window.tzSpin = {
     init: function (opts) {
       build();
