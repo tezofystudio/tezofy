@@ -21,14 +21,11 @@
   <style>
     /* ───────── AI GENERATOR STUDIO — page-specific styles ───────── */
     .gen-wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
-
-    .gen-topbar { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(9,9,11,.82); border-bottom: 1px solid var(--border-soft); }
-    .gen-topbar .wrap { max-width: 1180px; display: flex; align-items: center; justify-content: space-between; height: var(--header-h); }
     .gen-toplinks { display: flex; gap: 6px; align-items: center; }
     .gen-toplinks a { padding: 8px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1px solid transparent; }
     .gen-toplinks a:hover { color: var(--text); border-color: var(--border); }
     .gen-toplinks a.cta-mini { background: var(--grad); color: #fff; }
-    @media (max-width: 720px) { .gen-toplinks { overflow-x: auto; scrollbar-width: none; max-width: 58vw; } .gen-toplinks::-webkit-scrollbar { display: none; } .gen-toplinks a { flex: 0 0 auto; padding: 7px 11px; font-size: .76rem; white-space: nowrap; } }
+
 
     .gen-hero { text-align: center; padding: 46px 18px 8px; }
     .gen-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.35); }
@@ -157,55 +154,54 @@
     @media (max-width: 860px) { .studio { gap: 16px; } .gen-hero { padding-top: 34px; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
-    /* ===== Premium floating pill nav with raised center button ===== */
+
+    /* ===== Center special button — exact copy of the main site's .bb-ai design ===== */
+    .ai-chips { position: sticky; top: var(--header-h); z-index: 55; background: rgba(9,9,11,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-soft); }
+    html[data-theme="light"] .ai-chips { background: rgba(255,255,255,.86); }
+    .ai-chips .gen-toplinks { max-width: 1180px; margin: 0 auto; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; }
+    .ai-chips .gen-toplinks::-webkit-scrollbar { display: none; }
+    .ai-chips .gen-toplinks a { flex: 0 0 auto; white-space: nowrap; }
     @media (max-width: 859px) {
-      body { padding-bottom: calc(var(--bottombar-h) + 34px); }
-      .bottombar {
-        left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-        max-width: 470px; margin: 0 auto; height: 60px; padding: 0 8px; padding-bottom: 0;
-        background: rgba(13,13,19,.84); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--border-soft); border-radius: 999px;
-        box-shadow: 0 16px 42px rgba(0,0,0,.5);
+      .bottombar .bb-ai { position: relative; }
+      .bottombar .bb-ai .bb-core {
+        width: 52px; height: 52px; border-radius: 16px;
+        background: var(--grad); color: #fff;
+        display: grid; place-items: center;
+        transform: translateY(-15px);
+        box-shadow: 0 10px 26px rgba(255,45,170,.5);
+        font-weight: 900; font-size: 1.02rem; letter-spacing: .02em;
       }
-      html[data-theme="light"] .bottombar { background: rgba(255,255,255,.88); box-shadow: 0 16px 42px rgba(60,60,110,.22); }
-      html[data-theme="light"] .gen-topbar { background: rgba(255,255,255,.82); }
-      .bottombar a, .bottombar button { position: relative; }
-      .bottombar svg { width: 22px; height: 22px; }
-      .bottombar a.active::after { content: ""; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--pink); }
-      .bottombar .bb-c { align-self: stretch; }
-      .bottombar .bb-c svg {
-        width: 46px; height: 46px; padding: 11px; border-radius: 50%;
-        background: var(--grad); color: #fff; transform: translateY(-15px);
-        box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 4px rgba(255,255,255,.06);
-        animation: bbPulse 2.4s ease-in-out infinite;
-      }
-      @keyframes bbPulse {
-        0%, 100% { box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 0 rgba(255,45,170,.38); }
-        50% { box-shadow: 0 10px 26px rgba(255,45,170,.75), 0 0 0 10px rgba(255,45,170,0); }
-      }
-      .bottombar .bb-c span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
-      @media (prefers-reduced-motion: reduce) { .bottombar .bb-c svg { animation: none; } }
+      .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }
+      .bottombar .bb-ai span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
     }
   </style>
 </head>
 <body data-page="ai-generator">
 
   <!-- ─── topbar ─── -->
-  <header class="gen-topbar">
+  <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="index.html">
-        <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
+      <a class="brand" href="index.html" aria-label="TEZOFY home">
+        <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>
         <span>TEZOFY<small>AI Generator</small></span>
       </a>
-      <nav class="gen-toplinks">
+      <div class="header-actions">
+        <a class="header-search-pill" href="discover.html" aria-label="Search prompts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Search prompts…</span><kbd>⌘K</kbd></a>
+        <a class="icon-btn" href="discover.html" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></a>
+        <button class="icon-btn theme-btn" id="themeBtn" aria-label="Toggle dark / light mode"></button>
+        <span id="avatarHost"><a class="avatar-btn" href="index.html" aria-label="My account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-3.8 4-6 8-6s7.1 2.2 8 6"/></svg></a></span>
+      </div>
+    </div>
+  </header>
+  <div class="ai-chips">
+    <nav class="gen-toplinks" aria-label="AI tools">
         <a href="ai-hub.html">🎡 AI Hub</a>
         <a href="idea-maker.html">💡 Idea Forge</a>
         <a href="ai-generator.html">✨ Create</a>
         <a href="photo-enhance.html">🪄 Enhance</a>
         <a class="cta-mini" href="discover.html">✨ 1K+ Prompts</a>
       </nav>
-    </div>
-  </header>
+  </div>
 
   <!-- ─── hero ─── -->
   <section class="gen-hero gen-wrap">
@@ -333,10 +329,10 @@
   </footer>
 
   <!-- ─── bottom nav (app-feel) ─── -->
-    <nav class="bottombar">
+    <nav class="bottombar" aria-label="Primary">
     <a href="idea-maker.html" aria-label="Ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
     <a href="ai-generator.html" class="active" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
-    <a href="index.html" class="bb-c" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b><span>Home</span></a>
     <a href="photo-enhance.html" aria-label="Enhance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Enhance</span></a>
     <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
@@ -647,6 +643,27 @@
     } catch (e) {}
   })();
   </script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
+
+<script>
+(function () {
+  // Theme boot — same behavior as the main site (app.js): chitro:theme + <html data-theme>
+  try { document.documentElement.dataset.theme = JSON.parse(localStorage.getItem("chitro:theme") || '"dark"'); }
+  catch (e) { document.documentElement.dataset.theme = "dark"; }
+  function themeIcon(mode) {
+    return mode === "light"
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>';
+  }
+  var tb = document.getElementById("themeBtn");
+  if (!tb) return;
+  tb.innerHTML = themeIcon(document.documentElement.dataset.theme);
+  tb.addEventListener("click", function () {
+    var next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("chitro:theme", JSON.stringify(next)); } catch (e) {}
+    tb.innerHTML = themeIcon(next);
+  });
+})();
+</script>
 </body>
 </html>
