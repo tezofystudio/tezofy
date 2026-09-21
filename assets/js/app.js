@@ -621,6 +621,7 @@
     bar.innerHTML = `
       <a href="index.html" class="${page === "home" ? "active" : ""}">${I.home}<span>Home</span></a>
       <a href="discover.html" class="${page === "discover" || page === "category" ? "active" : ""}">${I.grid}<span>Discover</span></a>
+      <a href="ai-hub.html" class="bb-ai" aria-label="AI Studio">${I.spark}<span>AI</span></a>
       <button data-open-search aria-label="Search">${I.search}<span>Search</span></button>
       <a href="saved.html" class="${page === "saved" ? "active" : ""}">${I.bookmark}<span>Saved</span></a>`;
     document.body.appendChild(bar);
