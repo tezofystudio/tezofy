@@ -8,14 +8,15 @@
   <meta name="description" content="Write a raw idea in Bengali, Hindi or English — TEZOFY Idea Maker forges it into a pro-grade ultra prompt with Identity-Lock, smart typography & 8K boosting. Free, no sign-up.">
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23FF2DAA"/><stop offset="1" stop-color="%23FF7A00"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><path d="M32 14l4.4 11.6L48 30l-11.6 4.4L32 46l-4.4-11.6L16 30l11.6-4.4z" fill="white"/></svg>'>
   <meta property="og:title" content="TEZOFY Idea Maker — raw idea → ultra prompt">
-  <meta property="og:description" content="Bengali, Hindi, English — যেকোনো ভাষায় লিখুন, প্রো-গ্রেড English প্রম্পট নিন। Identity-Lock ও টাইপোগ্রাফি-বুস্ট বিল্ট-ইন।">
+  <meta property="og:description" content="Write in Bengali, Hindi or English — get back a senior-grade ultra prompt with Identity-Lock, typography & 8K boosting. Free, no sign-up.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://tezofystudio.github.io/tezofy/assets/img/og-card.png">
   <meta property="og:site_name" content="TEZOFY">
   <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/i18n.js" defer></script>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    /* ───────── IDEA MAKER — পেজ-নির্দিষ্ট স্টাইল (AI Generator-এর একই ডিজাইন-ভাষা) ───────── */
+    /* ───────── IDEA MAKER — page-specific styles (same design language as the site) ───────── */
     .gen-wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
 
     .gen-topbar { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(9,9,11,.82); border-bottom: 1px solid var(--border-soft); }
@@ -24,7 +25,7 @@
     .gen-toplinks a { padding: 8px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1px solid transparent; }
     .gen-toplinks a:hover { color: var(--text); border-color: var(--border); }
     .gen-toplinks a.cta-mini { background: var(--grad); color: #fff; }
-    @media (max-width: 620px) { .gen-toplinks a:not(.cta-mini) { display: none; } }
+    @media (max-width: 720px) { .gen-toplinks { overflow-x: auto; scrollbar-width: none; max-width: 58vw; } .gen-toplinks::-webkit-scrollbar { display: none; } .gen-toplinks a { flex: 0 0 auto; padding: 7px 11px; font-size: .76rem; white-space: nowrap; } }
 
     .gen-hero { text-align: center; padding: 46px 18px 8px; }
     .gen-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.35); }
@@ -64,7 +65,7 @@
     .im-err { display: none; margin-top: 12px; background: rgba(255,45,170,.10); border: 1px solid rgba(255,45,170,.4); color: var(--pink); padding: 11px 13px; border-radius: var(--radius-sm); font-size: .85rem; line-height: 1.5; }
     .im-err.show { display: block; }
 
-    /* ── আউটপুট স্টেজ (সবসময় দৃশ্যমান প্রম্পট-ঘর) ── */
+    /* ── output stage (always-visible prompt home) ── */
     .stage { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .stage-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border-soft); font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2); font-weight: 700; }
     .stage-head .cnt { font-weight: 400; text-transform: none; letter-spacing: 0; }
@@ -97,10 +98,10 @@
     .stage-note { padding: 0 14px 12px; font-size: .74rem; color: var(--muted-2); line-height: 1.6; }
     .stage-note b { color: var(--pink); }
 
-    /* ── হিস্ট্রি ── */
+    /* ── history ── */
     .hist-sec { margin: 26px 0 8px; }
 
-    /* ── ফিচার-শোকেস ── */
+    /* ── feature showcase ── */
     .showcase { margin: 44px 0 10px; text-align: center; }
     .showcase h2 { font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 800; letter-spacing: -.01em; }
     .showcase h2 .gr { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -124,11 +125,41 @@
 
     @media (max-width: 860px) { .studio { gap: 16px; } .gen-hero { padding-top: 34px; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+    /* ===== Premium floating pill nav with raised center button ===== */
+    @media (max-width: 859px) {
+      body { padding-bottom: calc(var(--bottombar-h) + 34px); }
+      .bottombar {
+        left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        max-width: 470px; margin: 0 auto; height: 60px; padding: 0 8px; padding-bottom: 0;
+        background: rgba(13,13,19,.84); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-soft); border-radius: 999px;
+        box-shadow: 0 16px 42px rgba(0,0,0,.5);
+      }
+      html[data-theme="light"] .bottombar { background: rgba(255,255,255,.88); box-shadow: 0 16px 42px rgba(60,60,110,.22); }
+      html[data-theme="light"] .gen-topbar { background: rgba(255,255,255,.82); }
+      .bottombar a, .bottombar button { position: relative; }
+      .bottombar svg { width: 22px; height: 22px; }
+      .bottombar a.active::after { content: ""; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--pink); }
+      .bottombar .bb-c { align-self: stretch; }
+      .bottombar .bb-c svg {
+        width: 46px; height: 46px; padding: 11px; border-radius: 50%;
+        background: var(--grad); color: #fff; transform: translateY(-15px);
+        box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 4px rgba(255,255,255,.06);
+        animation: bbPulse 2.4s ease-in-out infinite;
+      }
+      @keyframes bbPulse {
+        0%, 100% { box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 0 rgba(255,45,170,.38); }
+        50% { box-shadow: 0 10px 26px rgba(255,45,170,.75), 0 0 0 10px rgba(255,45,170,0); }
+      }
+      .bottombar .bb-c span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+      @media (prefers-reduced-motion: reduce) { .bottombar .bb-c svg { animation: none; } }
+    }
   </style>
 </head>
 <body data-page="idea-maker">
 
-  <!-- ─── টপবার (মূল সাইটের ন্যাভবার — হুবহু) ─── -->
+  <!-- ─── topbar (main site navbar — verbatim) ─── -->
   <header class="gen-topbar">
     <div class="wrap">
       <a class="brand" href="index.html">
@@ -137,29 +168,29 @@
       </a>
       <nav class="gen-toplinks">
         <a href="ai-hub.html">🎡 AI Hub</a>
-        <a href="discover.html">Prompts</a>
-        <a href="saved.html">Saved</a>
-        <a href="blog.html">Guides</a>
+        <a href="idea-maker.html">💡 Idea Forge</a>
+        <a href="ai-generator.html">✨ Create</a>
+        <a href="photo-enhance.html">🪄 Enhance</a>
         <a class="cta-mini" href="discover.html">✨ 1K+ Prompts</a>
       </nav>
     </div>
   </header>
 
-  <!-- ─── হিরো ─── -->
+  <!-- ─── hero ─── -->
   <section class="gen-hero gen-wrap">
     <span class="gen-badge">✦ Ultra Prompt Forge</span>
     <h1>Write. Forge. <span class="gr">Shine.</span></h1>
     <p>Drop a raw idea — in any language — and get back a senior-grade, ultra-detailed English prompt with Identity-Lock, smart typography &amp; 8K boosting built in. Free, unlimited, no sign-up.
-      <span class="bn">✨ বাংলা, हिन्दी বা English — যেভাবে স্বাচ্ছন্দ্য লিখুন, আউটপুট পাবেন প্রো-গ্রেড English প্রম্পটে।</span></p>
+      <span class="bn">✨ Write in Bengali, Hindi or English — the output is always a pro-grade English prompt.</span></p>
   </section>
 
-  <!-- ─── স্টুডিও ─── -->
+  <!-- ─── studio ─── -->
   <main class="studio gen-wrap">
-    <!-- বাম প্যানেল: ইনপুট ও কন্ট্রোল -->
+    <!-- left panel: input & controls -->
     <section class="panel" aria-label="Idea controls">
       <h3>✍️ Your Idea</h3>
       <div class="prompt-box">
-        <textarea id="imIdea" maxlength="600" placeholder="e.g. বৃষ্টির রাতে অভিশপ্ত প্রাসাদে এক রাজকুমারী… / my uploaded photo as a royal king on a golden throne / neon poster with the text &quot;DHAKA 2080&quot;" spellcheck="false"></textarea>
+        <textarea id="imIdea" maxlength="600" placeholder="e.g. a fairy-tale princess in a haunted palace on a rainy night / my uploaded photo as a royal king on a golden throne / neon poster with the text &quot;DHAKA 2080&quot;" spellcheck="false"></textarea>
         <div class="prompt-meta"><span id="imCount">0 characters</span><span id="imDetect"></span></div>
       </div>
       <div class="quick-row">
@@ -170,8 +201,8 @@
       <div class="opt-group">
         <div class="opt-label">🛡️ Smart Boosts <small style="font-weight:400;color:var(--muted-2)">• auto-detected from your idea</small></div>
         <div class="opt-chips">
-          <button class="opt" id="boFace" type="button" title="আপলোড করা ছবির মুখ/লুক অক্ষত রাখার ফিল্টার-নিরাপদ ক্লজ যুক্ত হবে">🗿 Identity Lock</button>
-          <button class="opt" id="boTypo" type="button" title="ছবির ওপর টেক্সট থাকলে থিম-ম্যাচড ফন্ট-নির্দেশনা যুক্ত হবে">🔤 Text-on-Image</button>
+          <button class="opt" id="boFace" type="button" title="Adds a filter-safe clause that preserves your uploaded photo's face & likeness">🗿 Identity Lock</button>
+          <button class="opt" id="boTypo" type="button" title="Adds a theme-matched font directive when your idea includes on-image text">🔤 Text-on-Image</button>
         </div>
       </div>
 
@@ -195,7 +226,7 @@
       <div class="im-err" id="imErr"></div>
     </section>
 
-    <!-- ডান প্যানেল: আউটপুট স্টেজ — মূল প্রম্পটের ঘর (সবসময় দৃশ্যমান) -->
+    <!-- right panel: output stage — the prompt home (always visible) -->
     <section class="stage" aria-label="Forged prompt output" id="stage">
       <div class="stage-head"><span>🧪 Ultra Prompt — Output</span><span class="cnt" id="outCount"></span></div>
       <div class="out-view" id="outView">
@@ -206,7 +237,7 @@
         </div>
       </div>
       <div class="tok-panel" id="tokPanel">
-        <div class="tp-head">🧩 Token slots — ভ্যালু বদলালেই প্রম্পট আপডেট হবে</div>
+        <div class="tp-head">🧩 Token slots — type a value and the prompt updates live</div>
         <div id="tokRows" style="display:flex;flex-direction:column;gap:10px"></div>
       </div>
       <div class="stage-actions" id="stageActions" hidden>
@@ -218,7 +249,7 @@
     </section>
   </main>
 
-  <!-- ─── হিস্ট্রি ─── -->
+  <!-- ─── history ─── -->
   <section class="hist-sec gen-wrap" id="histSec" hidden>
     <div class="panel">
       <h3>🕘 Recent Forges <span style="font-weight:400;text-transform:none;letter-spacing:0">— click to reload</span></h3>
@@ -226,7 +257,7 @@
     </div>
   </section>
 
-  <!-- ─── ফিচার-শোকেস ─── -->
+  <!-- ─── feature showcase ─── -->
   <section class="showcase gen-wrap">
     <h2>A tiny forge with <span class="gr">senior prompt-engineering</span> inside</h2>
     <p>Every forge applies the same professional vocabulary TEZOFY uses across its 1,000+ premium prompts:</p>
@@ -240,7 +271,7 @@
     </div>
   </section>
 
-  <!-- ─── ফাক ─── -->
+  <!-- ─── FAQ ─── -->
   <section class="gen-faq gen-wrap">
     <details id="faqLock"><summary>How does 🗿 Identity Lock work?<span>＋</span></summary><div class="ans">When your idea mentions your own photo, face or selfie (in any language), the forge appends a filter-safe directive — photographic &amp; anatomical wording instead of blunt "clone my face" terms. In external tools, upload your reference photo first, then paste the copied prompt: the clause keeps facial proportions, features and skin texture faithful to you.</div></details>
     <details><summary>Which languages can I write my idea in?<span>＋</span></summary><div class="ans">Any — Bengali, Hindi, English or a mix. The output is always a pro-grade English prompt, because English gives the best results across AI image tools. Cultural details are preserved naturally (লাল শাড়ি → elegant crimson silk saree).</div></details>
@@ -248,7 +279,7 @@
     <details><summary>Is it really free? Why does it take 20–60s?<span>＋</span></summary><div class="ans">Yes — unlimited, keyless, no account. It runs on a free community AI text engine, so peak hours can be slow; if it fails, just hit Forge again.</div></details>
   </section>
 
-  <!-- ─── ফুটার (মূল সাইটের — হুবহু) ─── -->
+  <!-- ─── footer (main site — verbatim) ─── -->
   <footer class="site-footer">
     <div class="wrap">
       <div class="footer-grid">
@@ -279,13 +310,13 @@
     </div>
   </footer>
 
-  <!-- ─── বটম নেভ (অ্যাপ-অনুভূতি — একই অনুপাত) ─── -->
-  <nav class="bottombar">
-    <a href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
-    <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Discover</span></a>
-    <a href="idea-maker.html" class="active" aria-label="Idea Maker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
-    <a href="ai-generator.html" aria-label="AI Generator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg><span>Generate</span></a>
-    <a href="saved.html" aria-label="Saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Saved</span></a>
+  <!-- ─── bottom nav (app-feel — same proportions) ─── -->
+    <nav class="bottombar">
+    <a href="idea-maker.html" class="active" aria-label="Ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
+    <a href="ai-generator.html" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
+    <a href="index.html" class="bb-c" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+    <a href="photo-enhance.html" aria-label="Enhance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Enhance</span></a>
+    <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
 
   <div class="gen-toast" id="genToast"></div>
@@ -296,14 +327,14 @@
     var $ = function (s, r) { return (r || document).querySelector(s); };
     var $$ = function (s, r) { return Array.from((r || document).querySelectorAll(s)); };
 
-    /* ---------- 🗿🔤 সিক্রেট বুস্ট-টোকেন ---------- */
-    // ফিল্টার-নিরাপদ বায়ো-ফিজিক্যাল ক্লজ — সরাসরি "clone/copy face" শব্দ নয়,
-    // ফটোগ্রাফিক/অ্যানাটমিক্যাল জার্গনে ইনপুট-ছবির মুখের আদল ধরে রাখে।
+    /* ---------- secret boost tokens ---------- */
+    // filter-safe bio-physical clause — never blunt "clone/copy face" words,
+    // photographic/anatomical jargon keeps the input photo's likeness faithful.
     var CLAUSE = "Strictly preserve all biological facial landmark proportions, cranial geometry, and micro-epidermal characteristics of the attached subject portrait, maintaining unbroken optical identity continuity.";
     var RES_TAIL = "8K ultra-high resolution, hyper-detailed textures, professional color grading, sharp focus.";
 
     var RE_FACE_EN = /\b(my|our)\s+(photo|picture|face|portrait|image|pic|selfie|look)s?\b|\bselfie\b|\buploaded\s+(photo|image|picture)|\breference\s+(photo|image)|\bface\s?swap\b|\bkeep\s+my\s+face\b|\bsame\s+face\b|\bmyself\b/i;
-    var RE_FACE_BN = /নিজের ছবি|আমার ছবি|নিজের ফটো|আমার ফটো|নিজের মুখ|আমার মুখ|সেলফি|আপলোড|নিজেকে|আমার ছবিটা|নিজের চেহারা/;
+    var RE_FACE_BN = /নিজের ছবি|আমার ছবি|নিজের ফটো|আমার ফটো|নিজের মুখ|আমার মুখ|সেলফি|Upload|নিজেকে|আমার ছবিটা|নিজের চেহারা/;
     var RE_FACE_HI = /मेरी\s+(फोटो|तस्वीर|सेल्फी)|मेरा\s+चेहरा|मेरे\s+चेहरे|सेल्फ़ी|अपलोड/;
     var RE_TXT_EN = /\b(text|title|typography|logo|font|headline|caption|poster|banner|wording)\b/i;
     var RE_TXT_BN = /লেখা|টেক্সট|ক্যাপশন|পোস্টার|ব্যানার|ফন্ট|শিরোনাম|নাম লিখ/;
@@ -335,22 +366,22 @@
       return "a style-matched professional font";
     }
 
-    /* ---------- টোস্ট ---------- */
+    /* ---------- toast ---------- */
     var toastT = null;
     function toast(m) {
-      var t = $("#genToast"); t.textContent = m; t.classList.add("show");
+      var t = $("#genToast"); t.textContent = m; t.classList.add("show"); if (window.TZI18N && TZI18N.scan) TZI18N.scan(t);
       clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("show"); }, 2200);
     }
 
-    /* ---------- স্টেট ---------- */
-    var state = { key: "" };                 // বাছাই করা স্টাইল-চিপের লেবেল
+    /* ---------- state ---------- */
+    var state = { key: "" };                 // selected style-chip label
     try { var _s = JSON.parse(localStorage.getItem("im_state")); if (_s) state.key = _s.key || ""; } catch (e) {}
     var resultPrompt = "";
     var tokens = [];
     var forging = false;
     var secTimer = null;
 
-    /* ---------- লাইভ অটো-ডিটেকশন ---------- */
+    /* ---------- live auto-detection ---------- */
     var ideaEl = $("#imIdea");
     function detectBoosts() {
       var v = ideaEl.value || "";
@@ -369,17 +400,17 @@
     $("#boFace").addEventListener("click", function () {
       boosts.face.manual = true; boosts.face.on = !boosts.face.on;
       $("#boFace").classList.toggle("on", boosts.face.on); saveBoosts();
-      toast(boosts.face.on ? "🗿 Identity Lock চালু" : "🗿 Identity Lock বন্ধ");
+      toast(boosts.face.on ? "🗿 Identity Lock ON" : "🗿 Identity Lock OFF");
     });
     $("#boTypo").addEventListener("click", function () {
       boosts.typo.manual = true; boosts.typo.on = !boosts.typo.on;
       $("#boTypo").classList.toggle("on", boosts.typo.on); saveBoosts();
-      toast(boosts.typo.on ? "🔤 টেক্সট-বুস্ট চালু" : "🔤 টেক্সট-বুস্ট বন্ধ");
+      toast(boosts.typo.on ? "🔤 Text boost ON" : "🔤 Text boost OFF");
     });
 
-    /* ---------- স্টাইল চিপ ---------- */
+    /* ---------- style chips ---------- */
     $$("#styleChips .opt").forEach(function (chip) {
-      var label = chip.textContent.replace(/^\S+\s/, "");      // ইমোজি ছাড়া লেবেল
+      var label = chip.textContent.replace(/^\S+\s/, "");      // label without emoji
       if (state.key && label === state.key) chip.classList.add("on");
       chip.addEventListener("click", function () {
         var was = chip.classList.contains("on");
@@ -390,14 +421,14 @@
       });
     });
 
-    /* ---------- ইনপুট কাউন্টার + ডিটেক্ট ---------- */
+    /* ---------- input counter + detect ---------- */
     ideaEl.addEventListener("input", function () {
       $("#imCount").textContent = ideaEl.value.length + " characters";
       detectBoosts();
     });
     detectBoosts();
 
-    /* ---------- সারপ্রাইজ / ক্লিয়ার ---------- */
+    /* ---------- surprise / clear ---------- */
     var SURPRISES = [
       "বৃষ্টির রাস্তায় একজন মেয়ে, cinematic",
       "A neon cyberpunk street food vendor",
@@ -413,17 +444,17 @@
       boosts.face.manual = false; boosts.typo.manual = false;
       ideaEl.dispatchEvent(new Event("input"));
       ideaEl.focus();
-      toast("🎲 Random idea loaded — Forge চাপুন!");
+      toast("🎲 Random idea loaded — hit Forge!");
     });
     $("#btnClear").addEventListener("click", function () {
       ideaEl.value = "";
       boosts.face.manual = false; boosts.typo.manual = false;
       ideaEl.dispatchEvent(new Event("input"));
       ideaEl.focus();
-      toast("🧹 পরিষ্কার!");
+      toast("🧹 Cleared!");
     });
 
-    /* ---------- 🧠 ফোর্জ-ইঞ্জিন (ফ্রি টেক্সট API, কিলেস) ---------- */
+    /* ---------- forge engine (free text API, keyless) ---------- */
     var SYS = "You are a world-class senior prompt engineer and Photoshop-grade photo-editing specialist. "
       + "Transform the user's raw idea (it may be written in ANY language — Bengali, Hindi, English, or mixed) into ONE refined, pro-grade, ultra-detailed English image-generation prompt. "
       + "Rules: Start directly with the scene description — no preamble, no labels, no quotation marks around the whole prompt. "
@@ -485,7 +516,7 @@
       });
     }
 
-    /* ---------- ক্লিন + ENFORCE-লেয়ার (গ্যারান্টিড বুস্ট) ---------- */
+    /* ---------- clean + enforce layer (guaranteed boosts) ---------- */
     function cleanOut(s) {
       var out = (s || "").trim();
       if (out.charAt(0) === '"' && out.charAt(out.length - 1) === '"') out = out.slice(1, -1).trim();
@@ -510,7 +541,7 @@
       return final;
     }
 
-    /* ---------- আউটপুট রেন্ডার ---------- */
+    /* ---------- output render ---------- */
     function escHtml(s) {
       return (s || "").replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
     }
@@ -527,7 +558,7 @@
     function renderBox() {
       var marked = escHtml(renderPrompt(resultPrompt));
       marked = marked.replace(/\[([A-Z][A-Z0-9 ]{1,24})(?:: ([^\]]+))?\]/g, function (m, k, v) {
-        return '<span class="tok" data-tk="' + k + '" title="নিচের স্লট-ঘরে বদল করুন">[' + k + ": " + (v || "…") + "]</span>";
+        return '<span class="tok" data-tk="' + k + '" title="edit in the slot boxes below">[' + k + ": " + (v || "…") + "]</span>";
       });
       $("#outView").innerHTML = '<div class="out-text">' + marked + "</div>";
       updateCount();
@@ -545,19 +576,19 @@
         var row = document.createElement("div"); row.className = "tok-row";
         var lab = document.createElement("label"); lab.textContent = "[" + k + "]"; row.appendChild(lab);
         var inp = document.createElement("input"); inp.className = "tok-inp"; inp.dataset.tk = k;
-        inp.placeholder = "e.g. black dress, golden hour, ঢাকার রাস্তা…";
+        inp.placeholder = "e.g. black dress, golden hour, Dhaka street…";
         inp.addEventListener("input", renderBox);
         row.appendChild(inp); rows.appendChild(row);
       });
       $("#tokPanel").classList.add("show");
     }
 
-    /* ---------- রেজাল্ট / ফেইল ---------- */
+    /* ---------- result / fail ---------- */
     function buildStageNote() {
       var notes = [];
-      if (boosts.face.on) notes.push("<b>🗿 Identity Lock on:</b> external টুলে ব্যবহার করলে আগে রেফারেন্স-ছবি আপলোড করুন, তারপর কপি করা প্রম্পট দিন — ক্লজটা মুখের আদল ধরে রাখবে।");
-      if (boosts.typo.on) notes.push("<b>🔤 Typography:</b> বানান হুবহু চাইলে উদ্ধৃতের টেক্সট এক চুলও বদলাবেন না।");
-      notes.push("🚀 কপি করা প্রম্পট Midjourney / DALL·E / Stable Diffusion — যেকোনো টুলে কাজ করবে, বুস্টসহ।");
+      if (boosts.face.on) notes.push("<b>🗿 Identity Lock on:</b> in external tools, upload your reference photo first, then paste the copied prompt — the clause keeps your face faithful।");
+      if (boosts.typo.on) notes.push("<b>🔤 Typography:</b> never alter the quoted text if the on-image spelling must stay exact.");
+      notes.push("🚀 The copied prompt works in Midjourney / DALL·E / Stable Diffusion — boosts included.");
       var n = $("#stageNote"); n.innerHTML = notes.join("<br>"); n.hidden = false;
     }
     function showResult(finalPrompt) {
@@ -565,11 +596,12 @@
       buildTokenInputs(detectTokens(finalPrompt));
       renderBox();
       buildStageNote();
+      if (window.TZI18N && TZI18N.scan) TZI18N.scan(document.getElementById("stage"));
       $("#stageActions").hidden = false;
       forging = false;
       var btn = $("#btnForge"); btn.disabled = false; $("#forgeLabel").textContent = "✨ Forge Ultra Prompt";
       if (secTimer) { clearInterval(secTimer); secTimer = null; }
-      toast("✨ প্রম্পট রেডি! কপি করুন বা জেনারেট করুন ⬇");
+      toast("✨ Prompt ready! Copy it or hit Generate ⬇");
       $("#stage").scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
     function onFail() {
@@ -578,12 +610,13 @@
       if (secTimer) { clearInterval(secTimer); secTimer = null; }
       $("#outView").innerHTML = '<div class="stage-empty"><span class="big">😵</span><b>Engine is busy right now</b><p style="margin-top:6px;font-size:.82rem">Hit ✨ Forge again — peak hours can need a retry or two.</p></div>';
       $("#stageActions").hidden = true; $("#stageNote").hidden = true; $("#tokPanel").classList.remove("show");
-      toast("⚠️ ব্যস্ত সময় — আবার চেষ্টা করুন!");
+      if (window.TZI18N && TZI18N.scan) TZI18N.scan(document.getElementById("outView"));
+      toast("⚠️ Busy hour — please retry!");
     }
 
     function forge() {
       var raw = ideaEl.value.trim();
-      if (raw.length < 2) { toast("⚠️ আগে একটা আইডিয়া লিখুন — নয়তো 🎲 Surprise me চাপুন!"); ideaEl.focus(); return; }
+      if (raw.length < 2) { toast("⚠️ Write an idea first — or hit 🎲 Surprise me!"); ideaEl.focus(); return; }
       if (forging) return;
       forging = true;
       $("#imErr").classList.remove("show");
@@ -603,7 +636,7 @@
     $("#btnForge").addEventListener("click", forge);
     $("#actReforge").addEventListener("click", forge);
 
-    /* ---------- হিস্ট্রি ---------- */
+    /* ---------- history ---------- */
     var HKEY = "tzidea_history";
     function getHist() { try { return JSON.parse(localStorage.getItem(HKEY) || "[]"); } catch (e) { return []; } }
     function setHist(h) { try { localStorage.setItem(HKEY, JSON.stringify(h.slice(0, 8))); } catch (e) {} }
@@ -630,14 +663,14 @@
           buildTokenInputs(detectTokens(x.prompt));
           renderBox(); buildStageNote();
           $("#stageActions").hidden = false;
-          toast("🕘 হিস্ট্রি থেকে লোড হয়েছে!");
+          toast("🕘 Restored from history!");
           $("#stage").scrollIntoView({ behavior: "smooth", block: "nearest" });
         });
         host.appendChild(b);
       });
     }
 
-    /* ---------- অ্যাকশন বাটন ---------- */
+    /* ---------- action buttons ---------- */
     function copyText(t, m) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(t).then(function () { toast(m); }, function () { fallbackCopy(t, m); });
@@ -645,19 +678,19 @@
     }
     function fallbackCopy(t, m) {
       var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta);
-      ta.select(); try { document.execCommand("copy"); toast(m); } catch (e) { toast("⚠️ কপি হয়নি — ম্যানুয়ালি করুন"); }
+      ta.select(); try { document.execCommand("copy"); toast(m); } catch (e) { toast("⚠️ Copy failed — please copy manually"); }
       document.body.removeChild(ta);
     }
     $("#actCopy").addEventListener("click", function () {
       if (!resultPrompt) return;
-      copyText(renderPrompt(resultPrompt), "📋 প্রম্পট কপি হয়েছে — 🗿🔤 বুস্টসহ!");
+      copyText(renderPrompt(resultPrompt), "📋 Prompt copied — 🗿🔤 boosts included!");
     });
     $("#actGen").addEventListener("click", function () {
       if (!resultPrompt) return;
       location.href = "ai-generator.html?p=" + encodeURIComponent(renderPrompt(resultPrompt));
     });
 
-    /* ---------- বুট ---------- */
+    /* ---------- boot ---------- */
     $("#year").textContent = new Date().getFullYear();
     renderHist();
     /* ?idea= / ?p= / ?style= / forge=1 */
@@ -681,5 +714,6 @@
     } catch (e) {}
   })();
   </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

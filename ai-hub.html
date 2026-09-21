@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#09090b">
-  <title>✨ AI Studio — ম্যাজিক স্পিন, জেনারেটর ও আরও | TEZOFY</title>
-  <meta name="description" content="TEZOFY AI Studio — আপনার সব AI-জাদুর ঘর: Daily Magic Spin, AI Image Generator, Idea Maker Ultra Prompt Forge. ফ্রি, কিলেস, সাইন-আপ ছাড়াই।">
+  <title>✨ AI Studio — Magic Spin, Generator & more | TEZOFY</title>
+  <meta name="description" content="TEZOFY AI Studio — your home of AI magic: Daily Magic Spin, AI Image Generator, Idea Maker Ultra Prompt Forge. Free, keyless, no sign-up.">
   <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23FF2DAA"/><stop offset="1" stop-color="%23FF7A00"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><path d="M32 14l4.4 11.6L48 30l-11.6 4.4L32 46l-4.4-11.6L16 30l11.6-4.4z" fill="white"/></svg>'>
   <meta property="og:title" content="TEZOFY AI Studio — your daily AI playground">
   <meta property="og:description" content="🎡 Spin daily magic, forge ultra prompts, generate images — free & unlimited.">
@@ -13,9 +13,10 @@
   <meta property="og:image" content="https://tezofystudio.github.io/tezofy/assets/img/og-card.png">
   <meta property="og:site_name" content="TEZOFY">
   <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/i18n.js" defer></script>
   <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    /* ───────── AI HUB — পেজ-নির্দিষ্ট স্টাইল (সাইটের ডিজাইন-ভাষায়) ───────── */
+    /* ───────── AI HUB — page-specific styles (site design language) ───────── */
     .gen-wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
 
     .gen-topbar { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(9,9,11,.82); border-bottom: 1px solid var(--border-soft); }
@@ -25,7 +26,7 @@
     .gen-toplinks a:hover { color: var(--text); border-color: var(--border); }
     .gen-toplinks a.cta-mini { background: var(--grad); color: #fff; }
     .gen-toplinks a.on { color: var(--pink); border-color: rgba(255,45,170,.4); }
-    @media (max-width: 720px) { .gen-toplinks a:not(.cta-mini):not(.on) { display: none; } }
+    @media (max-width: 720px) { .gen-toplinks { overflow-x: auto; scrollbar-width: none; max-width: 50vw; } .gen-toplinks::-webkit-scrollbar { display: none; } .gen-toplinks a { flex: 0 0 auto; padding: 7px 11px; font-size: .76rem; white-space: nowrap; } }
 
     .gen-hero { text-align: center; padding: 46px 18px 8px; }
     .gen-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.35); }
@@ -37,7 +38,7 @@
     .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
     .panel h3 { font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 
-    /* ── ম্যাজিক স্পিন হিরো-প্যানেল ── */
+    /* ── magic spin hero panel ── */
     .spin-panel { position: relative; overflow: hidden; text-align: center; margin: 30px 0 10px;
       background: radial-gradient(900px 300px at 50% -20%, rgba(255,45,170,.14), transparent 60%), var(--card); }
     .spin-wheel { font-size: 74px; display: inline-block; margin: 10px 0 6px; animation: hubFloat 3.4s ease-in-out infinite; }
@@ -49,7 +50,7 @@
     .gen-cta { display: inline-flex; width: auto; margin: 20px auto 6px; padding: 15px 34px; border: none; border-radius: var(--radius-sm); background: var(--grad); color: #fff; font-size: 1rem; font-weight: 800; letter-spacing: .02em; cursor: pointer; font-family: var(--font); box-shadow: 0 10px 34px rgba(255,45,170,.35); transition: .15s; align-items: center; justify-content: center; gap: 9px; }
     .gen-cta:hover { transform: translateY(-2px); box-shadow: 0 14px 44px rgba(255,45,170,.5); }
 
-    /* ── ফিচার কার্ড ── */
+    /* ── feature cards ── */
     .sec-title { text-align: center; margin: 44px 0 6px; font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 800; letter-spacing: -.01em; }
     .sec-title .gr { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .sec-sub { text-align: center; color: var(--muted); font-size: .9rem; }
@@ -76,11 +77,41 @@
     .gen-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+    /* ===== Premium floating pill nav with raised center button ===== */
+    @media (max-width: 859px) {
+      body { padding-bottom: calc(var(--bottombar-h) + 34px); }
+      .bottombar {
+        left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        max-width: 470px; margin: 0 auto; height: 60px; padding: 0 8px; padding-bottom: 0;
+        background: rgba(13,13,19,.84); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-soft); border-radius: 999px;
+        box-shadow: 0 16px 42px rgba(0,0,0,.5);
+      }
+      html[data-theme="light"] .bottombar { background: rgba(255,255,255,.88); box-shadow: 0 16px 42px rgba(60,60,110,.22); }
+      html[data-theme="light"] .gen-topbar { background: rgba(255,255,255,.82); }
+      .bottombar a, .bottombar button { position: relative; }
+      .bottombar svg { width: 22px; height: 22px; }
+      .bottombar a.active::after { content: ""; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--pink); }
+      .bottombar .bb-c { align-self: stretch; }
+      .bottombar .bb-c svg {
+        width: 46px; height: 46px; padding: 11px; border-radius: 50%;
+        background: var(--grad); color: #fff; transform: translateY(-15px);
+        box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 4px rgba(255,255,255,.06);
+        animation: bbPulse 2.4s ease-in-out infinite;
+      }
+      @keyframes bbPulse {
+        0%, 100% { box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 0 rgba(255,45,170,.38); }
+        50% { box-shadow: 0 10px 26px rgba(255,45,170,.75), 0 0 0 10px rgba(255,45,170,0); }
+      }
+      .bottombar .bb-c span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+      @media (prefers-reduced-motion: reduce) { .bottombar .bb-c svg { animation: none; } }
+    }
   </style>
 </head>
 <body data-page="ai-hub">
 
-  <!-- ─── টপবার + AI ফিচার-নেভ ─── -->
+  <!-- ─── topbar + AI feature nav ─── -->
   <header class="gen-topbar">
     <div class="wrap">
       <a class="brand" href="index.html">
@@ -88,61 +119,63 @@
         <span>TEZOFY<small>AI Studio</small></span>
       </a>
       <nav class="gen-toplinks">
-        <a href="#spin" class="on">🎡 Spin</a>
-        <a href="ai-generator.html">✨ Generate</a>
+        <a href="#spin">🎡 Spin</a>
         <a href="idea-maker.html">💡 Idea Forge</a>
-        <a class="cta-mini" href="ai-generator.html">🎨 Create Image</a>
+        <a href="ai-generator.html">✨ Create</a>
+        <a href="photo-enhance.html">🪄 Enhance</a>
+        <a class="cta-mini" href="discover.html">✨ 1K+ Prompts</a>
       </nav>
     </div>
   </header>
 
-  <!-- ─── হিরো ─── -->
+  <!-- ─── hero ─── -->
   <section class="gen-hero gen-wrap">
     <span class="gen-badge">✦ TEZOFY AI Universe</span>
     <h1>One tap into the <span class="gr">AI universe</span></h1>
     <p>Spin your daily magic, forge raw ideas into ultra prompts, and paint them into images — all free, unlimited, no sign-up.
-      <span class="bn">✨ প্রতিদিন ঘুরুন, লিখুন, বানান — আপনার AI-খেলার ঘর।</span></p>
+      <span class="bn">✨ Spin, write, create — every day, in your AI playground.</span></p>
   </section>
 
-  <!-- ─── ডেইলি ম্যাজিক স্পিন ─── -->
+  <!-- ─── Daily Magic Spin ─── -->
   <main class="gen-wrap">
     <section class="panel spin-panel" id="spin">
       <h3 style="justify-content:center">🎡 Featured today</h3>
       <span class="spin-wheel">🎡</span>
       <h2>Daily <span class="gr">Magic Spin</span></h2>
       <p>One tap, one random premium prompt, one freshly AI-painted image. Your daily spark of luck — spin it, love it, download it, or take it to the studio for a remix.</p>
-      <p class="bn-note">মূল অ্যাপ খুললেই এই স্পিন পপআপ-ও দেখাবে (দিনে ১বার) — স্কিপ করার সুযোগসহ।</p>
+      <p class="bn-note">The main app also auto-shows this spin once a day — skipping is one tap.</p>
       <button class="gen-cta" id="hubSpinBtn" type="button">🎡 Spin Now</button>
     </section>
 
-    <!-- ─── লাইভ ফিচার ─── -->
+    <!-- ─── live features ─── -->
     <h2 class="sec-title">Live now — <span class="gr">your AI toolkit</span></h2>
-    <p class="sec-sub">আজ থেকেই চালু — কোনো লগইন নয়, কোনো খরচ নয়:</p>
+    <p class="sec-sub">Live from today — no login, no cost:</p>
     <div class="feat-grid">
       <a class="feat" href="ai-generator.html"><span class="ic">✨</span><h4>AI Image Generator <span class="tag live">Live</span></h4><p>Type or paste a prompt, pick style chips &amp; aspect ratios, and watch AI paint it. One-tap download, seeds for remixing.</p><span class="go">Open generator →</span></a>
-      <a class="feat" href="idea-maker.html"><span class="ic">💡</span><h4>Idea Maker — Ultra Prompt Forge <span class="tag live">Live</span></h4><p>Write raw ideas in বাংলা / हिन्दी / English → get a senior-grade English prompt with 🗿 Identity-Lock, 🔤 typography boost &amp; 8K tail built in.</p><span class="go">Forge a prompt →</span></a>
-      <a class="feat" href="generator.html"><span class="ic">🗂️</span><h4>Prompt Library <span class="tag live">Live</span></h4><p>1,000+ hand-crafted TEZOFY prompts — the same library Magic Spin draws your daily luck from.</p><span class="go">Browse prompts →</span></a>
+      <a class="feat" href="idea-maker.html"><span class="ic">💡</span><h4>Idea Maker — Ultra Prompt Forge <span class="tag live">Live</span></h4><p>Write raw ideas in Bengali / Hindi / English → get a senior-grade English prompt with 🗿 Identity-Lock, 🔤 typography boost &amp; 8K tail built in.</p><span class="go">Forge a prompt →</span></a>
+      <a class="feat" href="photo-enhance.html"><span class="ic">🪄</span><h4>Photo Enhance <span class="tag live">Live</span></h4><p>Upload any photo → one-tap HD sharpening, contrast &amp; color pop — 100% on-device, nothing leaves your phone.</p><span class="go">Enhance a photo →</span></a>
+      <a class="feat" href="discover.html"><span class="ic">🗂️</span><h4>Prompt Library <span class="tag live">Live</span></h4><p>1,000+ hand-crafted TEZOFY prompts — the same library Magic Spin draws your daily luck from.</p><span class="go">Browse prompts →</span></a>
     </div>
 
-    <!-- ─── আসছে শীঘ্রই (রোডম্যাপ) ─── -->
+    <!-- ─── coming soon (roadmap) ─── -->
     <h2 class="sec-title">Next on the wheel — <span class="gr">roadmap</span></h2>
-    <p class="sec-sub">যেগুলো ধাপে ধাপে যুক্ত হবে এই হাবে:</p>
+    <p class="sec-sub">Rolling out to this hub, phase by phase:</p>
     <div class="feat-grid">
-      <div class="feat soon"><span class="ic">🤖</span><h4>জিজ্ঞেস করুন TEZOFY <span class="tag soon">ফেজ ২</span></h4><p>"ঈদে রোমান্টিক কাপল ফটো চাই" লিখুন — AI লাইব্রেরি থেকে সেরা ৩টা প্রম্পট কারণসহ বেছে দেবে।</p></div>
-      <div class="feat soon"><span class="ic">🖼️</span><h4>ছবি দিন → প্রম্পট নিন <span class="tag soon">ফেজ ২</span></h4><p>পছন্দের ছবি আপলোড করুন, ভিশন-মডেল তার রিইউজেবল প্রম্পট বানিয়ে দেবে।</p></div>
-      <div class="feat soon"><span class="ic">🎯</span><h4>"আপনার জন্য" রেল <span class="tag soon">ফেজ ৩</span></h4><p>কপি/লাইক/সেভের ইতিহাস থেকে শেখা প্রতিদিনের পার্সোনাল রিকমেন্ডেশন।</p></div>
-      <div class="feat soon"><span class="ic">🏆</span><h4>ডেইলি AI-চ্যালেঞ্জ <span class="tag soon">ফেজ ৩</span></h4><p>প্রতিদিন এক থিমে জেনারেট → জমা → কমিউনিটি ভোট — স্ট্রিক-লেভেলের খেলা।</p></div>
+      <div class="feat soon"><span class="ic">🤖</span><h4>Ask TEZOFY <span class="tag soon">Phase 2</span></h4><p>Type “romantic couple photo for Eid” — AI picks the top 3 prompts from the library, with reasons.</p></div>
+      <div class="feat soon"><span class="ic">🖼️</span><h4>Photo → Prompt <span class="tag soon">Phase 2</span></h4><p>Upload any photo; a vision model writes you its reusable prompt.</p></div>
+      <div class="feat soon"><span class="ic">🎯</span><h4>“For You” rail <span class="tag soon">Phase 3</span></h4><p>Daily personal picks learned from your copy / like / save history.</p></div>
+      <div class="feat soon"><span class="ic">🏆</span><h4>Daily AI Challenge <span class="tag soon">Phase 3</span></h4><p>One theme a day → generate → submit → community vote. A streak-and-level game.</p></div>
     </div>
   </main>
 
-  <!-- ─── ফাক ─── -->
+  <!-- ─── FAQ ─── -->
   <section class="gen-faq gen-wrap">
     <details><summary>Is everything here really free?<span>＋</span></summary><div class="ans">Yes — all live tools run on free community AI engines, fully keyless and client-side. Peak hours can take 20–60 seconds; a patient retry usually wins.</div></details>
     <details><summary>How does Daily Magic Spin pick my prompt?<span>＋</span></summary><div class="ans">It draws a random prompt from TEZOFY's 1,000+ hand-crafted library (with a built-in fallback set), then asks the free image engine to paint it live with a fresh random seed — so no two spins are alike.</div></details>
     <details><summary>Where does my data go?<span>＋</span></summary><div class="ans">Nowhere. Spins, forges and generations happen between your browser and the free AI engine; TEZOFY never sees or stores them.</div></details>
   </section>
 
-  <!-- ─── ফুটার (মূল সাইটের — হুবহু) ─── -->
+  <!-- ─── footer (main site — verbatim) ─── -->
   <footer class="site-footer">
     <div class="wrap">
       <div class="footer-grid">
@@ -174,13 +207,13 @@
     </div>
   </footer>
 
-  <!-- ─── বটম নেভ (একই অনুপাত — কেন্দ্রে AI) ─── -->
-  <nav class="bottombar">
-    <a href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
-    <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Discover</span></a>
-    <a href="ai-hub.html" class="active" aria-label="AI Studio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI</span></a>
-    <a href="ai-generator.html" aria-label="AI Generator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
-    <a href="saved.html" aria-label="Saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Saved</span></a>
+  <!-- ─── bottom nav (same proportions — AI in center) ─── -->
+    <nav class="bottombar">
+    <a href="idea-maker.html" aria-label="Ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
+    <a href="ai-generator.html" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
+    <a href="index.html" class="bb-c" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+    <a href="photo-enhance.html" aria-label="Enhance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Enhance</span></a>
+    <a href="ai-hub.html" class="active" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
 
   <div class="gen-toast" id="genToast"></div>
@@ -189,20 +222,21 @@
   <script>
   window.addEventListener("DOMContentLoaded", function () {
     document.getElementById("year").textContent = new Date().getFullYear();
-    /* হাবে অটো নয় — ম্যানুয়াল বাটন; অটো-পপআপ শুধু মূল সাইটে */
+    /* hub: manual button only; auto popup lives on the main site */
     if (window.tzSpin) {
       tzSpin.init({ auto: false });
       document.getElementById("hubSpinBtn").addEventListener("click", tzSpin.open);
-      /* URL-এ #spin=go দিলে সরাসরি স্পিন খুলবে (ভবিষ্যৎ ডিপ-লিংকের জন্য) */
+      /* ?spin=1 deep-link opens the spin instantly */
       try {
         if (new URLSearchParams(location.search).get("spin") === "1") tzSpin.open();
       } catch (e) {}
     } else {
       document.getElementById("hubSpinBtn").addEventListener("click", function () {
-        alert("🎡 Spin engine এখনো লোড হয়নি — assets/js/magic-spin.js আছে কিনা দেখুন।");
+        alert("🎡 Spin engine not loaded yet — check assets/js/magic-spin.js is present.");
       });
     }
   });
   </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>

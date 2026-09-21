@@ -13,12 +13,13 @@
   <meta property="og:image" content="https://tezofystudio.github.io/tezofy/assets/img/og-card.png">
   <meta property="og:site_name" content="TEZOFY">
   <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/i18n.js" defer></script>
   <link rel="stylesheet" href="assets/css/style.css">
   <script type="application/ld+json">
   {"@context":"https://schema.org","@type":"WebApplication","name":"TEZOFY AI Image Generator","url":"https://tezofystudio.github.io/tezofy/ai-generator.html","applicationCategory":"MultimediaApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":"Free AI image generator powered by TEZOFY's premium prompt library — style chips, aspect ratios, seeds, downloads."}
   </script>
   <style>
-    /* ───────── AI GENERATOR STUDIO — পেজ-নির্দিষ্ট স্টাইল ───────── */
+    /* ───────── AI GENERATOR STUDIO — page-specific styles ───────── */
     .gen-wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
 
     .gen-topbar { position: sticky; top: 0; z-index: 40; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(9,9,11,.82); border-bottom: 1px solid var(--border-soft); }
@@ -27,7 +28,7 @@
     .gen-toplinks a { padding: 8px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1px solid transparent; }
     .gen-toplinks a:hover { color: var(--text); border-color: var(--border); }
     .gen-toplinks a.cta-mini { background: var(--grad); color: #fff; }
-    @media (max-width: 620px) { .gen-toplinks a:not(.cta-mini) { display: none; } }
+    @media (max-width: 720px) { .gen-toplinks { overflow-x: auto; scrollbar-width: none; max-width: 58vw; } .gen-toplinks::-webkit-scrollbar { display: none; } .gen-toplinks a { flex: 0 0 auto; padding: 7px 11px; font-size: .76rem; white-space: nowrap; } }
 
     .gen-hero { text-align: center; padding: 46px 18px 8px; }
     .gen-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.35); }
@@ -76,7 +77,7 @@
     .gen-cta:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 14px 44px rgba(255,45,170,.5); }
     .gen-cta:disabled { opacity: .55; cursor: wait; }
 
-    /* ── প্রিভিউ স্টেজ ── */
+    /* ── preview stage ── */
     .stage { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .stage-view { position: relative; aspect-ratio: var(--stagew, 4) / var(--stageh, 5); background:
       radial-gradient(1200px 400px at 20% -10%, rgba(255,45,170,.08), transparent 60%), var(--card-2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -96,7 +97,7 @@
     .act.primary { background: var(--grad); border-color: transparent; color: #fff; }
     .stage-note { padding: 0 14px 12px; font-size: .74rem; color: var(--muted-2); }
 
-    /* ── হিস্ট্রি গ্রিড ── */
+    /* ── history grid ── */
     .hist-sec { margin: 26px 0 8px; }
     .hist-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 12px; }
     .hist-item { position: relative; aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); cursor: pointer; background: var(--card-2); }
@@ -105,7 +106,7 @@
     .hist-item .heart { position: absolute; top: 6px; right: 6px; background: rgba(9,9,11,.7); border: none; color: #fff; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; font-size: .72rem; backdrop-filter: blur(6px); }
     .hist-item .heart.loved { background: var(--grad); }
 
-    /* ── ফিচার-শোকেস ── */
+    /* ── feature showcase ── */
     .showcase { margin: 44px 0 10px; text-align: center; }
     .showcase h2 { font-size: clamp(1.4rem, 3.2vw, 2rem); font-weight: 800; letter-spacing: -.01em; }
     .showcase h2 .gr { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
@@ -124,7 +125,7 @@
     .gen-faq details[open] summary { color: var(--pink); }
     .gen-faq .ans { margin-top: 9px; color: var(--muted); font-size: .86rem; line-height: 1.6; }
 
-    /* ── লাইব্রেরি মোডাল ── */
+    /* ── library modal ── */
     .lib-ov { position: fixed; inset: 0; z-index: 60; background: rgba(4,4,6,.78); backdrop-filter: blur(8px); display: none; align-items: flex-end; justify-content: center; }
     .lib-ov.open { display: flex; }
     @media (min-width: 760px) { .lib-ov { align-items: center; } }
@@ -155,11 +156,41 @@
 
     @media (max-width: 860px) { .studio { gap: 16px; } .gen-hero { padding-top: 34px; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+    /* ===== Premium floating pill nav with raised center button ===== */
+    @media (max-width: 859px) {
+      body { padding-bottom: calc(var(--bottombar-h) + 34px); }
+      .bottombar {
+        left: 12px; right: 12px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        max-width: 470px; margin: 0 auto; height: 60px; padding: 0 8px; padding-bottom: 0;
+        background: rgba(13,13,19,.84); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--border-soft); border-radius: 999px;
+        box-shadow: 0 16px 42px rgba(0,0,0,.5);
+      }
+      html[data-theme="light"] .bottombar { background: rgba(255,255,255,.88); box-shadow: 0 16px 42px rgba(60,60,110,.22); }
+      html[data-theme="light"] .gen-topbar { background: rgba(255,255,255,.82); }
+      .bottombar a, .bottombar button { position: relative; }
+      .bottombar svg { width: 22px; height: 22px; }
+      .bottombar a.active::after { content: ""; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--pink); }
+      .bottombar .bb-c { align-self: stretch; }
+      .bottombar .bb-c svg {
+        width: 46px; height: 46px; padding: 11px; border-radius: 50%;
+        background: var(--grad); color: #fff; transform: translateY(-15px);
+        box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 4px rgba(255,255,255,.06);
+        animation: bbPulse 2.4s ease-in-out infinite;
+      }
+      @keyframes bbPulse {
+        0%, 100% { box-shadow: 0 10px 26px rgba(255,45,170,.5), 0 0 0 0 rgba(255,45,170,.38); }
+        50% { box-shadow: 0 10px 26px rgba(255,45,170,.75), 0 0 0 10px rgba(255,45,170,0); }
+      }
+      .bottombar .bb-c span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+      @media (prefers-reduced-motion: reduce) { .bottombar .bb-c svg { animation: none; } }
+    }
   </style>
 </head>
 <body data-page="ai-generator">
 
-  <!-- ─── টপবার ─── -->
+  <!-- ─── topbar ─── -->
   <header class="gen-topbar">
     <div class="wrap">
       <a class="brand" href="index.html">
@@ -168,25 +199,25 @@
       </a>
       <nav class="gen-toplinks">
         <a href="ai-hub.html">🎡 AI Hub</a>
-        <a href="discover.html">Prompts</a>
-        <a href="saved.html">Saved</a>
-        <a href="blog.html">Guides</a>
+        <a href="idea-maker.html">💡 Idea Forge</a>
+        <a href="ai-generator.html">✨ Create</a>
+        <a href="photo-enhance.html">🪄 Enhance</a>
         <a class="cta-mini" href="discover.html">✨ 1K+ Prompts</a>
       </nav>
     </div>
   </header>
 
-  <!-- ─── হিরো ─── -->
+  <!-- ─── hero ─── -->
   <section class="gen-hero gen-wrap">
     <span class="gen-badge">✦ AI Image Studio</span>
     <h1>Type. Style. <span class="gr">Generate.</span></h1>
     <p>Turn any idea — or one of TEZOFY's 1,000+ premium prompts — into a real AI image. Free, unlimited, no sign-up needed.
-      <span class="bn">✨ একদম ফ্রি — কোনো লগইন লাগবে না, অনলিমিটেড!</span></p>
+      <span class="bn">✨ Totally free — no login, no limits!</span></p>
   </section>
 
-  <!-- ─── স্টুডিও ─── -->
+  <!-- ─── studio ─── -->
   <main class="studio gen-wrap">
-    <!-- বাম প্যানেল: কন্ট্রোল -->
+    <!-- left panel: controls -->
     <section class="panel" aria-label="Generator controls">
       <h3>🧠 Your Prompt</h3>
       <div class="prompt-box">
@@ -221,7 +252,7 @@
       <button class="gen-cta" id="btnGenerate" type="button"><span id="genLabel">🎨 Generate Image</span></button>
     </section>
 
-    <!-- ডান প্যানেল: প্রিভিউ -->
+    <!-- right panel: preview -->
     <section class="stage" aria-label="Generated image preview" id="stage">
       <div class="stage-view" id="stageView">
         <div class="stage-empty" id="stageEmpty">
@@ -241,7 +272,7 @@
     </section>
   </main>
 
-  <!-- ─── হিস্ট্রি ─── -->
+  <!-- ─── history ─── -->
   <section class="hist-sec gen-wrap" id="histSec" hidden>
     <div class="panel">
       <h3>🕘 Recent Creations <span style="font-weight:400;text-transform:none;letter-spacing:0">— click to reload, tap ❤️ to pin</span></h3>
@@ -249,7 +280,7 @@
     </div>
   </section>
 
-  <!-- ─── ফিচার-শোকেস ─── -->
+  <!-- ─── feature showcase ─── -->
   <section class="showcase gen-wrap">
     <h2>One studio, <span class="gr">the whole TEZOFY universe</span></h2>
     <p>Everything you see here is powered by the same features that make TEZOFY special — explore them all:</p>
@@ -263,7 +294,7 @@
     </div>
   </section>
 
-  <!-- ─── ফাক ─── -->
+  <!-- ─── FAQ ─── -->
   <section class="gen-faq gen-wrap">
     <details><summary>Is this generator really free?<span>＋</span></summary><div class="ans">Yes — unlimited generations, no account, no watermark games. It runs on a free community AI engine, so peak hours may take 20–60 seconds per image.</div></details>
     <details><summary>Which seed should I use?<span>＋</span></summary><div class="ans">Leave it empty for a fresh surprise every time. When you get a result you love, note its seed from the history strip — reusing the same seed + prompt reproduces the same image.</div></details>
@@ -271,7 +302,7 @@
     <details><summary>Where do the style chips come from?<span>＋</span></summary><div class="ans">Straight from TEZOFY's Customize Engine — the same lighting, mood, camera and effects vocabulary used across our 1,000+ prompt templates.</div></details>
   </section>
 
-  <!-- ─── ফুটার ─── -->
+  <!-- ─── footer ─── -->
   <footer class="site-footer">
     <div class="wrap">
       <div class="footer-grid">
@@ -301,16 +332,16 @@
     </div>
   </footer>
 
-  <!-- ─── বটম নেভ (অ্যাপ-অনুভূতি) ─── -->
-  <nav class="bottombar">
-    <a href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
-    <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Discover</span></a>
-    <a href="ai-generator.html" class="active" aria-label="AI Generator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/></svg><span>Generate</span></a>
-    <a href="saved.html" aria-label="Saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span>Saved</span></a>
-    <a href="blog.html" aria-label="More"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Guides</span></a>
+  <!-- ─── bottom nav (app-feel) ─── -->
+    <nav class="bottombar">
+    <a href="idea-maker.html" aria-label="Ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
+    <a href="ai-generator.html" class="active" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
+    <a href="index.html" class="bb-c" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+    <a href="photo-enhance.html" aria-label="Enhance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Enhance</span></a>
+    <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
 
-  <!-- ─── লাইব্রেরি মোডাল ─── -->
+  <!-- ─── library modal ─── -->
   <div class="lib-ov" id="libOv" role="dialog" aria-modal="true" aria-label="Prompt library">
     <div class="lib-card">
       <div class="lib-head">
@@ -333,31 +364,31 @@
     var $ = function (s, r) { return (r || document).querySelector(s); };
     var $$ = function (s, r) { return Array.from((r || document).querySelectorAll(s)); };
 
-    /* ---------- স্টেট ---------- */
+    /* ---------- state ---------- */
     var RATIOS = [
       ["3:4", 896, 1152], ["1:1", 1024, 1024], ["4:5", 864, 1080],
       ["9:16", 768, 1344], ["4:3", 1152, 896], ["16:9", 1344, 768]
     ];
     var CHIP_GROUPS = ["lighting", "mood", "time", "angle", "fx"];
     var selected = { ratio: RATIOS[0], opts: {} };   /* opts[group] = [labels] */
-    var last = null;                                  /* শেষ জেনারেশন */
-    var library = null;                               /* ক্যাশড প্রম্পট-লিস্ট */
+    var last = null;                                  /* last generation */
+    var library = null;                               /* cached prompt list */
 
-    /* ---------- টোস্ট ---------- */
+    /* ---------- toast ---------- */
     var toastT = null;
     function toast(m) {
-      var t = $("#genToast"); t.textContent = m; t.classList.add("show");
+      var t = $("#genToast"); t.textContent = m; t.classList.add("show"); if (window.TZI18N && TZI18N.scan) TZI18N.scan(t);
       clearTimeout(toastT); toastT = setTimeout(function () { t.classList.remove("show"); }, 2200);
     }
 
-    /* ---------- প্রম্পট-ইনপুট কাউন্টার ---------- */
+    /* ---------- prompt input counter ---------- */
     var pInput = $("#pInput");
     pInput.addEventListener("input", function () {
       $("#pCount").textContent = pInput.value.length + " characters";
       $("#pSrc").textContent = "";
     });
 
-    /* ---------- CUSTOMIZE চিপ-গ্রুপ রেন্ডার (data.js-এর OPTS থেকে) ---------- */
+    /* ---------- CUSTOMIZE chip groups render (from data.js OPTS) ---------- */
     function renderChipGroups() {
       var host = $("#optGroups");
       CHIP_GROUPS.forEach(function (g) {
@@ -392,7 +423,7 @@
       });
     }
 
-    /* ---------- রেশিও সেগমেন্ট ---------- */
+    /* ---------- ratio segment ---------- */
     function renderRatios() {
       var host = $("#ratioRow");
       RATIOS.forEach(function (r, i) {
@@ -410,7 +441,7 @@
       $(".stage-view").style.setProperty("--stageh", RATIOS[0][2]);
     }
 
-    /* ---------- চূড়ান্ত প্রম্পট জোড়া ---------- */
+    /* ---------- final prompt assembly ---------- */
     function finalPrompt() {
       var base = pInput.value.trim();
       var parts = [base];
@@ -421,17 +452,17 @@
       return parts.filter(Boolean).join(" ");
     }
 
-    /* ---------- পোলিনেশনস URL ---------- */
+    /* ---------- pollinations URL ---------- */
     function imageUrl(prompt, seed, model, w, h) {
       return "https://image.pollinations.ai/prompt/" + encodeURIComponent(prompt) +
         "?width=" + w + "&height=" + h + "&seed=" + seed + "&model=" + model + "&nologo=true&safe=true";
     }
 
-    /* ---------- জেনারেট ---------- */
+    /* ---------- generate ---------- */
     var generating = false;
     function generate(forceSeed) {
       var prompt = finalPrompt();
-      if (!prompt) { toast("⚠️ আগে কিছু লিখুন — নয়তো 🎲 Surprise me চাপুন!"); return; }
+      if (!prompt) { toast("⚠️ Write something first — or hit 🎲 Surprise me!"); return; }
       if (generating) return;
       generating = true;
       var btn = $("#btnGenerate"); btn.disabled = true; $("#genLabel").textContent = "🎨 Painting…";
@@ -455,7 +486,7 @@
         btn.disabled = false; generating = false; $("#genLabel").textContent = "🎨 Generate Image";
         last = { p: prompt, seed: seed, model: model, w: r[1], h: r[2], url: url, t: Date.now() };
         pushHistory(last);
-        toast("✨ রেডি! ডাউনলোড করে নিন ⬇");
+        toast("✨ Ready! Hit download ⬇");
       };
       img.onerror = function () { clearTimeout(timedOut); onFail(); };
       img.src = url;
@@ -463,10 +494,11 @@
     function onFail() {
       var btn = $("#btnGenerate"); btn.disabled = false; generating = false; $("#genLabel").textContent = "🎨 Generate Image";
       $("#stageView").innerHTML = '<div class="stage-empty"><span class="big">😵</span><b>Engine is busy right now</b><p style="margin-top:6px;font-size:.82rem">Hit Generate again — peak-hours can need a retry or two. (Turbo engine is faster!)</p></div>';
-      toast("⚠️ ব্যস্ত সময় — আবার চেষ্টা করুন!");
+      if (window.TZI18N && TZI18N.scan) TZI18N.scan(document.getElementById("stageView"));
+      toast("⚠️ Busy hour — please retry!");
     }
 
-    /* ---------- হিস্ট্রি ---------- */
+    /* ---------- history ---------- */
     function getHist() { try { return JSON.parse(localStorage.getItem("tzai_history") || "[]"); } catch (e) { return []; } }
     function setHist(h) { try { localStorage.setItem("tzai_history", JSON.stringify(h.slice(0, 12))); } catch (e) {} }
     function pushHistory(item) {
@@ -487,7 +519,7 @@
         d.addEventListener("click", function () {
           pInput.value = x.p; $("#seedInput").value = x.seed; $("#modelSel").value = x.model;
           pInput.dispatchEvent(new Event("input"));
-          window.scrollTo({ top: 0, behavior: "smooth" }); toast("🕘 লোড হয়েছে — Generate চাপুন!");
+          window.scrollTo({ top: 0, behavior: "smooth" }); toast("🕘 Loaded — hit Generate!");
         });
         grid.appendChild(d);
       });
@@ -495,12 +527,12 @@
     function getSaved() { try { return JSON.parse(localStorage.getItem("tzai_saved") || "[]"); } catch (e) { return []; } }
     function toggleSave(x) {
       var s = getSaved().filter(function (y) { return y.url !== x.url; });
-      if (s.length === getSaved().length) { s.unshift(x); toast("❤️ পিন করা হলো!"); } else toast("🗑 পিন সরানো হলো");
+      if (s.length === getSaved().length) { s.unshift(x); toast("❤️ Pinned!"); } else toast("🗑 Pin removed");
       try { localStorage.setItem("tzai_saved", JSON.stringify(s.slice(0, 24))); } catch (e) {}
       renderHist();
     }
 
-    /* ---------- অ্যাকশন বাটন ---------- */
+    /* ---------- action buttons ---------- */
     function copyText(t, m) {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(t).then(function () { toast(m); }, function () { fallbackCopy(t, m); });
@@ -508,16 +540,16 @@
     }
     function fallbackCopy(t, m) {
       var ta = document.createElement("textarea"); ta.value = t; document.body.appendChild(ta);
-      ta.select(); try { document.execCommand("copy"); toast(m); } catch (e) { toast("⚠️ কপি হয়নি — ম্যানুয়ালি করুন"); }
+      ta.select(); try { document.execCommand("copy"); toast(m); } catch (e) { toast("⚠️ Copy failed — please copy manually"); }
       document.body.removeChild(ta);
     }
-    $("#actCopyPrompt").addEventListener("click", function () { if (last) copyText(last.p, "📋 প্রম্পট কপি হয়েছে!"); });
-    $("#actCopyLink").addEventListener("click", function () { if (last) copyText(last.url, "🔗 ইমেজ লিংক কপি হয়েছে!"); });
+    $("#actCopyPrompt").addEventListener("click", function () { if (last) copyText(last.p, "📋 Prompt copied!"); });
+    $("#actCopyLink").addEventListener("click", function () { if (last) copyText(last.url, "🔗 Image link copied!"); });
     $("#actOpen").addEventListener("click", function () { if (last) window.open(last.url, "_blank"); });
     $("#actRegen").addEventListener("click", function () { generate(Math.floor(Math.random() * 999999999)); });
     $("#actDownload").addEventListener("click", function () {
       if (!last) return;
-      toast("⬇ ডাউনলোড শুরু হচ্ছে…");
+      toast("⬇ Download starting…");
       fetch(last.url).then(function (r) { return r.blob(); }).then(function (bl) {
         var a = document.createElement("a");
         a.href = URL.createObjectURL(bl);
@@ -527,9 +559,9 @@
       }).catch(function () { window.open(last.url, "_blank"); });
     });
 
-    /* ---------- সারপ্রাইজ / সিড ---------- */
+    /* ---------- surprise / seed ---------- */
     $("#btnDice").addEventListener("click", function () {
-      $("#seedInput").value = Math.floor(Math.random() * 999999999); toast("🎲 নতুন সিড!");
+      $("#seedInput").value = Math.floor(Math.random() * 999999999); toast("🎲 New seed!");
     });
     $("#btnGenerate").addEventListener("click", function () { generate(); });
     $("#btnSurprise").addEventListener("click", function () {
@@ -538,11 +570,11 @@
         pInput.value = (p.prompt || p.tagline || "").replace(/\[[^\]]+\]/g, function (m) { return m.slice(1, -1).toLowerCase(); });
         pInput.dispatchEvent(new Event("input"));
         if (p.title) $("#pSrc").textContent = "inspired by: " + p.title;
-        toast("🎲 " + (p.title || "Surprise!") + " — Generate চাপুন!");
+        toast("🎲 " + (p.title || "Surprise!") + " — hit Generate!");
       });
     });
 
-    /* ---------- লাইব্রেরি ---------- */
+    /* ---------- library ---------- */
     function grabLibrary() {
       if (library) return Promise.resolve(library);
       var local = window.PROMPTS || [];
@@ -575,7 +607,7 @@
           var okQ = !q || (p.title + " " + (p.tagline || "") + " " + (p.prompt || "")).toLowerCase().indexOf(q) !== -1;
           return okC && okQ;
         }).slice(0, 60);
-        if (!items.length) { body.innerHTML = '<p style="color:var(--muted-2);grid-column:1/-1;text-align:center;padding:30px 0">কিছু পাওয়া যায়নি — অন্য শব্দ লিখে দেখুন 🔍</p>'; return; }
+        if (!items.length) { body.innerHTML = '<p style="color:var(--muted-2);grid-column:1/-1;text-align:center;padding:30px 0">Nothing found — try another keyword 🔍</p>'; return; }
         items.forEach(function (p) {
           var d = document.createElement("div"); d.className = "lib-item";
           var img = document.createElement("img"); img.loading = "lazy"; img.alt = p.title;
@@ -589,13 +621,13 @@
             pInput.value = (p.prompt || "").replace(/\[[^\]]+\]/g, function (m) { return m.slice(1, -1).toLowerCase(); });
             pInput.dispatchEvent(new Event("input"));
             if (p.title) $("#pSrc").textContent = "from library: " + p.title;
-            closeLib(); toast("📚 " + (p.title || "") + " লোড হয়েছে!");
+            closeLib(); toast("📚 " + (p.title || "") + " loaded!"); if (window.TZI18N && TZI18N.scan) TZI18N.scan(document.getElementById("genToast"));
           });
           body.appendChild(d);
         });
       });
     }
-    function openLib() { $("#libOv").classList.add("open"); document.body.style.overflow = "hidden"; renderLibCats(); renderLibBody(); setTimeout(function () { $("#libSearch").focus(); }, 80); }
+    function openLib() { if (window.TZI18N && TZI18N.scan) setTimeout(function(){ TZI18N.scan(document.getElementById("libOv")); }, 120); $("#libOv").classList.add("open"); document.body.style.overflow = "hidden"; renderLibCats(); renderLibBody(); setTimeout(function () { $("#libSearch").focus(); }, 80); }
     function closeLib() { $("#libOv").classList.remove("open"); document.body.style.overflow = ""; }
     $("#btnLibrary").addEventListener("click", openLib);
     $("#libClose").addEventListener("click", closeLib);
@@ -603,17 +635,18 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeLib(); });
     $("#libSearch").addEventListener("input", function (e) { libQ = e.target.value; renderLibBody(); });
 
-    /* ---------- বুট ---------- */
+    /* ---------- boot ---------- */
     $("#year").textContent = new Date().getFullYear();
     renderChipGroups();
     renderRatios();
     renderHist();
-    /* ?p= দিয়ে শেয়ার করা প্রম্পট সরাসরি লোড */
+    /* load shared prompt via ?p= */
     try {
       var qp = new URLSearchParams(location.search).get("p");
       if (qp) { pInput.value = qp; pInput.dispatchEvent(new Event("input")); }
     } catch (e) {}
   })();
   </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
