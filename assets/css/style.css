@@ -1214,8 +1214,8 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 
 /* ✨ কেন্দ্রের AI বাটন — ছোট ও অ্যানিমেটেড FAB পপ */
 .bottombar .bb-ai svg { 
-  width: 28px; 
-  height: 28px; 
+  width: 20px; 
+  height: 20px; 
   padding: 5px; 
   margin-top: -12px; 
   border-radius: 50%; 
