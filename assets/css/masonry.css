@@ -1,0 +1,62 @@
+/* ============================================================
+   TEZOFY — Pinterest Masonry · v3.1 (GRIDFORGE-PIN)
+   ------------------------------------------------------------
+   CSS অর্ধেক — JS অর্ধেক assets/js/masonry.js-এ।
+
+   • .masonry (JS ছাড়া)        → নিরাপদ fallback: uniform grid
+   • .masonry.ms-ready (JS চালু) → grid-auto-rows: 4px সক্রিয় হয়,
+     ইঞ্জিন প্রতি কার্ডে grid-row-end: span N বসায় → ম্যাসনরি।
+
+   v3.1: 9:16-নেটিভ ডিফল্ট, কার্ডের নিচের uses/লাইক লাইন বাদ,
+   টাইটেল কালার night/day টোকেন-ড্রিভেন।
+
+   ভার্টিকাল ফাঁক: row-gap 0 + কার্ডের margin-bottom (ইঞ্জিন span-এর
+   হিসাবে ধরে নেয়) → কলাম-ফাঁকের সাথে প্রায় সমান (±4px) স্পেসিং।
+   ============================================================ */
+
+.masonry {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px;                        /* fallback: সাধারণ uniform grid */
+  align-items: start;
+}
+
+/* ইঞ্জিন চালু হলে বসে — এখান থেকেই ম্যাসনরি শুরু */
+.masonry.ms-ready {
+  grid-auto-rows: 4px;              /* ছোট রো-ইউনিট: span যত সূক্ষ্ম, ফাঁক তত সমান */
+  gap: 0 13px;                      /* row-gap 0 — ভার্টিকাল ফাঁক span-হিসাবে আসে */
+}
+.masonry.ms-ready > .card { margin-bottom: 13px; } /* ভার্টিকাল গ্যাপ — ইঞ্জিন মেপে নেয় */
+
+@media (min-width: 640px) {
+  .masonry        { grid-template-columns: repeat(3, 1fr); gap: 15px; }
+  .masonry.ms-ready { gap: 0 15px; }
+  .masonry.ms-ready > .card { margin-bottom: 15px; }
+}
+@media (min-width: 1024px) { .masonry { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 1360px) { .masonry { grid-template-columns: repeat(5, 1fr); } }
+
+/* প্রতিটি কার্ডের নিজস্ব রেশিও — ইঞ্জিন ইনলাইন --ar বসায় (stable hash)।
+   data-ar দিলে সেটাই জিতবে; ডিফল্ট ৯:১৬ (বেশির ভাগ ছবির নেটিভ রেশিও)। */
+.masonry .card-img { aspect-ratio: var(--ar, 9/16); }
+
+/* ম্যাসনরিতে cover-ক্রপ: ব্লার-ব্যাকড্রপ (.fill) লুকিয়ে দিই —
+   ডাবল-ডিকোড + ব্লার-পেইন্ট বাঁচে, মোবাইলে লেজি ছবির লোড দ্বিগুণ হয় না।
+   (ডিটেইল পেজে no-crop ভিউ আগের মতোই আছে — এটা শুধু গ্রিড কার্ডের থাম্বনেইল) */
+.masonry .card-img .fill { display: none; }
+.masonry .card-img .main {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- v3.1 ফিক্স ---------- */
+
+/* কার্ডের নিচের ⚡ uses/লাইক কাউন্ট লাইন বাদ — শুধু টাইটেল থাকবে।
+   শুধু ম্যাসনরিতে বাদ দিতে চাইলে সিলেক্টরটা `.masonry .card-info p` করুন। */
+.card-info p { display: none; }
+
+/* ইমেজ টাইটেল কালার — var(--text) টোকেন ফলো করে, তাই
+   নাইট মুড (#fafafa) ও ডে মুড (:root[data-theme="light"] → #17171c)
+   দুটোতেই ঠিক কনট্রাস্টে দেখায়। */
+.card-info h3 { color: var(--text); }
