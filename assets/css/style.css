@@ -890,7 +890,7 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 }
 
 /* ===== Pinterest masonry + flush cards + quick actions + light mode ===== */
-/* v2.5 GRIDFORGE — was Pinterest masonry (ragged gaps); now uniform grid, one fixed ratio */
+/* v3.1 GRIDFORGE — was Pinterest masonry (ragged gaps); now uniform grid, one fixed ratio */
 .masonry { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; align-items: start; }
 .masonry > .card { margin-bottom: 0; }
 @media (min-width: 640px)  { .masonry { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
