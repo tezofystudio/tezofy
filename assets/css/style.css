@@ -890,14 +890,30 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
 }
 
 /* ===== Pinterest masonry + flush cards + quick actions + light mode ===== */
-/* v3.1 GRIDFORGE — was Pinterest masonry (ragged gaps); now uniform grid, one fixed ratio */
-.masonry { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; align-items: start; }
-.masonry > .card { margin-bottom: 0; }
-@media (min-width: 640px)  { .masonry { grid-template-columns: repeat(3, 1fr); gap: 15px; } }
+/* v3.0 GRIDFORGE-PIN — Pinterest masonry: CSS Grid + JS spans (assets/js/masonry.js)।
+   DOM ক্রম বাঁ→ডান ঠিক থাকে, zero CLS, JS বন্ধ থাকলে uniform grid fallback। */
+.masonry {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 13px;                        /* fallback (JS ছাড়া): uniform grid */
+  align-items: start;
+}
+.masonry.ms-ready { grid-auto-rows: 4px; gap: 0 13px; }   /* ইঞ্জিন চালু হলে */
+.masonry.ms-ready > .card { margin-bottom: 13px; }        /* ভার্টিকাল গ্যাপ — span-হিসাবে */
+@media (min-width: 640px)  { .masonry { grid-template-columns: repeat(3, 1fr); gap: 15px; } .masonry.ms-ready { gap: 0 15px; } .masonry.ms-ready > .card { margin-bottom: 15px; } }
 @media (min-width: 1024px) { .masonry { grid-template-columns: repeat(4, 1fr); } }
 @media (min-width: 1360px) { .masonry { grid-template-columns: repeat(5, 1fr); } }
-.masonry .card-img { aspect-ratio: 4/5; }
-.masonry .card-img img { height: 100%; }
+.masonry .card-img { aspect-ratio: var(--ar, 9/16); }     /* ইঞ্জিন ইনলাইন --ar বসায়, ডিফল্ট ৯:১৬ */
+.masonry .card-img .fill { display: none; }               /* কভার-ক্রপ, ব্লার-ব্যাকড্রপ বাদ */
+.masonry .card-img .main { width: 100%; height: 100%; object-fit: cover; }
+
+/* v3.1: কার্ডের নিচের uses/লাইক কাউন্ট লাইন বাদ — শুধু টাইটেল।
+   শুধু ম্যাসনরিতে বাদ দিতে চাইলে: .masonry .card-info p { display: none; } */
+.card-info p { display: none; }
+
+/* v3.1: টাইটেল কালার টোকেন-ড্রিভেন — নাইট মুড (#fafafa) ও
+   ডে মুড (:root[data-theme="light"] → #17171c) দুটোতেই ঠিক কনট্রাস্ট। */
+.card-info h3 { color: var(--text); }
 
 .card { background: transparent; border: 0; box-shadow: none; }
 .card:hover { border-color: transparent; box-shadow: none; transform: translateY(-2px); }
