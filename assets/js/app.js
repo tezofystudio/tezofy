@@ -798,7 +798,7 @@
     const recSec = $("#recent");
     if (recSec && recent.length) {
       recSec.style.display = "";
-      recSec.innerHTML = sectionHead("🕘", "Recently Viewed", recent, "saved.html") + `<div class="grid"></div>`;
+      recSec.innerHTML = sectionHead("🕘", "Recently Viewed", recent, "saved.html") + `<div class="masonry"></div>`;
       renderGrid($(".grid", recSec), recent.slice(0, 4));
     }
 
@@ -814,7 +814,7 @@
       const host = $(sel);
       if (!host) return;
       const full = getCat(catId);
-      host.innerHTML = sectionHead(emoji, title, full, `category.html?c=${catId}`) + `<div class="grid"></div>`;
+      host.innerHTML = sectionHead(emoji, title, full, `category.html?c=${catId}`) + `<div class="masonry"></div>`;
       renderGrid($(".grid", host), full.slice(0, max));
     });
 
@@ -1080,7 +1080,7 @@
 
       <section class="section">
         <div class="section-head reveal"><span class="emoji">✨</span><h2>Related prompts</h2><a class="see-all" href="discover.html">Explore All ${I.right}</a></div>
-        <div class="grid" id="relatedGrid"></div>
+        <div class="masonry" id="relatedGrid"></div>
       </section>`;
 
     const related = PROMPTS.filter((x) => x.id !== p.id && x.cats.some((c) => p.cats.includes(c)))
