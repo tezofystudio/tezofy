@@ -799,7 +799,7 @@
     if (recSec && recent.length) {
       recSec.style.display = "";
       recSec.innerHTML = sectionHead("🕘", "Recently Viewed", recent, "saved.html") + `<div class="masonry"></div>`;
-      renderGrid($(".grid", recSec), recent.slice(0, 4));
+      renderGrid($(".masonry", recSec), recent.slice(0, 4));
     }
 
     /* Category sections */
@@ -815,7 +815,7 @@
       if (!host) return;
       const full = getCat(catId);
       host.innerHTML = sectionHead(emoji, title, full, `category.html?c=${catId}`) + `<div class="masonry"></div>`;
-      renderGrid($(".grid", host), full.slice(0, max));
+      renderGrid($(".masonry", host), full.slice(0, max));
     });
 
     /* categories grid */
