@@ -70,15 +70,23 @@
     ".ai-fly-item .tx small { display: block; font-size: .72rem; color: var(--muted-2); margin-top: 1px; }" +
     ".ai-fly-item .go { flex: none; color: var(--pink); font-weight: 800; }" +
 
-    /* মূল সাইটের কেন্দ্রীয় AI বাটন → টুল-পেজের মতো উঁচু গ্র্যাডিয়েন্ট চেহারা */
+    /* কেন্দ্রীয় AI/Home বাটন → গোল, অ্যালাইনড, পালস-অ্যানিমেটেড কোর
+       (নিচে কোনো লেখা নেই; AI বাটনের কোরের মাঝে "AI" লেখা) */
     "@media (max-width: 859px) {" +
     "  .bottombar .bb-ai { position: relative; }" +
-    "  .bottombar .bb-ai .bb-core { width: 52px; height: 52px; border-radius: 16px; background: var(--grad);" +
-    "    color: #fff; display: grid; place-items: center; transform: translateY(-15px);" +
-    "    box-shadow: 0 10px 26px rgba(255,45,170,.5); }" +
+    "  .bottombar .bb-ai .bb-core { position: relative; width: 52px; height: 52px; border-radius: 999px;" +
+    "    background: var(--grad); color: #fff; display: grid; place-items: center;" +
+    "    box-shadow: 0 6px 20px rgba(255,45,170,.5); animation: bb-breathe 2.4s ease-in-out infinite; }" +
+    "  .bottombar .bb-ai .bb-core::after { content: \"\"; position: absolute; inset: -3px; border-radius: 999px;" +
+    "    border: 2px solid rgba(255,45,170,.55); animation: bb-ring 2.4s ease-out infinite; }" +
     "  .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }" +
-    "  .bottombar .bb-ai span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);" +
-    "    color: var(--pink); font-weight: 800; }" +
+    "  .bottombar .bb-ai .bb-core .bb-txt { font-size: 1.02rem; font-weight: 800; letter-spacing: .02em; }" +
+    "  .bottombar .bb-ai > span { display: none; }" +
+    "}" +
+    "@keyframes bb-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }" +
+    "@keyframes bb-ring { 0% { transform: scale(.92); opacity: .85; } 70%, 100% { transform: scale(1.38); opacity: 0; } }" +
+    "@media (prefers-reduced-motion: reduce) {" +
+    "  .bottombar .bb-ai .bb-core, .bottombar .bb-ai .bb-core::after { animation: none; }" +
     "}";
 
   /* ---------- মেনু DOM ---------- */
@@ -158,11 +166,8 @@
       b.setAttribute("aria-expanded", "false");
       b.setAttribute("aria-label", "TEZOFY AI tools");
       if (a.classList.contains("bb-ai")) {
-        /* কেন্দ্রীয় AI বাটন → উঁচু গ্র্যাডিয়েন্ট core */
-        var svg = a.querySelector("svg");
-        var label = a.querySelector("span");
-        b.innerHTML = '<b class="bb-core">' + (svg ? svg.outerHTML : "✦") + '</b>' +
-                      '<span>' + (label ? label.textContent : "AI") + '</span>';
+        /* কেন্দ্রীয় AI বাটন → গোল পালস-কোর, মাঝখানে "AI" লেখা, নিচে কোনো লেবেল নেই */
+        b.innerHTML = '<b class="bb-core"><span class="bb-txt">AI</span></b>';
       } else {
         b.innerHTML = a.innerHTML;
       }
