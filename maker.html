@@ -170,9 +170,9 @@
     <span class="gen-badge">🧬 DNA Remix Lab</span>
     <h1>Prompt <span class="gr">Maker</span></h1>
     <p>Load a base prompt, then remix its DNA — swap the art style, teleport it to a new world, mash two categories, mutate, add wow-fx or full-mix everything at once.
-      <span class="bn">🧬 বেস প্রম্পট লোড করুন, তারপর ডিএনএ রিমিক্স — নতুন আর্ট, নতুন ওয়ার্ল্ড, ম্যাশআপ, মিউটেট, ওয়াও-ইফেক্ট, মুড শিফট বা ফুল মিক্স। কোলাজ ও পোস্টার ফরম্যাট, প্রিমিয়াম ফিনিশ — সব এক জায়গায়।</span></p>
-  </section>
-
+      <span class="bn">🧬 Load a base prompt, then remix its DNA — fresh art, new worlds, mashups, mutations, wow effects, mood shifts, or full mixes. Collage and poster formats, premium finish — all in one place.</span></p>
+</section>
+  
   <!-- ─── studio ─── -->
   <main class="gen-wrap">
     <div class="studio">
@@ -219,7 +219,7 @@
           <input type="checkbox" id="refToggle">
           <span>📷 Reference photo mode</span>
         </label>
-        <p class="ref-hint" id="refHint">Uploaded photo-র ফেস-আইডেন্টিটি অপরিবর্তিত রেখে শুধু আউটফিট, সেটিং, লাইট ও মুড বদলানো হবে — প্রম্পটের শুরুতে identity-lock clause যোগ হবে।</p>
+        <p class="ref-hint" id="refHint">While keeping the uploaded photo's face identity unchanged, only the outfit, setting, lighting, and mood will be modified — an identity-lock clause will be added at the beginning of the prompt.</p>
         <label class="switch-row">
           <input type="checkbox" id="premToggle" checked>
           <span>💎 Premium finish</span>
@@ -249,14 +249,14 @@
           <button class="btn" id="copyBtn">📋 Copy</button>
           <button class="btn-ghost" id="saveBtn">⭐ Save</button>
         </div>
-        <p class="tiny-tip">💡 চিপগুলো দেখায় প্রতিটা স্লট কোন ক্যাটাগরির ডিএনএ থেকে এসেছে। Format ড্রপডাউন থেকে 💍 কোলাজ বা ✒️ পোস্টার (নিজের উক্তি সহ) বেছে নিন — 💎 Premium finish এডিটোরিয়াল-গ্রেড পলিশ লেয়ার যোগ করে।</p>
-      </section>
+        <p class="tiny-tip">💡 The chips show which category's DNA each slot comes from. Choose 💍 Collage or ✒️ Poster (with your custom quote) from the Format dropdown — 💎 Premium finish adds an editorial-grade polish layer.</p>
+</section>
     </div>
 
     <!-- saved -->
     <section class="saved-sec">
       <h2>⭐ Saved remixes</h2>
-      <p class="sec-sub">এই ডিভাইসেই সেভ থাকে (সর্বোচ্চ ৫০টি) — <span id="savedCount">0 saved</span></p>
+      <p class="sec-sub">Saved on this device (maximum 50) — <span id="savedCount">0 saved</span></p>
       <div class="saved-list" id="savedList"></div>
     </section>
   </main>
