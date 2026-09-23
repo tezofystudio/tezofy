@@ -1250,36 +1250,55 @@
       const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
-         /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার */
+         /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার (সরাসরি ডিভাইসে সেভ — কোনো নতুন ট্যাব খুলবে না) */
     const dlBtn = $("#dlImgBtn");
     if (dlBtn) {
       dlBtn.addEventListener("click", async (e) => {
         e.preventDefault();
-        const filename = (p.title || "tezofy-image").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".jpg";
+        const filename = (p.title || "tezofy-image")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") + ".jpg";
+
         toast("Downloading image... 📥");
+
+        // ১. ছবিকে লোকাল Blob-এ রূপান্তর করার ফাংশন
+        async function getBlob(imgUrl) {
+          // সাইটের নিজস্ব ছবি হলে সরাসরি ফেচ
+          if (!/^https?:\/\//i.test(imgUrl) || imgUrl.includes(location.hostname)) {
+            try {
+              const r = await fetch(imgUrl);
+              if (r.ok) return await r.blob();
+            } catch (err) {}
+          }
+          // গুগল ড্রাইভ / এক্সটার্নাল ছবি হলে হাই-স্পিড সিডিএন দিয়ে ব্লব তৈরি
+          try {
+            const r = await fetch("https://wsrv.nl/?url=" + encodeURIComponent(imgUrl));
+            if (r.ok) return await r.blob();
+          } catch (err) {}
+          try {
+            const r = await fetch("https://corsproxy.io/?" + encodeURIComponent(imgUrl));
+            if (r.ok) return await r.blob();
+          } catch (err) {}
+          const r = await fetch(imgUrl, { mode: "cors" });
+          if (r.ok) return await r.blob();
+          throw new Error("Download blocked");
+        }
+
         try {
-          const res = await fetch(p.img, { mode: "cors" });
-          if (!res.ok) throw new Error("fetch failed");
-          const blob = await res.blob();
-          const u = URL.createObjectURL(blob);
+          const blob = await getBlob(p.img);
+          const blobUrl = URL.createObjectURL(blob);
           const a = document.createElement("a");
-          a.href = u;
+          a.style.display = "none";
+          a.href = blobUrl;
           a.download = filename;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(u), 1000);
-          toast("Image downloaded! 🖼️");
+          setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+          toast("Image saved to Downloads! 🖼️");
         } catch (err) {
-          // এক্সটার্নাল হোস্ট ফলব্যাক (CORS সমস্যা থাকলেও সরাসরি ডাউনলোড হবে)
-          const a = document.createElement("a");
-          a.href = p.img;
-          a.download = filename;
-          a.target = "_blank";
-          a.rel = "noopener";
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
+          toast("Download failed — please try again ⚠️");
         }
       });
     }
