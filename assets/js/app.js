@@ -1250,7 +1250,7 @@
       const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
-             /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার — ছোট লোগো + TEZOFY নাম সহ ওয়াটারমার্ক */
+                 /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার — ব্যাকগ্রাউন্ডহীন, বড় লোগো + অটো-কালার অ্যাডাপ্টিভ ওয়াটারমার্ক */
     const dlBtn = $("#dlImgBtn");
     if (dlBtn) {
       dlBtn.addEventListener("click", async (e) => {
@@ -1260,7 +1260,7 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "") + ".jpg";
 
-        toast("Processing & adding watermark... 🎨");
+        toast("Processing high-res image... 🎨");
 
         // ১. ছবিকে লোকাল Blob-এ আনার ব্রিজ (CORS নিরাপদ)
         async function getBlob(imgUrl) {
@@ -1294,8 +1294,8 @@
           });
         }
 
-        // ৩. ছোট লোগো ও TEZOFY নাম ক্যানভাসে ড্র করা
-        async function applyWatermark(mainImg) {
+        // ৩. অ্যাডাপ্টিভ ওয়াটারমার্ক (ইমেজের কালার অনুযায়ী অটো টেক্সট কালার)
+        async function applyAdaptiveWatermark(mainImg) {
           const canvas = document.createElement("canvas");
           const w = mainImg.naturalWidth || mainImg.width || 800;
           const h = mainImg.naturalHeight || mainImg.height || 1000;
@@ -1303,55 +1303,82 @@
           canvas.height = h;
           const ctx = canvas.getContext("2d");
 
-          // মূল ছবি ক্যানভাসে আঁকা
+          // মূল ছবি ড্র করা
           ctx.drawImage(mainImg, 0, 0, w, h);
 
-          // ছোট সাইজের জন্য নিখুঁত স্কেল ফ্যাক্টর
-          const scale = Math.max(0.55, Math.min(w, h) / 1100);
-          const logoSize = Math.round(20 * scale);    // লোগোর উচ্চতা ২০px
-          const fontSize = Math.round(13 * scale);    // টেক্সট সাইজ ১৩px
-          const padX = Math.round(8 * scale);
-          const padY = Math.round(5 * scale);
-          const gap = Math.round(7 * scale);
-          const margin = Math.round(16 * scale);
+          // বড় ও সুস্পষ্ট সাইজ স্কেলিং
+          const scale = Math.max(0.75, Math.min(w, h) / 900);
+          const logoSize = Math.round(38 * scale);   // বড় ও স্পষ্ট লোগো ৩৮px
+          const fontSize = Math.round(22 * scale);   // বোল্ড ফন্ট সাইজ ২২px
+          const gap = Math.round(12 * scale);        // লোগো ও লেখার ফাঁকা
+          const margin = Math.round(28 * scale);     // বর্ডার থেকে মার্জিন
 
           ctx.save();
-          ctx.font = `800 ${fontSize}px system-ui, -apple-system, sans-serif`;
+          ctx.font = `900 ${fontSize}px system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
           const brandText = "TEZOFY";
           const textW = ctx.measureText(brandText).width;
 
-          const badgeH = logoSize + padY * 2;
-          const badgeW = padX + logoSize + gap + textW + padX;
+          const totalW = logoSize + gap + textW;
+          const totalH = Math.max(logoSize, fontSize);
 
-          // ছবির নিচের ডান কোণা (Bottom-Right)
-          const x = w - badgeW - margin;
-          const y = h - badgeH - margin;
-          const r = badgeH / 2;
+          // পজিশন: নিচের ডান কোণা
+          const x = w - totalW - margin;
+          const y = h - totalH - margin;
 
-          // হালকা স্লিক ডার্ক গ্লাস ব্যাকগ্রাউন্ড (যাতে সব ছবিতে সুন্দর ফুটে ওঠে)
-          ctx.fillStyle = "rgba(10, 10, 16, 0.58)";
-          ctx.beginPath();
-          if (ctx.roundRect) ctx.roundRect(x, y, badgeW, badgeH, r);
-          else ctx.rect(x, y, badgeW, badgeH);
-          ctx.fill();
+          // 🧠 স্মার্ট অটো-কালার স্ক্যানার: ওয়াটারমার্কের পেছনের ব্রাইটনেস মাপা
+          var textColor = "#ffffff";
+          var shadowColor = "rgba(0, 0, 0, 0.85)";
 
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
-          ctx.lineWidth = Math.max(1, Math.round(1 * scale));
-          ctx.stroke();
+          try {
+            const sampleArea = ctx.getImageData(
+              Math.max(0, x - 10),
+              Math.max(0, y - 10),
+              Math.min(w - x + 10, totalW + 20),
+              Math.min(h - y + 10, totalH + 20)
+            );
+            const d = sampleArea.data;
+            let r = 0, g = 0, b = 0, count = 0;
+            for (let i = 0; i < d.length; i += 16) {
+              r += d[i]; g += d[i + 1]; b += d[i + 2]; count++;
+            }
+            const avgR = r / (count || 1);
+            const avgG = g / (count || 1);
+            const avgB = b / (count || 1);
+            
+            // আলোক উজ্জ্বলতার স্ট্যান্ডার্ড সূত্র (Relative Luminance):
+            const lum = 0.299 * avgR + 0.587 * avgG + 0.114 * avgB;
 
-          // আপনার আপলোড করা লোগো বসানো (assets/icons/logo.png)
+            // ব্যাকগ্রাউন্ড যদি সাদা বা হালকা হয় (lum > 130) -> নেভিব্লু টেক্সট
+            // ব্যাকগ্রাউন্ড যদি ডার্ক হয় (lum <= 130) -> উজ্জ্বল সাদা টেক্সট
+            if (lum > 130) {
+              textColor = "#0a192f";                   // গাঢ় নেভিব্লু
+              shadowColor = "rgba(255, 255, 255, 0.9)"; // সফট লাইট শ্যাডো
+            } else {
+              textColor = "#ffffff";                   // খাঁটি উজ্জ্বল সাদা
+              shadowColor = "rgba(0, 0, 0, 0.85)";      // সফট ডার্ক শ্যাডো
+            }
+          } catch (err) {}
+
+          // ৪. আপনার লোগো বসানো (কোনো পেছনের ব্যাকগ্রাউন্ড বক্স নেই)
           try {
             const logo = await loadImage("assets/icons/logo.png");
-            ctx.drawImage(logo, x + padX, y + padY, logoSize, logoSize);
-          } catch (err) {
-            ctx.fillStyle = "#ff2daa";
-            ctx.fillText("✦", x + padX, y + badgeH / 2 + fontSize / 3);
-          }
+            ctx.shadowColor = shadowColor;
+            ctx.shadowBlur = Math.round(6 * scale);
+            ctx.shadowOffsetX = 1;
+            ctx.shadowOffsetY = 2;
+            ctx.drawImage(logo, x, y + (totalH - logoSize) / 2, logoSize, logoSize);
+          } catch (e) {}
 
-          // ব্র্যান্ড নাম "TEZOFY"
-          ctx.fillStyle = "#ffffff";
+          // ৫. "TEZOFY" ব্র্যান্ড নাম ড্র করা (স্বয়ংক্রিয় অ্যাডাপ্টিভ কালার)
+          ctx.fillStyle = textColor;
           ctx.textBaseline = "middle";
-          ctx.fillText(brandText, x + padX + logoSize + gap, y + badgeH / 2);
+          ctx.letterSpacing = "0.04em";
+          ctx.shadowColor = shadowColor;
+          ctx.shadowBlur = Math.round(5 * scale);
+          ctx.shadowOffsetX = 1;
+          ctx.shadowOffsetY = 1;
+
+          ctx.fillText(brandText, x + logoSize + gap, y + totalH / 2);
           ctx.restore();
 
           return new Promise((resolve) => {
@@ -1364,11 +1391,11 @@
           const tempUrl = URL.createObjectURL(rawBlob);
           const mainImg = await loadImage(tempUrl);
           
-          // ওয়াটারমার্ক প্রসেস
-          const watermarkedBlob = await applyWatermark(mainImg);
+          // ওয়াটারমার্ক প্রসেসিং
+          const watermarkedBlob = await applyAdaptiveWatermark(mainImg);
           URL.revokeObjectURL(tempUrl);
 
-          // লোকাল ফাইলে অটো ডাউনলোড
+          // ডিভাইসে অটো ডাউনলোড
           const dlUrl = URL.createObjectURL(watermarkedBlob);
           const a = document.createElement("a");
           a.style.display = "none";
