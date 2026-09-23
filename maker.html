@@ -106,18 +106,33 @@
     .gen-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     @media (max-width: 859px) {
-      .studio { grid-template-columns: 1fr; }
+      /* মোবাইল ফিক্স: 1fr = minmax(auto,1fr) হওয়ায় pills-সারির min-content
+         প্যানেলকে ২২০০px+ ফুলিয়ে ফেলত — ডান পাশ চিরকাল অদৃশ্য থাকত।
+         minmax(0,1fr) + item-e min-width:0 → প্যানেল ভিউপোর্টে বাঁধা, চিপ-সারি নিজের ভেতরে স্ক্রল করে। */
+      .studio { grid-template-columns: minmax(0, 1fr); }
+      .studio > * { min-width: 0; }
       .gen-hero { padding-top: 34px; }
       .bottombar .bb-ai { position: relative; }
       .bottombar .bb-ai .bb-core {
-        width: 52px; height: 52px; border-radius: 16px;
+        position: relative; width: 52px; height: 52px; border-radius: 999px;
         background: var(--grad); color: #fff;
         display: grid; place-items: center;
-        transform: translateY(-15px);
-        box-shadow: 0 10px 26px rgba(255,45,170,.5);
+        box-shadow: 0 6px 20px rgba(255,45,170,.5);
+        animation: bb-breathe 2.4s ease-in-out infinite;
+      }
+      .bottombar .bb-ai .bb-core::after {
+        content: ""; position: absolute; inset: -3px; border-radius: 999px;
+        border: 2px solid rgba(255,45,170,.55);
+        animation: bb-ring 2.4s ease-out infinite;
       }
       .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }
-      .bottombar .bb-ai span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+      .bottombar .bb-ai .bb-core .bb-txt { font-size: 1.02rem; font-weight: 800; letter-spacing: .02em; }
+      .bottombar .bb-ai > span { display: none; }
+      @keyframes bb-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      @keyframes bb-ring { 0% { transform: scale(.92); opacity: .85; } 70%, 100% { transform: scale(1.38); opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        .bottombar .bb-ai .bb-core, .bottombar .bb-ai .bb-core::after { animation: none; }
+      }
     }
   </style>
 </head>
@@ -250,7 +265,7 @@
   <nav class="bottombar" aria-label="Primary">
     <a href="infinite.html" aria-label="Infinite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg><span>Infinite</span></a>
     <a href="maker.html" class="active" aria-label="Maker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v6L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 8V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span>Maker</span></a>
-    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b><span>Home</span></a>
+    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b></a>
     <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Discover</span></a>
     <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
@@ -434,5 +449,5 @@
 
   <!-- AI টুলস-মেনু: বটমবারের AI বাটন → পপআপ + ডেস্কটপ হেডার-পিল -->
   <script src="assets/js/ai-menu.js"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3fbb41869ae26ba',t:'MTc5MDE4OTA5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

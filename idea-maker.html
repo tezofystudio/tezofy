@@ -133,15 +133,25 @@
     @media (max-width: 859px) {
       .bottombar .bb-ai { position: relative; }
       .bottombar .bb-ai .bb-core {
-        width: 52px; height: 52px; border-radius: 16px;
+        position: relative; width: 52px; height: 52px; border-radius: 999px;
         background: var(--grad); color: #fff;
         display: grid; place-items: center;
-        transform: translateY(-15px);
-        box-shadow: 0 10px 26px rgba(255,45,170,.5);
-        font-weight: 900; font-size: 1.02rem; letter-spacing: .02em;
+        box-shadow: 0 6px 20px rgba(255,45,170,.5);
+        animation: bb-breathe 2.4s ease-in-out infinite;
+      }
+      .bottombar .bb-ai .bb-core::after {
+        content: ""; position: absolute; inset: -3px; border-radius: 999px;
+        border: 2px solid rgba(255,45,170,.55);
+        animation: bb-ring 2.4s ease-out infinite;
       }
       .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }
-      .bottombar .bb-ai span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+      .bottombar .bb-ai .bb-core .bb-txt { font-size: 1.02rem; font-weight: 800; letter-spacing: .02em; }
+      .bottombar .bb-ai > span { display: none; }
+      @keyframes bb-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+      @keyframes bb-ring { 0% { transform: scale(.92); opacity: .85; } 70%, 100% { transform: scale(1.38); opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) {
+        .bottombar .bb-ai .bb-core, .bottombar .bb-ai .bb-core::after { animation: none; }
+      }
     }
   </style>
 </head>
@@ -310,7 +320,7 @@
     <nav class="bottombar" aria-label="Primary">
     <a href="idea-maker.html" class="active" aria-label="Ideas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4.6 12.3c.8.7 1.3 1.6 1.5 2.7h6.2c.2-1.1.7-2 1.5-2.7A7 7 0 0 0 12 2z"/></svg><span>Ideas</span></a>
     <a href="ai-generator.html" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L9 18"/></svg><span>Create</span></a>
-    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b><span>Home</span></a>
+    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b></a>
     <a href="photo-enhance.html" aria-label="Enhance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg><span>Enhance</span></a>
     <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
   </nav>
@@ -732,5 +742,6 @@
   });
 })();
 </script>
-</body>
+  <script src="assets/js/ai-menu.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a3fbb4bdab3c26ba',t:'MTc5MDE4OTEyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
