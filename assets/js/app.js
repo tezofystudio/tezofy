@@ -1040,13 +1040,13 @@
         </div>
       </div>
       <div class="detail-layout">
-         <div class="detail-layout">
         <div class="detail-img reveal">
-          <img class="fill" aria-hidden="true" src="${p.img}" alt="">
+          <img class="fill" aria-hidden="true" src="${p.img}" alt="" draggable="false">
           <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
-            <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image">
+            <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image" draggable="false">
           </span>
-           <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
+          <div class="img-shield" id="imgShield" aria-hidden="true"></div>
+          <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
             ${I.download}
           </button>
         </div>
@@ -1250,7 +1250,17 @@
       const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
-                 /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার — ব্যাকগ্রাউন্ডহীন, বড় লোগো + অটো-কালার অ্যাডাপ্টিভ ওয়াটারমার্ক */
+                
+    /* 🛡️ ব্রাউজারের লং-প্রেস ও রাইট-ক্লিক নিষ্ক্রিয়করণ */
+    const shield = $("#imgShield");
+    if (shield) {
+      shield.addEventListener("contextmenu", (e) => {
+        e.preventDefault(); // ব্রাউজারের সেভ ইমেজ মেনু সম্পূর্ণ বন্ধ
+        toast("Please use the Download button above 📥");
+      });
+    }
+     
+     /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার — ব্যাকগ্রাউন্ডহীন, বড় লোগো + অটো-কালার অ্যাডাপ্টিভ ওয়াটারমার্ক */
     const dlBtn = $("#dlImgBtn");
     if (dlBtn) {
       dlBtn.addEventListener("click", async (e) => {
