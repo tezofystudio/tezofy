@@ -197,3 +197,155 @@
     enhance();
   }
 })();
+/* ============================================================
+   TEZOFY — AI Tool Pages: Profile & Auth Bridge
+   হেডারের #avatarHost-কে সচল ও প্রোফাইল মডাল ওপেন করে
+   ============================================================ */
+(function () {
+  "use strict";
+
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem("chitro:session")); } catch (e) { return null; }
+  }
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem("chitro:users")) || {}; } catch (e) { return {}; }
+  }
+  function currentUser() {
+    var s = getSession();
+    return s ? getUsers()[s] || null : null;
+  }
+  function avatarPhoto(email) {
+    try { return JSON.parse(localStorage.getItem("chitro:avatar:" + email)) || ""; } catch (e) { return ""; }
+  }
+  function streak() {
+    try {
+      var v = JSON.parse(localStorage.getItem("chitro:visits")) || [];
+      if (!v.length) return 0;
+      var DAY = 86400000, n = 0, d = new Date(), today = d.toISOString().slice(0, 10);
+      if (v[v.length - 1] !== today) d = new Date(d.getTime() - DAY);
+      while (true) {
+        var s = d.toISOString().slice(0, 10);
+        if (v.indexOf(s) !== -1) { n++; d = new Date(d.getTime() - DAY); } else break;
+      }
+      return n;
+    } catch (e) { return 0; }
+  }
+
+  var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+
+  var ov = null;
+  function ensureOverlay() {
+    if (ov) return ov;
+    ov = document.createElement("div");
+    ov.className = "auth-overlay";
+    ov.id = "tzAuthOverlay";
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function (e) {
+      if (e.target === ov) close();
+    });
+    return ov;
+  }
+
+  function close() {
+    if (ov) {
+      ov.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+  }
+
+  function renderModal() {
+    ensureOverlay();
+    var u = currentUser();
+    if (u) {
+      var ph = avatarPhoto(u.email);
+      var st = streak();
+      var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
+      var since = u.created ? new Date(u.created).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "member";
+      
+      ov.innerHTML =
+        '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Profile">' +
+          '<div class="sheet-handle"></div>' +
+          '<div style="display:flex;justify-content:flex-end">' +
+            '<button class="icon-btn" type="button" id="tzCloseProfile" aria-label="Close">' + CLOSE_SVG + '</button>' +
+          '</div>' +
+          '<div class="profile-hero">' +
+            '<span class="pf-ring">' +
+              '<div class="profile-avatar big">' +
+                (ph ? '<img class="av-main" src="' + ph + '" alt="">' : initial) +
+              '</div>' +
+            '</span>' +
+            '<div class="ph-info">' +
+              '<h2>' + (u.name || "Creator") + '</h2>' +
+              '<p>' + (u.email || "") + ' · since ' + since + '</p>' +
+              '<div class="pill-row">' +
+                '<span class="streak-pill">🔥 ' + st + ' day' + (st === 1 ? '' : 's') + ' streak</span>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="p-actions">' +
+            '<a class="p-action" href="saved.html">⭐ <span>My saved prompts</span> <span class="right">→</span></a>' +
+            '<a class="p-action" href="index.html">🏠 <span>Back to Home</span> <span class="right">→</span></a>' +
+            '<button class="p-action danger" type="button" id="tzLogoutBtn">🚪 <span>Log out</span></button>' +
+          '</div>' +
+        '</div>';
+
+      document.getElementById("tzCloseProfile").addEventListener("click", close);
+      document.getElementById("tzLogoutBtn").addEventListener("click", function () {
+        localStorage.setItem("chitro:session", "null");
+        close();
+        updateAvatarHost();
+      });
+    } else {
+      ov.innerHTML =
+        '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Sign In">' +
+          '<div class="sheet-handle"></div>' +
+          '<div style="display:flex;justify-content:flex-end">' +
+            '<button class="icon-btn" type="button" id="tzCloseAuth" aria-label="Close">' + CLOSE_SVG + '</button>' +
+          '</div>' +
+          '<div style="text-align:center;padding:12px 0 20px;">' +
+            '<div style="width:54px;height:54px;border-radius:50%;background:var(--grad-soft);display:inline-grid;place-items:center;margin:0 auto 12px;font-size:1.5rem;">👤</div>' +
+            '<h2 style="font-size:1.2rem;font-weight:800;margin-bottom:6px;">Sign in to TEZOFY</h2>' +
+            '<p style="font-size:.82rem;color:var(--muted);max-width:280px;margin:0 auto 16px;">Access your saved prompts, sync across devices & enjoy full creator tools.</p>' +
+            '<a class="btn primary" href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;background:var(--grad);color:#fff;text-decoration:none;font-weight:700;">Continue on Home Page →</a>' +
+          '</div>' +
+        '</div>';
+      document.getElementById("tzCloseAuth").addEventListener("click", close);
+    }
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function updateAvatarHost() {
+    var host = document.getElementById("avatarHost");
+    if (!host) return;
+    var u = currentUser();
+    if (!u) {
+      host.innerHTML =
+        '<button class="avatar-btn" type="button" aria-label="Sign in" id="tzAvatarBtn">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+            '<circle cx="12" cy="8" r="4"/><path d="M4 21c.9-3.8 4-6 8-6s7.1 2.2 8 6"/>' +
+          '</svg>' +
+        '</button>';
+    } else {
+      var ph = avatarPhoto(u.email);
+      var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
+      host.innerHTML =
+        '<button class="avatar-btn logged" type="button" aria-label="Profile" id="tzAvatarBtn">' +
+          (ph ? '<img class="avatar-ph" src="' + ph + '" alt="' + initial + '">' : initial) +
+        '</button>';
+    }
+    var btn = document.getElementById("tzAvatarBtn");
+    if (btn) {
+      btn.addEventListener("click", function (e) {
+        e.preventDefault();
+        renderModal();
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", updateAvatarHost);
+  } else {
+    updateAvatarHost();
+  }
+})();
