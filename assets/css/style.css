@@ -1228,3 +1228,46 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 .hero-ring:hover { filter: drop-shadow(0 14px 34px hsl(var(--ogH, 318) 95% 60% / .38)); }
 @keyframes ogSpin { to { --ogA: 360deg; } }
 
+/* 📥 টেমপ্লেট পেজের ইমেজ ডাউনলোড বাটন (ইমেজের ওপর ভাসমান) */
+.img-dl-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(18, 18, 28, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.img-dl-btn svg {
+  width: 15px;
+  height: 15px;
+  stroke: #fff;
+  stroke-width: 2.2;
+  transition: transform 0.2s ease;
+}
+.img-dl-btn:hover {
+  background: var(--grad, linear-gradient(135deg, #ff2daa, #ff7a00));
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 22px rgba(255, 45, 170, 0.45);
+}
+.img-dl-btn:hover svg {
+  transform: translateY(1px);
+}
+.img-dl-btn:active {
+  transform: scale(0.96);
+}
