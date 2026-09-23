@@ -1271,3 +1271,27 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 .img-dl-btn:active {
   transform: scale(0.94);
 }
+
+/* 🛡️ ইমেজ লং-প্রেস ও রাইট-ক্লিক সুরক্ষা */
+.detail-img {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+}
+
+.detail-img img {
+  pointer-events: none !important; /* ব্রাউজার ছবির ওপর ক্লিক ধরতে পারবে না */
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+/* ছবির ওপর অদৃশ্য সুরক্ষা ঢাল */
+.img-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: transparent;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+}
