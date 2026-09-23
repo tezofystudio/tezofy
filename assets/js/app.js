@@ -1250,7 +1250,7 @@
       const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
-         /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার (সরাসরি ডিভাইসে সেভ — কোনো নতুন ট্যাব খুলবে না) */
+             /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার — ছোট লোগো + TEZOFY নাম সহ ওয়াটারমার্ক */
     const dlBtn = $("#dlImgBtn");
     if (dlBtn) {
       dlBtn.addEventListener("click", async (e) => {
@@ -1260,18 +1260,16 @@
           .replace(/[^a-z0-9]+/g, "-")
           .replace(/^-|-$/g, "") + ".jpg";
 
-        toast("Downloading image... 📥");
+        toast("Processing & adding watermark... 🎨");
 
-        // ১. ছবিকে লোকাল Blob-এ রূপান্তর করার ফাংশন
+        // ১. ছবিকে লোকাল Blob-এ আনার ব্রিজ (CORS নিরাপদ)
         async function getBlob(imgUrl) {
-          // সাইটের নিজস্ব ছবি হলে সরাসরি ফেচ
           if (!/^https?:\/\//i.test(imgUrl) || imgUrl.includes(location.hostname)) {
             try {
               const r = await fetch(imgUrl);
               if (r.ok) return await r.blob();
             } catch (err) {}
           }
-          // গুগল ড্রাইভ / এক্সটার্নাল ছবি হলে হাই-স্পিড সিডিএন দিয়ে ব্লব তৈরি
           try {
             const r = await fetch("https://wsrv.nl/?url=" + encodeURIComponent(imgUrl));
             if (r.ok) return await r.blob();
@@ -1285,18 +1283,103 @@
           throw new Error("Download blocked");
         }
 
+        // ২. ইমেজ লোডার প্রমিজ
+        function loadImage(src) {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.crossOrigin = "anonymous";
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+          });
+        }
+
+        // ৩. ছোট লোগো ও TEZOFY নাম ক্যানভাসে ড্র করা
+        async function applyWatermark(mainImg) {
+          const canvas = document.createElement("canvas");
+          const w = mainImg.naturalWidth || mainImg.width || 800;
+          const h = mainImg.naturalHeight || mainImg.height || 1000;
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+
+          // মূল ছবি ক্যানভাসে আঁকা
+          ctx.drawImage(mainImg, 0, 0, w, h);
+
+          // ছোট সাইজের জন্য নিখুঁত স্কেল ফ্যাক্টর
+          const scale = Math.max(0.55, Math.min(w, h) / 1100);
+          const logoSize = Math.round(20 * scale);    // লোগোর উচ্চতা ২০px
+          const fontSize = Math.round(13 * scale);    // টেক্সট সাইজ ১৩px
+          const padX = Math.round(8 * scale);
+          const padY = Math.round(5 * scale);
+          const gap = Math.round(7 * scale);
+          const margin = Math.round(16 * scale);
+
+          ctx.save();
+          ctx.font = `800 ${fontSize}px system-ui, -apple-system, sans-serif`;
+          const brandText = "TEZOFY";
+          const textW = ctx.measureText(brandText).width;
+
+          const badgeH = logoSize + padY * 2;
+          const badgeW = padX + logoSize + gap + textW + padX;
+
+          // ছবির নিচের ডান কোণা (Bottom-Right)
+          const x = w - badgeW - margin;
+          const y = h - badgeH - margin;
+          const r = badgeH / 2;
+
+          // হালকা স্লিক ডার্ক গ্লাস ব্যাকগ্রাউন্ড (যাতে সব ছবিতে সুন্দর ফুটে ওঠে)
+          ctx.fillStyle = "rgba(10, 10, 16, 0.58)";
+          ctx.beginPath();
+          if (ctx.roundRect) ctx.roundRect(x, y, badgeW, badgeH, r);
+          else ctx.rect(x, y, badgeW, badgeH);
+          ctx.fill();
+
+          ctx.strokeStyle = "rgba(255, 255, 255, 0.18)";
+          ctx.lineWidth = Math.max(1, Math.round(1 * scale));
+          ctx.stroke();
+
+          // আপনার আপলোড করা লোগো বসানো (assets/icons/logo.png)
+          try {
+            const logo = await loadImage("assets/icons/logo.png");
+            ctx.drawImage(logo, x + padX, y + padY, logoSize, logoSize);
+          } catch (err) {
+            ctx.fillStyle = "#ff2daa";
+            ctx.fillText("✦", x + padX, y + badgeH / 2 + fontSize / 3);
+          }
+
+          // ব্র্যান্ড নাম "TEZOFY"
+          ctx.fillStyle = "#ffffff";
+          ctx.textBaseline = "middle";
+          ctx.fillText(brandText, x + padX + logoSize + gap, y + badgeH / 2);
+          ctx.restore();
+
+          return new Promise((resolve) => {
+            canvas.toBlob((b) => resolve(b), "image/jpeg", 0.95);
+          });
+        }
+
         try {
-          const blob = await getBlob(p.img);
-          const blobUrl = URL.createObjectURL(blob);
+          const rawBlob = await getBlob(p.img);
+          const tempUrl = URL.createObjectURL(rawBlob);
+          const mainImg = await loadImage(tempUrl);
+          
+          // ওয়াটারমার্ক প্রসেস
+          const watermarkedBlob = await applyWatermark(mainImg);
+          URL.revokeObjectURL(tempUrl);
+
+          // লোকাল ফাইলে অটো ডাউনলোড
+          const dlUrl = URL.createObjectURL(watermarkedBlob);
           const a = document.createElement("a");
           a.style.display = "none";
-          a.href = blobUrl;
+          a.href = dlUrl;
           a.download = filename;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
-          setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
-          toast("Image saved to Downloads! 🖼️");
+          setTimeout(() => URL.revokeObjectURL(dlUrl), 2000);
+          
+          toast("Downloaded with TEZOFY watermark! 🖼️✨");
         } catch (err) {
           toast("Download failed — please try again ⚠️");
         }
