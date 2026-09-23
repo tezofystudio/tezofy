@@ -1040,8 +1040,16 @@
         </div>
       </div>
       <div class="detail-layout">
-        <div class="detail-img reveal"><img class="fill" aria-hidden="true" src="${p.img}" alt=""><span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}"><img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image"></span></div>
-        <div>
+         <div class="detail-layout">
+        <div class="detail-img reveal">
+          <img class="fill" aria-hidden="true" src="${p.img}" alt="">
+          <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
+            <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image">
+          </span>
+          <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
+            ${I.download}<span>Download</span>
+          </button>
+        </div>
           <div class="detail-head reveal">
             <h1>${esc(p.title)}</h1>
             <p class="sub">${esc(p.tagline)}</p>
