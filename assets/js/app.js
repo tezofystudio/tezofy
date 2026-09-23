@@ -1523,6 +1523,16 @@
     s.onerror = () => next();
     document.head.appendChild(s);
   }
+  function injectAiMenu() {
+    /* AI টুলস-মেনু (assets/js/ai-menu.js): বটমবারের AI বাটন → পপআপ,
+       ডেস্কটপ হেডারে "AI Tools" পিল। ফাইল না থাকলে কিছুই বদলায় না। */
+    if (document.querySelector("script[data-ai-menu]")) return;
+    const s = document.createElement("script");
+    s.src = "assets/js/ai-menu.js";
+    s.async = true;
+    s.dataset.aiMenu = "1";
+    document.head.appendChild(s);
+  }
 
   /* ---------- boot (idempotent) ---------- */
   let booted = false;
@@ -1536,6 +1546,7 @@
     ensureLabels(() => {
       normalizeLabels();
       buildChrome(page);
+      injectAiMenu();
       brandLogoSwap();
       injectSocials();
       bindQuickActions();
