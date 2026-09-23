@@ -1047,7 +1047,7 @@
             <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image">
           </span>
           <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
-            ${I.download}<span>Download</span>
+            ${I.download}<span></span>
           </button>
         </div>
           <div class="detail-head reveal">
@@ -1250,6 +1250,39 @@
       const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
       window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
     });
+         /* 📥 ইমেজ ডাউনলোড হ্যান্ডলার */
+    const dlBtn = $("#dlImgBtn");
+    if (dlBtn) {
+      dlBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const filename = (p.title || "tezofy-image").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".jpg";
+        toast("Downloading image... 📥");
+        try {
+          const res = await fetch(p.img, { mode: "cors" });
+          if (!res.ok) throw new Error("fetch failed");
+          const blob = await res.blob();
+          const u = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = u;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(u), 1000);
+          toast("Image downloaded! 🖼️");
+        } catch (err) {
+          // এক্সটার্নাল হোস্ট ফলব্যাক (CORS সমস্যা থাকলেও সরাসরি ডাউনলোড হবে)
+          const a = document.createElement("a");
+          a.href = p.img;
+          a.download = filename;
+          a.target = "_blank";
+          a.rel = "noopener";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      });
+    }
 
     watchReveals();
   }
