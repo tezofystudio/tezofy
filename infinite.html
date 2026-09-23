@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#09090b">
+  <title>♾️ Infinite Prompt Library | TEZOFY</title>
+  <meta name="description" content="TEZOFY Infinite Prompt Library — 23 million+ unique AI photo prompts across 21 categories. Dial every slot, shuffle, save &amp; export 1000 at once. Free, no sign-up.">
+  <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23FF2DAA"/><stop offset="1" stop-color="%23FF7A00"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(%23g)"/><path d="M32 14l4.4 11.6L48 30l-11.6 4.4L32 46l-4.4-11.6L16 30l11.6-4.4z" fill="white"/></svg>'>
+  <meta property="og:title" content="TEZOFY ♾️ — Infinite Prompt Library">
+  <meta property="og:description" content="23 million+ unique AI photo prompts across 21 categories. Dial every slot, shuffle, save &amp; export 1000 at once. Free, no sign-up.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://tezofystudio.github.io/tezofy/assets/img/og-card.png">
+  <meta property="og:site_name" content="TEZOFY">
+  <meta name="twitter:card" content="summary_large_image">
+  <script src="assets/js/i18n.js" defer></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <!-- theme boot (app.js-এর মতোই chitro:theme — FOUC এড়াতে head-এ) -->
+  <script>try { document.documentElement.dataset.theme = JSON.parse(localStorage.getItem("chitro:theme") || '"dark"'); } catch (e) { document.documentElement.dataset.theme = "dark"; }</script>
+  <style>
+    /* ── TEZOFY ♾️ Infinite Library — page styles (site tokens) ── */
+    .gen-wrap { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
+    .gen-toplinks { display: flex; gap: 6px; align-items: center; }
+    .gen-toplinks a { padding: 8px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; color: var(--muted); text-decoration: none; border: 1px solid transparent; }
+    .gen-toplinks a:hover { color: var(--text); border-color: var(--border); }
+    .gen-toplinks a.on { color: var(--text); border-color: rgba(255,45,170,.45); background: var(--grad-soft); }
+    .gen-toplinks a.cta-mini { background: var(--grad); color: #fff; }
+
+    .ai-chips { position: sticky; top: var(--header-h); z-index: 55; background: rgba(9,9,11,.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--border-soft); }
+    html[data-theme="light"] .ai-chips { background: rgba(255,255,255,.86); }
+    .ai-chips .gen-toplinks { max-width: 1180px; margin: 0 auto; padding: 8px 16px; overflow-x: auto; scrollbar-width: none; }
+    .ai-chips .gen-toplinks::-webkit-scrollbar { display: none; }
+    .ai-chips .gen-toplinks a { flex: 0 0 auto; white-space: nowrap; }
+
+    .gen-hero { text-align: center; padding: 46px 18px 10px; }
+    .gen-badge { display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.35); }
+    .gen-hero h1 { margin: 16px 0 10px; font-size: clamp(1.9rem, 5vw, 3.1rem); font-weight: 800; letter-spacing: -.02em; line-height: 1.08; }
+    .gen-hero h1 .gr { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .gen-hero p { color: var(--muted); max-width: 660px; margin: 0 auto; font-size: .99rem; line-height: 1.6; }
+    .gen-hero .bn { display: block; margin-top: 8px; color: var(--muted-2); font-size: .85rem; }
+
+    .studio { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 16px; margin-top: 22px; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+    .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .panel-head h2 { font-size: 1.02rem; font-weight: 800; letter-spacing: -.01em; }
+    .total-badge { font-size: .74rem; font-weight: 700; color: var(--pink); white-space: nowrap; }
+    .char-count { font-size: .72rem; color: var(--muted-2); text-align: right; margin-top: 8px; }
+
+    .cat-title { font-size: .86rem; color: var(--muted); margin: 12px 0 4px; font-weight: 600; }
+    .fld-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 10px; }
+    .fld { display: flex; flex-direction: column; gap: 6px; font-size: .68rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--muted-2); }
+    .fld input, .fld select {
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); padding: 10px 12px; font: inherit; font-size: .88rem; font-weight: 500;
+      letter-spacing: 0; text-transform: none; width: 100%; transition: border-color .2s;
+    }
+    .fld input:focus, .fld select:focus { outline: none; border-color: var(--pink); }
+    .slot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 12px; }
+
+    .switch-row { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 12px 14px; background: var(--bg-soft); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); cursor: pointer; font-size: .88rem; font-weight: 600; color: var(--muted); }
+    .switch-row input { appearance: none; -webkit-appearance: none; width: 40px; height: 22px; border-radius: 999px; background: var(--border); position: relative; cursor: pointer; transition: .25s; flex: none; margin: 0; }
+    .switch-row input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: .25s; }
+    .switch-row input:checked { background: var(--grad); }
+    .switch-row input:checked::after { left: 21px; }
+    .ref-hint { display: none; margin-top: 8px; font-size: .78rem; color: var(--muted-2); line-height: 1.5; padding: 0 14px; }
+
+    .prompt-box {
+      width: 100%; min-height: 240px; resize: vertical;
+      background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
+      color: var(--text); padding: 14px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .87rem; line-height: 1.6;
+    }
+    .prompt-box:focus { outline: none; border-color: var(--pink); }
+    .prompt-box::-webkit-scrollbar { width: 8px; }
+    .prompt-box::-webkit-scrollbar-thumb { background: rgba(255,45,170,.4); border-radius: 99px; }
+
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .btn-row .btn, .btn-row .btn-ghost { flex: 1 1 auto; justify-content: center; }
+    .tiny-tip { margin-top: 12px; font-size: .74rem; color: var(--muted-2); line-height: 1.5; }
+
+    .saved-sec { margin-top: 26px; }
+    .saved-sec h2 { font-size: 1.05rem; font-weight: 800; letter-spacing: -.01em; margin-bottom: 4px; }
+    .saved-sec .sec-sub { font-size: .8rem; color: var(--muted-2); margin-bottom: 12px; }
+    .saved-list { display: grid; gap: 10px; }
+    .item { display: flex; align-items: flex-start; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; font-size: .84rem; color: var(--muted); line-height: 1.55; }
+    .item .tag { flex: none; font-size: .68rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #ffb4dd; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.3); border-radius: 999px; padding: 4px 10px; }
+    .item .txt { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+    .mini-btn { flex: none; background: var(--card-2); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: .74rem; font-weight: 700; cursor: pointer; transition: .2s; }
+    .mini-btn:hover { color: var(--text); border-color: var(--pink); }
+
+    .gen-toast { position: fixed; left: 50%; bottom: calc(var(--bottombar-h) + 18px); transform: translateX(-50%) translateY(16px); background: var(--card-2); border: 1px solid var(--border); color: var(--text); padding: 11px 18px; border-radius: 999px; font-size: .84rem; font-weight: 650; z-index: 90; opacity: 0; pointer-events: none; transition: .22s; box-shadow: var(--shadow); }
+    .gen-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    @media (max-width: 859px) {
+      .studio { grid-template-columns: 1fr; }
+      .gen-hero { padding-top: 34px; }
+      .bottombar .bb-ai { position: relative; }
+      .bottombar .bb-ai .bb-core {
+        width: 52px; height: 52px; border-radius: 16px;
+        background: var(--grad); color: #fff;
+        display: grid; place-items: center;
+        transform: translateY(-15px);
+        box-shadow: 0 10px 26px rgba(255,45,170,.5);
+      }
+      .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }
+      .bottombar .bb-ai span { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); color: var(--pink); font-weight: 800; }
+    }
+  </style>
+</head>
+<body data-page="infinite">
+
+  <!-- ─── topbar (main site navbar — verbatim pattern) ─── -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="TEZOFY home">
+        <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>
+        <span>TEZOFY<small>Infinite Library</small></span>
+      </a>
+      <div class="header-actions">
+        <a class="header-search-pill" href="discover.html" aria-label="Search prompts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Search prompts…</span><kbd>⌘K</kbd></a>
+        <a class="icon-btn" href="discover.html" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></a>
+        <button class="icon-btn theme-btn" id="themeBtn" aria-label="Toggle dark / light mode"></button>
+        <span id="avatarHost"><a class="avatar-btn" href="index.html" aria-label="My account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c.9-3.8 4-6 8-6s7.1 2.2 8 6"/></svg></a></span>
+      </div>
+    </div>
+  </header>
+  <div class="ai-chips">
+    <nav class="gen-toplinks" aria-label="AI tools">
+      <a href="ai-hub.html">🎡 AI Hub</a>
+      <a href="idea-maker.html">💡 Idea Forge</a>
+      <a href="ai-generator.html">✨ Create</a>
+      <a href="photo-enhance.html">🪄 Enhance</a>
+      <a href="infinite.html" class="on">♾️ Infinite</a>
+      <a href="maker.html">🧬 Maker</a>
+      <a class="cta-mini" href="discover.html">✨ 1K+ Prompts</a>
+    </nav>
+  </div>
+
+  <!-- ─── hero ─── -->
+  <section class="gen-hero gen-wrap">
+    <span class="gen-badge">♾️ <span id="totalBadge">∞ combinations</span></span>
+    <h1>Infinite Prompt <span class="gr">Library</span></h1>
+    <p>Every slot is a dial — subject, setting, mood, light, camera… Twist them and the same category never runs dry. Copy, save or export 1000 prompts in one click.
+      <span class="bn">♾️ ২১ ক্যাটাগরিতে ২ কোটিরও বেশি ইউনিক প্রম্পট — প্রতিটা স্লট নিজের হাতে সাজান, বা শাফল চাপুন। কপি, সেভ আর ১০০০ প্রম্পটের CSV এক ক্লিকে।</span></p>
+  </section>
+
+  <!-- ─── studio ─── -->
+  <main class="gen-wrap">
+    <div class="studio">
+
+      <!-- controls -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2>🎛️ Build your prompt</h2>
+        </div>
+        <div class="filter-bar" id="pills" role="tablist" aria-label="Categories"></div>
+        <p class="cat-title" id="catTitle"></p>
+        <div class="fld-row" id="phRow"></div>
+        <div class="slot-grid" id="slotGrid"></div>
+        <label class="switch-row">
+          <input type="checkbox" id="refToggle">
+          <span>📷 Reference photo mode</span>
+        </label>
+        <p class="ref-hint" id="refHint">Uploaded photo-র ফেস-আইডেন্টিটি অপরিবর্তিত রেখে শুধু আউটফিট, সেটিং, লাইট ও মুড বদলানো হবে — প্রম্পটের শুরুতে identity-lock clause যোগ হবে।</p>
+        <label class="switch-row">
+          <input type="checkbox" id="premToggle" checked>
+          <span>💎 Premium finish</span>
+        </label>
+      </section>
+
+      <!-- output -->
+      <section class="panel">
+        <div class="panel-head">
+          <h2>✨ Your prompt</h2>
+        </div>
+        <textarea class="prompt-box" id="promptBox" spellcheck="false" aria-label="Generated prompt"></textarea>
+        <p class="char-count" id="charCount"></p>
+        <div class="btn-row">
+          <button class="btn" id="shuffleBtn">🔀 Shuffle</button>
+          <button class="btn-ghost" id="copyBtn">📋 Copy</button>
+          <button class="btn-ghost" id="saveBtn">⭐ Save</button>
+          <button class="btn-ghost" id="csvBtn">⬇ 1000 CSV</button>
+        </div>
+        <p class="tiny-tip">💡 Gemini, ChatGPT ও Midjourney-তে সরাসরি পেস্ট করুন। "Shuffle" এলোমেলো কম্বিনেশন বানায়; ড্রপডাউন থেকে নিজের পছন্দ বসালে সেটাই লক হয়ে যায়। 💎 Premium finish প্রম্পটের শুরুতে এডিটোরিয়াল-গ্রেড পলিশ লেয়ার (medium-format ক্যামেরা, golden light, jewel-tone প্যালেট) যোগ করে।</p>
+      </section>
+    </div>
+
+    <!-- saved -->
+    <section class="saved-sec">
+      <h2>⭐ Saved prompts</h2>
+      <p class="sec-sub">এই ডিভাইসেই সেভ থাকে (সর্বোচ্চ ৫০টি) — <span id="savedCount">0 saved</span></p>
+      <div class="saved-list" id="savedList"></div>
+    </section>
+  </main>
+
+  <!-- ─── bottom nav (app-feel) ─── -->
+  <nav class="bottombar" aria-label="Primary">
+    <a href="infinite.html" class="active" aria-label="Infinite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z"/></svg><span>Infinite</span></a>
+    <a href="maker.html" aria-label="Maker"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v6L4.5 18a2 2 0 0 0 1.8 3h11.4a2 2 0 0 0 1.8-3L14 8V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></svg><span>Maker</span></a>
+    <a href="index.html" class="bb-ai" aria-label="Home"><b class="bb-core"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h5v-6h4v6h5V9.5"/></svg></b><span>Home</span></a>
+    <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Discover</span></a>
+    <a href="ai-hub.html" aria-label="AI Hub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>AI Hub</span></a>
+  </nav>
+
+  <div class="gen-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- ─── global labels + engine + UI ─── -->
+  <script src="assets/js/labels.js"></script>
+  <script src="assets/js/infinite-engine.js"></script>
+  <script>
+  (function () {
+    "use strict";
+    var E = window.TezofyEngine;
+    var L = window.TEZOFY_LABELS;   /* গ্লোবাল লেবেল রেজিস্ট্রি — সাইটের সাথে একই নাম+ইমোজি */
+    var $ = function (id) { return document.getElementById(id); };
+    var state = { cat: "festival", ph: {} };
+    var saved = [];
+    try { saved = JSON.parse(localStorage.getItem("tezofy_saved") || "[]"); } catch (e) {}
+
+    var toastTimer = null;
+    function toast(msg) {
+      var t = $("toast"); t.textContent = msg; t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1600);
+    }
+    function fmt(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+    /* ইঞ্জিন-কী → গ্লোবাল লেবেল (নাম+ইমোজি সাইটের সাথে হুবহু মিলবে) */
+    function lbl(k) {
+      if (L) { var x = L.labelForEngine(k, E.CATS[k]); if (x) return x; }
+      return { name: E.CATS[k].label, emoji: E.CATS[k].emoji };
+    }
+
+    $("totalBadge").textContent = "∞ " + fmt(E.totalCombos()) + " unique combinations";
+
+    /* category pills — গ্লোবাল লেবেল থেকে */
+    var keys = Object.keys(E.CATS);
+    keys.forEach(function (k) {
+      var b = document.createElement("button");
+      b.className = "f-chip";
+      b.setAttribute("role", "tab");
+      var lb = lbl(k);
+      b.textContent = lb.emoji + " " + lb.name;
+      b.onclick = function () { setCat(k); };
+      b.id = "pill-" + k;
+      $("pills").appendChild(b);
+    });
+
+    function setCat(k) {
+      state.cat = k; state.ph = {};
+      keys.forEach(function (x) { $("pill-" + x).classList.toggle("active", x === k); });
+      renderControls();
+      shuffle();
+    }
+
+    function renderControls() {
+      var c = E.CATS[state.cat];
+      var lb = lbl(state.cat);
+      $("catTitle").textContent = lb.emoji + " " + lb.name + " — " +
+        fmt(E.combos(state.cat)) + " combinations in this category";
+      var ph = $("phRow"); ph.innerHTML = "";
+      c.placeholders.forEach(function (p) {
+        var l = document.createElement("label"); l.className = "fld";
+        l.textContent = "Fill [" + p[0] + "]";
+        var inp = document.createElement("input");
+        inp.placeholder = p[1]; inp.id = "ph-" + p[0];
+        inp.oninput = update;
+        l.appendChild(inp); ph.appendChild(l);
+      });
+      var g = $("slotGrid"); g.innerHTML = "";
+      c.slots.forEach(function (s) {
+        var l = document.createElement("label"); l.className = "fld";
+        l.textContent = s[0].toUpperCase();
+        var sel = document.createElement("select"); sel.id = "slot-" + s[0];
+        s[1].forEach(function (o) {
+          var op = document.createElement("option"); op.textContent = o; sel.appendChild(op);
+        });
+        sel.onchange = update;
+        l.appendChild(sel); g.appendChild(l);
+      });
+      var lr = document.createElement("label"); lr.className = "fld"; lr.textContent = "RATIO";
+      var lsel = document.createElement("select"); lsel.id = "slot-ratio";
+      E.RATIO.forEach(function (code) {
+        var op = document.createElement("option"); op.value = code; op.textContent = E.RATIO_LABEL[code]; lsel.appendChild(op);
+      });
+      lsel.onchange = update;
+      lr.appendChild(lsel); g.appendChild(lr);
+    }
+
+    function currentChoices() {
+      var c = E.CATS[state.cat], ch = {};
+      c.slots.forEach(function (s) { ch[s[0]] = $("slot-" + s[0]).value; });
+      ch.ratio = $("slot-ratio").value;
+      return ch;
+    }
+    function currentPh() {
+      var c = E.CATS[state.cat], ph = {};
+      c.placeholders.forEach(function (p) {
+        var v = $("ph-" + p[0]).value.trim();
+        if (v) ph[p[0]] = v;
+      });
+      return ph;
+    }
+    function update() {
+      var out = E.build(state.cat, currentChoices(), currentPh(),
+                        { reference: $("refToggle").checked,
+                          premium: $("premToggle").checked });
+      $("promptBox").value = out;
+      $("charCount").textContent = out.length + " characters · optimized for Gemini, ChatGPT & Midjourney";
+    }
+    function shuffle() {
+      var c = E.CATS[state.cat];
+      var ch = E.randomChoices(state.cat, Math.random);
+      c.slots.forEach(function (s) { $("slot-" + s[0]).value = ch[s[0]]; });
+      $("slot-ratio").value = ch.ratio;
+      update();
+    }
+
+    function copyText(txt) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(txt).then(function () { toast("Copied ✓"); },
+          function () { fallbackCopy(txt); });
+      } else fallbackCopy(txt);
+    }
+    function fallbackCopy(txt) {
+      var ta = document.createElement("textarea");
+      ta.value = txt; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); toast("Copied ✓"); } catch (e) { toast("Select & copy manually"); }
+      document.body.removeChild(ta);
+    }
+
+    $("refToggle").onchange = function () {
+      $("refHint").style.display = this.checked ? "block" : "none";
+      update();
+    };
+    $("premToggle").onchange = update;
+    $("shuffleBtn").onclick = function () { shuffle(); toast("Shuffled 🔀"); };
+    $("copyBtn").onclick = function () { copyText($("promptBox").value); };
+    $("saveBtn").onclick = function () {
+      saved.unshift({ cat: state.cat, prompt: $("promptBox").value });
+      saved = saved.slice(0, 50);
+      try { localStorage.setItem("tezofy_saved", JSON.stringify(saved)); } catch (e) {}
+      renderSaved(); toast("Saved ⭐");
+    };
+    $("csvBtn").onclick = function () {
+      var rows = ["prompt"], i;
+      for (i = 0; i < 1000; i++) {
+        rows.push('"' + E.generate(state.cat, { placeholders: currentPh() }).prompt.replace(/"/g, '""') + '"');
+      }
+      try {
+        var blob = new Blob([rows.join("\n")], { type: "text/csv" });
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "tezofy-" + state.cat + "-1000.csv";
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        toast("1000 prompts downloaded ⬇");
+      } catch (e) { toast("Download blocked in preview"); }
+    };
+
+    function renderSaved() {
+      var box = $("savedList"); box.innerHTML = "";
+      $("savedCount").textContent = saved.length + " saved";
+      if (!saved.length) {
+        box.innerHTML = '<div class="item"><span class="txt">Nothing saved yet — tap ⭐ Save on any prompt.</span></div>';
+        return;
+      }
+      saved.forEach(function (s, i) {
+        var d = document.createElement("div"); d.className = "item";
+        var tag = document.createElement("span"); tag.className = "tag";
+        tag.textContent = lbl(s.cat).name;
+        var txt = document.createElement("span"); txt.className = "txt"; txt.textContent = s.prompt;
+        var c1 = document.createElement("button"); c1.className = "mini-btn"; c1.textContent = "Copy";
+        c1.onclick = function () { copyText(s.prompt); };
+        var c2 = document.createElement("button"); c2.className = "mini-btn"; c2.textContent = "✕";
+        c2.onclick = function () {
+          saved.splice(i, 1);
+          try { localStorage.setItem("tezofy_saved", JSON.stringify(saved)); } catch (e) {}
+          renderSaved();
+        };
+        d.appendChild(tag); d.appendChild(txt); d.appendChild(c1); d.appendChild(c2);
+        box.appendChild(d);
+      });
+    }
+
+    setCat("festival");
+    renderSaved();
+  })();
+  </script>
+
+  <script>
+  (function () {
+    // Theme toggle — same behavior as the main site (app.js): chitro:theme + <html data-theme>
+    function themeIcon(mode) {
+      return mode === "light"
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg>';
+    }
+    var tb = document.getElementById("themeBtn");
+    if (!tb) return;
+    tb.innerHTML = themeIcon(document.documentElement.dataset.theme);
+    tb.addEventListener("click", function () {
+      var next = document.documentElement.dataset.theme === "light" ? "dark" : "light";
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem("chitro:theme", JSON.stringify(next)); } catch (e) {}
+      tb.innerHTML = themeIcon(next);
+    });
+  })();
+  </script>
+</body>
+</html>
