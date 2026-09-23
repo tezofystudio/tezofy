@@ -1046,8 +1046,8 @@
           <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
             <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image">
           </span>
-          <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
-            ${I.download}<span></span>
+           <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
+            ${I.download}
           </button>
         </div>
           <div class="detail-head reveal">
