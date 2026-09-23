@@ -888,7 +888,12 @@
 
   /* ---------- page: category ---------- */
   function pageCategory() {
-    const id = param("c") || "trending";
+    let id = param("c") || "trending";
+    /* গ্লোবাল লেবেল: পুরনো/শিট অ্যালায়াস → ক্যানোনিকাল আইডি (যেমন happy-birthday → birthday) */
+    if (typeof TEZOFY_LABELS !== "undefined") {
+      const canon = TEZOFY_LABELS.canonical(id);
+      if (canon) id = canon;
+    }
     $$(".grid").forEach((g) => g.classList.add("masonry"));
     const cat = CATEGORIES.find((c) => c.id === id);
     const list = getCat(id);
@@ -896,7 +901,21 @@
     $("#catDesc").textContent = cat ? cat.desc : "";
     document.title = `${cat ? cat.name : "Category"} — ${SITE.name}`;
     if (list.length) { renderGrid($("#catGrid"), list); $("#catEmpty").style.display = "none"; }
-    else { $("#catGrid").innerHTML = ""; $("#catEmpty").style.display = ""; }
+    else {
+      $("#catGrid").innerHTML = ""; $("#catEmpty").style.display = "";
+      /* ইঞ্জিনে স্লট আছে এমন ক্যাটাগরি খালি হলে Infinite Engine-এর সিটিআই */
+      const lbl = (typeof TEZOFY_LABELS !== "undefined") ? TEZOFY_LABELS.labelFor(id) : null;
+      const emptyHost = $("#catEmpty");
+      if (lbl && lbl.engine && emptyHost && !$("#catEngineCta")) {
+        const cta = document.createElement("a");
+        cta.id = "catEngineCta";
+        cta.href = "infinite.html";
+        cta.className = "btn";
+        cta.style.marginTop = "12px";
+        cta.textContent = `♾️ Generate ${lbl.name} prompts instantly`;
+        emptyHost.appendChild(cta);
+      }
+    }
   }
 
   /* ---------- page: saved ---------- */
@@ -1449,6 +1468,7 @@
       if (PROMPTS.some(function (x) { return x.id === p.id; })) return;
       PROMPTS.push(p); added++;
     });
+    normalizeLabels();   /* রিমোট ক্যাট/প্রম্পট এসেছে → লেবেল-রেজিস্ট্রি দিয়ে আবার সামঞ্জস্য */
     return added;
   }
   function initRemotePrompts() {
@@ -1473,6 +1493,37 @@
     } catch (e) {}
   }
 
+  /* ---------- global label system (assets/js/labels.js) ----------
+     TEZOFY_LABELS = সাইটজুড়ে ক্যাটাগরির একমাত্র উৎস। labels.js না থাকলে
+     সাইট আগের মতোই চলে (graceful fallback)। */
+  function normalizeLabels() {
+    if (typeof TEZOFY_LABELS === "undefined" || !Array.isArray(TEZOFY_LABELS.all)) return false;
+    /* ১) অ্যালায়াস আইডি → ক্যানোনিকাল (যেমন শিটের happy-birthday → birthday) */
+    PROMPTS.forEach((p) => {
+      p.cats = p.cats.map((c) => {
+        const n = TEZOFY_LABELS.canonical(c);
+        return (n && n !== c) ? n : c;
+      });
+    });
+    /* ২) CATEGORIES পুনর্গঠন — রেজিস্ট্রির ক্রম/নাম/ইমোজি; অজানা রিমোট ক্যাট শেষে টিকে থাকে
+       (রেজিস্ট্রি-অ্যালায়াস আইডি — যেমন শিটের happy-birthday — ডুপ্লিকেট হিসেবে বাদ যায়) */
+    const known = new Set(TEZOFY_LABELS.all.map((l) => l.id));
+    TEZOFY_LABELS.all.forEach((l) => (l.aliases || []).forEach((a) => known.add(a)));
+    const extras = CATEGORIES.filter((c) => !known.has(c.id));
+    CATEGORIES.length = 0;
+    TEZOFY_LABELS.all.forEach((l) => CATEGORIES.push({ id: l.id, name: l.name, icon: l.emoji, desc: l.desc || "" }));
+    extras.forEach((c) => CATEGORIES.push(c));
+    return true;
+  }
+  function ensureLabels(next) {
+    if (typeof TEZOFY_LABELS !== "undefined") return next();
+    const s = document.createElement("script");
+    s.src = "assets/js/labels.js";
+    s.onload = () => next();
+    s.onerror = () => next();
+    document.head.appendChild(s);
+  }
+
   /* ---------- boot (idempotent) ---------- */
   let booted = false;
   function boot() {
@@ -1482,15 +1533,18 @@
     registerSW();
     const page = document.body.dataset.page || "home";
     applyStoredTheme();
-    buildChrome(page);
-    brandLogoSwap();
-    injectSocials();
-    bindQuickActions();
-    initRemotePrompts();
-    const rerenderPage = () => ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
-    window.__chitroRerender = rerenderPage;
-    rerenderPage();
-    watchReveals();
+    ensureLabels(() => {
+      normalizeLabels();
+      buildChrome(page);
+      brandLogoSwap();
+      injectSocials();
+      bindQuickActions();
+      initRemotePrompts();
+      const rerenderPage = () => ({ home: pageHome, discover: pageDiscover, category: pageCategory, template: pageTemplate, blog: pageBlog, article: pageArticle, saved: pageSaved }[page] || pageHome)();
+      window.__chitroRerender = rerenderPage;
+      rerenderPage();
+      watchReveals();
+    });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
