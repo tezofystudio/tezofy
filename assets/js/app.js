@@ -595,7 +595,6 @@
     });
   }
 
-  function refreshAvatar() {
 
   function refreshAvatar() {
     const host = $("#avatarHost");
