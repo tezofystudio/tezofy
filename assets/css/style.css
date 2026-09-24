@@ -1390,3 +1390,57 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
     animation: none; 
   }
 }
+
+/* ===== Social Circle Row (Google & Facebook নিচে সার্কেল বাটন) ===== */
+.social-circle-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 12px 0 6px;
+}
+.social-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  transition: transform .16s, border-color .16s, box-shadow .16s;
+  padding: 0;
+  flex: none;
+}
+.social-circle-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 45, 170, .5);
+  box-shadow: 0 4px 14px rgba(255, 45, 170, .25);
+}
+.social-circle-btn:active {
+  transform: scale(0.93);
+}
+.social-circle-btn.fb {
+  background: #1877f2;
+  border-color: #1877f2;
+}
+.social-circle-btn.fb svg {
+  width: 22px;
+  height: 22px;
+  fill: #fff;
+}
+.g-btn-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: none;
+  background: #fff;
+  border: 1px solid var(--border);
+}
+.g-btn-circle > div {
+  margin: 0 auto !important;
+}
