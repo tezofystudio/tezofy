@@ -153,17 +153,19 @@
     return n;
   }
 
+   function avatarPhoto() { const s = session(); return s ? store.get("avatar:" + s, "") : ""; }
   function avatarHTML() {
     const u = currentUser();
     if (!u) {
       const hasAccounts = Object.keys(users()).length > 0;
       return hasAccounts
         ? `<button class="header-auth-btn login" data-open-auth="login" aria-label="Log in"><span>Log In</span></button>`
-        : `<button class="header-auth-btn signup" data-open-auth="signup" aria-label="Sign up"><span> Sign Up</span></button>`;
+        : `<button class="header-auth-btn signup" data-open-auth="signup" aria-label="Sign up"><span>✨ Sign Up</span></button>`;
     }
     const ph = avatarPhoto();
     return `<button class="avatar-btn logged" data-open-auth="profile" aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
   }
+
 
 
   /* ---------- profile pride: level tiers + random ring themes ---------- */
@@ -591,6 +593,9 @@
         currentUser() ? (renderProfile(), ov.classList.add("open"), document.body.style.overflow = "hidden") : (renderAuth(mode === "login" ? "login" : "signup"), ov.classList.add("open"), document.body.style.overflow = "hidden");
       }
     });
+  }
+
+  function refreshAvatar() {
 
   function refreshAvatar() {
     const host = $("#avatarHost");
