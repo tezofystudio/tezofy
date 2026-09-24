@@ -75,10 +75,10 @@
     "/* Bottombar .bb-ai প্রমোট চেহারা */" +
     "@media (max-width: 859px) {" +
     "  .bottombar .bb-ai { position: relative; }" +
-    "  .bottombar .bb-ai .bb-core { width: 44px; height: 44px; border-radius: 999px;" +
+    "  .bottombar .bb-ai .bb-core { position: relative; width: 52px; height: 52px; border-radius: 999px;" +
     "    background: var(--grad); display: grid; place-items: center;" +
     "    box-shadow: 0 4px 16px rgba(255,45,170,.45); position: relative;" +
-    "    animation: bb-breathe 3.4s ease-in-out infinite; }" +
+    "    animation: bb-breathe 2.4s ease-in-out infinite; }" +
     "  .bottombar .bb-ai .bb-core::after { content: \"\"; position: absolute; inset: -3px; border-radius: 999px;" +
     "    border: 2px solid rgba(255,45,170,.55); animation: bb-ring 2.4s ease-out infinite; }" +
     "  .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }" +
@@ -501,7 +501,7 @@
       var pass = document.getElementById("tzPass").value || "";
       var fail = function (m) { errEl.textContent = m; errEl.classList.add("show"); };
 
-      var EMAIL_RX = /^[a-z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
+      var EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (!EMAIL_RX.test(email)) return fail("Please enter a valid real email address (e.g. name@gmail.com).");
       if (!pass || pass.length < 6) return fail("Password must be at least 6 characters.");
 
