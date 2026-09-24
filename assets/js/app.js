@@ -211,11 +211,18 @@
     window.__chitroOpenAuth = (mode = "signup") => open(mode);
 
       function socialHTML() {
-      if (!window.CloudAuth || !CloudAuth.socialEnabled()) return "";
       var buttons = "";
-      if (CloudAuth.googleConfigured()) buttons += '<div id="gBtn" class="g-btn-circle" title="Continue with Google"></div>';
-      if (CloudAuth.fbReady()) buttons += '<button type="button" class="social-circle-btn fb" id="fbBtn" title="Continue with Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg></button>';
-      return '<div class="auth-divider"><span>OR CONTINUE WITH</span></div><div class="social-circle-row">' + buttons + '</div>';
+      buttons += '<div id="gBtn" class="g-btn-slot">' +
+        '<button type="button" class="social-btn google-fallback" id="gFallbackBtn">' +
+          '<svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/><path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/></svg>' +
+          '<span>Continue with Google</span>' +
+        '</button>' +
+      '</div>';
+      buttons += '<button type="button" class="social-btn fb" id="fbBtn">' +
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg>' +
+        '<span>Continue with Facebook</span>' +
+      '</button>';
+      return '<div class="auth-divider"><span>OR CONTINUE WITH</span></div><div class="social-row">' + buttons + '</div>';
     }
 
     function unlockRefresh() { setTimeout(() => { if ($(".lock-overlay") && window.__chitroRerender) window.__chitroRerender(); }, 300); }
@@ -249,14 +256,14 @@
       toast("Welcome, " + u.name.split(" ")[0] + "! 🎉");
     }
 
-        function renderAuth(initialMode = "login") {
+            function renderAuth(initialMode = "login") {
       let currentMode = initialMode === "signup" ? "signup" : "login";
       ov.innerHTML = `
         <div class="auth-card" role="dialog" aria-modal="true" aria-label="Account">
           <div class="sheet-handle"></div>
           <div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button></div>
           <div class="auth-head">
-            <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo" style="width:28px;height:28px;object-fit:contain"></span>
+            <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>
             <h2>Welcome to ${SITE.name}</h2>
             <span class="brand-eyebrow">✦ Premium AI Prompt Studio</span>
             <p>Save prompts, unlock members-only designs & keep your streak — free forever.</p>
@@ -286,7 +293,7 @@
       const forgotBtn = $("#forgotLink", ov);
       const errEl = $("#authError", ov);
 
-      /* 🎯 ফ্লিকার-মুক্ত ইনস্ট্যান্ট সুইচ */
+      /* 🎯 ফ্লিকার-মুক্ত ইনস্ট্যান্ট সুইচ (পেজের সাইজ অপরিবর্তিত থাকবে) */
       function setTab(m) {
         currentMode = m;
         errEl.textContent = "";
@@ -349,7 +356,7 @@
               if (res && res.banned) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = "Create Free Account";
-                return fail("⛔ This account is banned — please contact for support.");
+                return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
               }
               begin();
             });
