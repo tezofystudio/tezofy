@@ -1336,3 +1336,57 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
   color: #ff7ec2;
   transform: translateY(-1px);
 }
+
+/* ============================================================
+   Bottombar Central Animated Circle Button (.bb-ai)
+   (এআই হাবে হোম বাটনের মতোই মূল পেজে অ্যানিমেটেড গোল AI সার্কেল)
+   ============================================================ */
+@media (max-width: 859px) {
+  .bottombar .bb-ai { 
+    position: relative; 
+  }
+  .bottombar .bb-ai .bb-core {
+    position: relative; 
+    width: 52px; 
+    height: 52px; 
+    border-radius: 999px;
+    background: var(--grad, linear-gradient(135deg, #ff2daa, #ff7a00)); 
+    color: #fff;
+    display: grid; 
+    place-items: center;
+    box-shadow: 0 6px 20px rgba(255, 45, 170, 0.5);
+    animation: bb-breathe 2.4s ease-in-out infinite;
+  }
+  .bottombar .bb-ai .bb-core::after {
+    content: ""; 
+    position: absolute; 
+    inset: -3px; 
+    border-radius: 999px;
+    border: 2px solid rgba(255, 45, 170, 0.55);
+    animation: bb-ring 2.4s ease-out infinite;
+  }
+  .bottombar .bb-ai .bb-core .bb-txt { 
+    font-size: 1.05rem; 
+    font-weight: 800; 
+    letter-spacing: 0.02em; 
+    color: #fff;
+  }
+  .bottombar .bb-ai > span { 
+    display: none; 
+  }
+}
+
+@keyframes bb-breathe { 
+  0%, 100% { transform: scale(1); } 
+  50% { transform: scale(1.06); } 
+}
+@keyframes bb-ring { 
+  0% { transform: scale(0.92); opacity: 0.85; } 
+  70%, 100% { transform: scale(1.38); opacity: 0; } 
+}
+@media (prefers-reduced-motion: reduce) {
+  .bottombar .bb-ai .bb-core, 
+  .bottombar .bb-ai .bb-core::after { 
+    animation: none; 
+  }
+}
