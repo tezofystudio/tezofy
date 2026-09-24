@@ -1050,6 +1050,7 @@
             ${I.download}
           </button>
         </div>
+        </div>
           <div class="detail-head reveal">
             <h1>${esc(p.title)}</h1>
             <p class="sub">${esc(p.tagline)}</p>
