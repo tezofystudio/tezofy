@@ -153,12 +153,16 @@
     return n;
   }
 
-  function avatarPhoto() { const s = session(); return s ? store.get("avatar:" + s, "") : ""; }
   function avatarHTML() {
     const u = currentUser();
-    if (!u) return `<button class="avatar-btn" data-open-auth aria-label="Sign in">${I.user}</button>`;
+    if (!u) {
+      const hasAccounts = Object.keys(users()).length > 0;
+      return hasAccounts
+        ? `<button class="header-auth-btn login" data-open-auth="login" aria-label="Log in"><span>Log In</span></button>`
+        : `<button class="header-auth-btn signup" data-open-auth="signup" aria-label="Sign up"><span> Sign Up</span></button>`;
+    }
     const ph = avatarPhoto();
-    return `<button class="avatar-btn logged" data-open-auth aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
+    return `<button class="avatar-btn logged" data-open-auth="profile" aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
   }
 
 
@@ -579,13 +583,14 @@
         ia.addEventListener("click", async () => { const f = window.__chitroInstall; window.__chitroInstall = null; f.prompt(); await f.userChoice; close(); });
       }
     }
-    document.addEventListener("click", (e) => {
-      if (e.target.closest("[data-open-auth]")) {
+        document.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-open-auth]");
+      if (b) {
         e.preventDefault();
-        currentUser() ? (renderProfile(), ov.classList.add("open"), document.body.style.overflow = "hidden") : open();
+        const mode = b.getAttribute("data-open-auth") || "signup";
+        currentUser() ? (renderProfile(), ov.classList.add("open"), document.body.style.overflow = "hidden") : (renderAuth(mode === "login" ? "login" : "signup"), ov.classList.add("open"), document.body.style.overflow = "hidden");
       }
     });
-  }
 
   function refreshAvatar() {
     const host = $("#avatarHost");
