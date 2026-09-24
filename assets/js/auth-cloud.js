@@ -86,10 +86,10 @@
         try { w2 = container.clientWidth || 0; } catch (e) {}
         if (!w2) { setTimeout(draw, 80); return; }
         google.accounts.id.renderButton(container, {
-          theme: "outline", size: "large", width: Math.min(w2, 400),
-          text: "continue_with", shape: "pill", logo_alignment: "center"
+          type: "icon",
+          shape: "circle",
+          size: "large"
         });
-      })();
     }
     if (window.google && google.accounts) { boot(); return true; }
     if (gsiLoading) { var t = setInterval(function () { if (window.google && google.accounts) { clearInterval(t); boot(); } }, 150); return true; }
