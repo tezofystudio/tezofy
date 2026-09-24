@@ -191,9 +191,12 @@
 })();
 
 /* ============================================================
-   TEZOFY — AI Tool Pages: 1000% Exact Auth Engine (Cloud & Social)
-   Official Brand Logo + Smooth Zero-Flicker Tab Switching
-   Google Sign-In + Facebook + Email Auth + Profile Dashboard
+   TEZOFY — AI Tool Pages: Full Gatekeeper Auth & Security Engine
+   - 6-Digit Email OTP Verification on Sign Up
+   - Full Self-Service Forgot Password & Reset Flow
+   - Cloud Social Login (Google Sign-In + Facebook)
+   - Profile Dashboard, 3-State Smart Header Button
+   - Disposable Email Shield & Encrypted Passwords
    ============================================================ */
 (function () {
   "use strict";
@@ -204,6 +207,24 @@
     fbAppId: "1474580381159042"
   };
 
+  /* -------- 1. TEMP-MAIL SHIELD -------- */
+  var BLOCKED_DOMAINS = "10minute.cf|10minutemail.be|10minutemail.co.uk|10minutemail.com|10minutemail.net|10minutemail.org|burnermail.io|dispostable.com|fakeinbox.com|fakemail.net|getnada.com|guerrillamail.com|inboxkitten.com|jetable.org|mailcatch.com|maildrop.cc|mailexpire.com|mailinator.com|mailnesia.com|mintemail.com|moakt.com|mohmal.com|mytemp.email|mytrashmail.com|sharklasers.com|spambox.us|spamgourmet.com|temp-mail.org|tempail.com|tempemail.net|tempmail.com|tempmail.net|tempmailo.com|throwawaymail.com|trashmail.com|yopmail.com".split("|");
+  var BLOCK_SUBS = "10minut|anonymbox|armyspy|burnermail|cuvox|dayrep|dispostable|duidir|einrot|emailondeck|fakeinbox|fakemail|fakermail|getnada|guerrillamail|inboxkitten|jetable|mailcatch|maildrop|mailexpire|mailinator|mailnesia|mintemail|minutemail|moakt|mohmal|pokemail|sharklasers|spamgourmet|temp-mail|tempail|tempinbox|tempmail|throwaway|trashmail|yopmail".split("|");
+
+  function isDisposable(email) {
+    var domain = String(email || "").split("@")[1];
+    if (!domain) return false;
+    domain = domain.toLowerCase().trim();
+    for (var i = 0; i < BLOCKED_DOMAINS.length; i++) {
+      if (domain === BLOCKED_DOMAINS[i] || domain.endsWith("." + BLOCKED_DOMAINS[i])) return true;
+    }
+    for (var j = 0; j < BLOCK_SUBS.length; j++) {
+      if (BLOCK_SUBS[j] && domain.indexOf(BLOCK_SUBS[j]) !== -1) return true;
+    }
+    return false;
+  }
+
+  /* -------- 2. LOCAL STORAGE & HELPERS -------- */
   function getSession() {
     try { return JSON.parse(localStorage.getItem("chitro:session")); } catch (e) { return null; }
   }
@@ -237,6 +258,36 @@
     var h = 0; for (var i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; }
     return "h" + Math.abs(h).toString(36) + s.length;
   }
+  function escH(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (m) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m];
+    });
+  }
+
+  /* -------- 3. CLOUD BACKEND (APPS SCRIPT) API -------- */
+  function cmd(payload) {
+    if (!CFG.sheetUrl) return Promise.resolve({ ok: false, error: "Server is not configured" });
+    return fetch(CFG.sheetUrl, {
+      method: "POST",
+      redirect: "follow",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); })
+      .catch(function () { return { ok: false, error: "Network issue — please try again" }; });
+  }
+
+  function sha256Hex(str) {
+    if (window.crypto && crypto.subtle && window.TextEncoder) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(str)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ("0" + x.toString(16)).slice(-2); }).join("");
+      });
+    }
+    return Promise.resolve(hash(str));
+  }
+  function hashPass(email, pass) {
+    return sha256Hex(String(email || "").toLowerCase().trim() + "::" + String(pass || "") + "::tezofy-gk1");
+  }
+
   function collectSheet(entry) {
     if (!CFG.sheetUrl) return;
     try {
@@ -251,7 +302,25 @@
     } catch (e) {}
   }
 
-  /* Google Sign-In loader */
+  /* -------- 4. TOAST NOTIFICATION -------- */
+  function showToast(msg) {
+    var t = document.getElementById("tzToast");
+    if (!t) {
+      t = document.createElement("div");
+      t.id = "tzToast";
+      t.style.cssText = "position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 76px);transform:translateX(-50%) translateY(16px);background:rgba(18,19,26,0.96);border:1px solid rgba(255,45,170,0.45);color:#fff;padding:11px 22px;border-radius:999px;font-size:0.86rem;font-weight:700;z-index:9999;opacity:0;pointer-events:none;transition:all 0.24s cubic-bezier(0.2,0.8,0.2,1);box-shadow:0 8px 32px rgba(0,0,0,0.6);text-align:center;max-width:90vw;";
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = "1";
+    t.style.transform = "translateX(-50%) translateY(0)";
+    setTimeout(function() {
+      t.style.opacity = "0";
+      t.style.transform = "translateX(-50%) translateY(16px)";
+    }, 3200);
+  }
+
+  /* -------- 5. SOCIAL AUTH (GOOGLE & FB) -------- */
   var gsiLoading = false;
   function renderGoogleBtn(container, onSuccess) {
     if (!container || !CFG.googleClientId) return;
@@ -286,7 +355,6 @@
     document.head.appendChild(s);
   }
 
-  /* Facebook SDK loader */
   var fbLoading = false;
   function loginFacebook(onSuccess, onErr) {
     if (!CFG.fbAppId) { if (onErr) onErr("Facebook login not configured."); return; }
@@ -317,7 +385,26 @@
     document.head.appendChild(s);
   }
 
+  function handleSocialSuccess(u) {
+    if (isDisposable(u.email)) {
+      showToast("Temporary email addresses aren't allowed — please sign in with real Gmail 🚫");
+      return;
+    }
+    var users = getUsers();
+    if (!users[u.email]) {
+      users[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
+      localStorage.setItem("chitro:users", JSON.stringify(users));
+    }
+    localStorage.setItem("chitro:session", JSON.stringify(u.email));
+    collectSheet({ name: u.name, email: u.email, provider: u.provider, page: location.pathname });
+    close();
+    updateAvatarHost();
+    showToast("Welcome, " + u.name.split(" ")[0] + "! 🎉");
+  }
+
+  /* -------- 6. OVERLAY & DOM UTILS -------- */
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+  var BACK_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
 
   var ov = null;
   function ensureOverlay() {
@@ -336,19 +423,7 @@
     }
   }
 
-  function handleSocialSuccess(u) {
-    var users = getUsers();
-    if (!users[u.email]) {
-      users[u.email] = { name: u.name, email: u.email, pass: hash("social:" + u.provider + ":" + u.email), created: Date.now(), via: u.provider };
-      localStorage.setItem("chitro:users", JSON.stringify(users));
-    }
-    localStorage.setItem("chitro:session", JSON.stringify(u.email));
-    collectSheet({ name: u.name, email: u.email, provider: u.provider, page: location.pathname });
-    close();
-    updateAvatarHost();
-  }
-
-  /* ১. প্রোফাইল ড্যাশবোর্ড (লগইন করা ইউজারদের জন্য) */
+  /* -------- 7. PROFILE DASHBOARD (LOGGED IN) -------- */
   function renderProfileModal() {
     ensureOverlay();
     var u = currentUser();
@@ -395,7 +470,7 @@
     document.body.style.overflow = "hidden";
   }
 
-  /* ২. ১০০% আসল অথ মডাল (ব্র্যান্ড লোগো + স্মুথ জিরো-ফ্লিকার সুইচিং) */
+  /* -------- 8. MAIN AUTH MODAL (LOGIN & SIGNUP) -------- */
   function renderAuthModal(initialMode) {
     ensureOverlay();
     var currentMode = initialMode === "signup" ? "signup" : "login";
@@ -444,7 +519,6 @@
     var forgotBtn = document.getElementById("tzForgotLink");
     var errEl = document.getElementById("tzAuthError");
 
-    /* 🎯 স্মুথ ট্যাব সুইচিং: পেজ না কাঁপিয়ে ফ্রেমলেস পরিবর্তন */
     function setTab(mode) {
       currentMode = mode;
       errEl.textContent = "";
@@ -474,16 +548,14 @@
     document.getElementById("tzCloseAuth").addEventListener("click", close);
     document.getElementById("tzGuestLink").addEventListener("click", close);
 
-    if (forgotBtn) {
-      forgotBtn.addEventListener("click", function () {
-        alert("To reset your password, please continue from the Home Page or contact support.");
-      });
-    }
+    /* Forgot Password Click */
+    forgotBtn.addEventListener("click", function () {
+      var preset = (document.getElementById("tzEmail").value || "").trim().toLowerCase();
+      renderForgotStep(preset);
+    });
 
-    /* Google Sign In Render (লোড হবে মাত্র একবার) */
     renderGoogleBtn(document.getElementById("tzGBtn"), handleSocialSuccess);
 
-    /* Facebook Login Handler */
     document.getElementById("tzFbBtn").addEventListener("click", function () {
       loginFacebook(handleSocialSuccess, function (msg) {
         errEl.textContent = msg;
@@ -491,7 +563,7 @@
       });
     });
 
-    /* Email / Password Form Submit */
+    /* Submit Handler with Real OTP Trigger */
     document.getElementById("tzAuthForm").addEventListener("submit", function (e) {
       e.preventDefault();
       errEl.textContent = "";
@@ -508,21 +580,49 @@
       var users = getUsers();
 
       if (currentMode === "signup") {
-        var name = (document.getElementById("tzName").value || "").trim() || email.split("@")[0];
-        if (users[email]) return fail("An account with this email already exists. Try logging in.");
-        users[email] = { name: name, email: email, pass: hash(pass), created: Date.now() };
-        localStorage.setItem("chitro:users", JSON.stringify(users));
-        localStorage.setItem("chitro:session", JSON.stringify(email));
-        collectSheet({ name: name, email: email, provider: "email", page: location.pathname });
-        close();
-        updateAvatarHost();
+        var name = (document.getElementById("tzName").value || "").trim();
+        if (name.length < 3) return fail("Please write your full name (at least 3 letters).");
+        if (/[<>{}]/.test(name)) return fail("Name shouldn't contain invalid characters.");
+        if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(pass)) return fail("Password must be 6+ characters with a letter and a number.");
+        if (isDisposable(email)) return fail("Temporary email addresses aren't allowed — please use your real email (Gmail is perfect).");
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending code…";
+
+        cmd({ action: "otp", kind: "signup", email: email, name: name }).then(function (res) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Create Free Account";
+          if (!res || !res.ok) {
+            return fail((res && res.error) || "Something went wrong — please try again.");
+          }
+          renderOtpStep({ purpose: "signup", email: email, name: name, pass: pass });
+        });
       } else {
         var u = users[email];
-        if (!u) return fail("No account found with this email. Please Sign Up first.");
+        if (!u) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Logging in…";
+          hashPass(email, pass).then(function (ph) {
+            cmd({ action: "login", email: email, ph: ph }).then(function (res) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Log In";
+              if (!res || !res.ok) return fail((res && res.error) || "Email or password doesn't match our records.");
+              users[email] = { name: res.name || email.split("@")[0], email: email, pass: hash(pass), created: Date.now(), via: "email" };
+              localStorage.setItem("chitro:users", JSON.stringify(users));
+              localStorage.setItem("chitro:session", JSON.stringify(email));
+              close();
+              updateAvatarHost();
+              showToast("Welcome back, " + (res.name ? res.name.split(" ")[0] : "friend") + "! 👋");
+            });
+          });
+          return;
+        }
         if (u.pass !== hash(pass)) return fail("Incorrect password. Please try again.");
         localStorage.setItem("chitro:session", JSON.stringify(email));
+        collectSheet({ name: u.name, email: email, provider: "email", page: location.pathname });
         close();
         updateAvatarHost();
+        showToast("Welcome back, " + (u.name ? u.name.split(" ")[0] : "friend") + "! 👋");
       }
     });
 
@@ -530,7 +630,228 @@
     document.body.style.overflow = "hidden";
   }
 
-  /* ৩. হেডারের ৩-স্টেট স্মার্ট বাটন রেন্ডারার */
+  /* -------- 9. OTP VERIFICATION STEP -------- */
+  function renderOtpStep(ctx) {
+    ensureOverlay();
+    var isSignup = ctx.purpose === "signup";
+
+    ov.innerHTML =
+      '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Verify Code">' +
+        '<div class="sheet-handle"></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<button class="icon-btn" id="tzOtpBack" aria-label="Back">' + BACK_SVG + '</button>' +
+          '<button class="icon-btn" id="tzCloseOtp" aria-label="Close">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<div class="auth-head">' +
+          '<span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>' +
+          '<h2>' + (isSignup ? "Check your inbox 📬" : "Reset code sent 📬") + '</h2>' +
+          '<p>We sent a 6-digit code to <b>' + escH(ctx.email) + '</b>.<br>Can\'t find it? Peek into Spam or Junk 👀</p>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label for="tzOtpCode">6-DIGIT CODE</label>' +
+          '<input id="tzOtpCode" type="text" inputmode="numeric" maxlength="6" placeholder="••••••" autocomplete="one-time-code" style="letter-spacing:.45em;text-align:center;font-size:1.35rem;font-weight:700">' +
+        '</div>' +
+        '<div class="auth-error" id="tzOtpError"></div>' +
+        '<button class="btn auth-submit" id="tzOtpVerifyBtn">' + (isSignup ? "Verify & create account" : "Verify code") + '</button>' +
+        '<button class="guest-link" id="tzOtpResend" disabled>Resend (60s)</button>' +
+      '</div>';
+
+    document.getElementById("tzCloseOtp").addEventListener("click", close);
+    document.getElementById("tzOtpBack").addEventListener("click", function () {
+      if (isSignup) renderAuthModal("signup");
+      else renderForgotStep(ctx.email);
+    });
+
+    var errEl = document.getElementById("tzOtpError");
+    var fail = function (m) { errEl.textContent = m; errEl.classList.add("show"); };
+
+    var cd = 60;
+    var rsBtn = document.getElementById("tzOtpResend");
+    var tick = function () {
+      rsBtn.disabled = cd > 0;
+      rsBtn.textContent = cd > 0 ? "Resend (" + cd + "s)" : "🔁 Resend code";
+      if (cd-- > 0) setTimeout(tick, 1000);
+    };
+    tick();
+
+    rsBtn.addEventListener("click", function () {
+      if (rsBtn.disabled) return;
+      cmd({ action: "otp", kind: ctx.purpose, email: ctx.email, name: ctx.name }).then(function (res) {
+        if (!res || !res.ok) return fail((res && res.error) || "Please try again");
+        cd = 60;
+        tick();
+        showToast("New code sent 📨");
+      });
+    });
+
+    var codeEl = document.getElementById("tzOtpCode");
+    setTimeout(function () { codeEl.focus(); }, 100);
+
+    var verifyBtn = document.getElementById("tzOtpVerifyBtn");
+    var doVerify = function () {
+      var code = (codeEl.value || "").trim();
+      if (!/^\d{6}$/.test(code)) return fail("Please enter the full 6-digit code.");
+      verifyBtn.disabled = true;
+      verifyBtn.textContent = "Verifying…";
+
+      cmd({ action: "otpverify", email: ctx.email, code: code }).then(function (res) {
+        if (!res || !res.ok) {
+          verifyBtn.disabled = false;
+          verifyBtn.textContent = isSignup ? "Verify & create account" : "Verify code";
+          return fail((res && res.error) || "Invalid or expired code. Please try again.");
+        }
+        if (isSignup) {
+          finishSignup(ctx);
+        } else {
+          ctx.code = code;
+          renderNewPassStep(ctx);
+        }
+      });
+    };
+
+    codeEl.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); doVerify(); }
+    });
+    verifyBtn.addEventListener("click", doVerify);
+
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  function finishSignup(ctx) {
+    var users = getUsers();
+    users[ctx.email] = { name: ctx.name, email: ctx.email, pass: hash(ctx.pass), created: Date.now(), via: "email" };
+    localStorage.setItem("chitro:users", JSON.stringify(users));
+    localStorage.setItem("chitro:session", JSON.stringify(ctx.email));
+
+    hashPass(ctx.email, ctx.pass).then(function (ph) {
+      collectSheet({ name: ctx.name, email: ctx.email, provider: "email", page: location.pathname, ph: ph });
+    });
+
+    close();
+    updateAvatarHost();
+    showToast("Verified ✓ Welcome, " + ctx.name.split(" ")[0] + "! 🎉");
+  }
+
+  /* -------- 10. FORGOT PASSWORD STEP -------- */
+  function renderForgotStep(preset) {
+    ensureOverlay();
+    ov.innerHTML =
+      '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Forgot Password">' +
+        '<div class="sheet-handle"></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<button class="icon-btn" id="tzFgBack" aria-label="Back">' + BACK_SVG + '</button>' +
+          '<button class="icon-btn" id="tzCloseFg" aria-label="Close">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<div class="auth-head">' +
+          '<span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>' +
+          '<h2>Forgot password? 🔑</h2>' +
+          '<p>Enter the email of your account — we\'ll send a 6-digit verification code to reset it.</p>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label for="tzFgEmail">EMAIL</label>' +
+          '<input id="tzFgEmail" type="email" value="' + escH(preset || "") + '" placeholder="you@example.com" autocomplete="email">' +
+        '</div>' +
+        '<div class="auth-error" id="tzFgError"></div>' +
+        '<button class="btn auth-submit" id="tzFgSend">Send reset code</button>' +
+        '<button class="guest-link" id="tzFgBackLink">← Back to login</button>' +
+      '</div>';
+
+    document.getElementById("tzCloseFg").addEventListener("click", close);
+    document.getElementById("tzFgBack").addEventListener("click", function () { renderAuthModal("login"); });
+    document.getElementById("tzFgBackLink").addEventListener("click", function () { renderAuthModal("login"); });
+
+    var errEl = document.getElementById("tzFgError");
+    var fail = function (m) { errEl.textContent = m; errEl.classList.add("show"); };
+
+    document.getElementById("tzFgSend").addEventListener("click", function () {
+      var btn = document.getElementById("tzFgSend");
+      var email = (document.getElementById("tzFgEmail").value || "").trim().toLowerCase();
+      var EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!EMAIL_RX.test(email)) return fail("Please enter a valid real email address.");
+      if (isDisposable(email)) return fail("Temporary email won't work — please use your real email.");
+
+      btn.disabled = true;
+      btn.textContent = "Sending…";
+
+      cmd({ action: "otp", kind: "reset", email: email }).then(function (res) {
+        btn.disabled = false;
+        btn.textContent = "Send reset code";
+        if (!res || !res.ok) return fail((res && res.error) || "No account found with this email — please sign up first.");
+        renderOtpStep({ purpose: "reset", email: email });
+      });
+    });
+
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  /* -------- 11. NEW PASSWORD STEP -------- */
+  function renderNewPassStep(ctx) {
+    ensureOverlay();
+    ov.innerHTML =
+      '<div class="auth-card" role="dialog" aria-modal="true" aria-label="New Password">' +
+        '<div class="sheet-handle"></div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center">' +
+          '<button class="icon-btn" id="tzNpBack" aria-label="Back">' + BACK_SVG + '</button>' +
+          '<button class="icon-btn" id="tzCloseNp" aria-label="Close">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<div class="auth-head">' +
+          '<span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>' +
+          '<h2>Create a new password 🛡️</h2>' +
+          '<p>Code verified ✓ — now set your new password.</p>' +
+        '</div>' +
+        '<div class="field">' +
+          '<label for="tzNp1">NEW PASSWORD</label>' +
+          '<input id="tzNp1" type="password" placeholder="6+ chars: letter + number" autocomplete="new-password">' +
+        '</div>' +
+        '<div class="field">' +
+          '<label for="tzNp2">TYPE IT AGAIN</label>' +
+          '<input id="tzNp2" type="password" placeholder="Same password again" autocomplete="new-password">' +
+        '</div>' +
+        '<div class="auth-error" id="tzNpError"></div>' +
+        '<button class="btn auth-submit" id="tzNpSave">Save new password</button>' +
+      '</div>';
+
+    document.getElementById("tzCloseNp").addEventListener("click", close);
+    document.getElementById("tzNpBack").addEventListener("click", function () { renderAuthModal("login"); });
+
+    var errEl = document.getElementById("tzNpError");
+    var fail = function (m) { errEl.textContent = m; errEl.classList.add("show"); };
+
+    document.getElementById("tzNpSave").addEventListener("click", function () {
+      var btn = document.getElementById("tzNpSave");
+      var p1 = document.getElementById("tzNp1").value || "";
+      var p2 = document.getElementById("tzNp2").value || "";
+
+      if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(p1)) return fail("Password needs 6+ characters with a letter and a number.");
+      if (p1 !== p2) return fail("Those two passwords don't match.");
+
+      btn.disabled = true;
+      btn.textContent = "Saving…";
+
+      hashPass(ctx.email, p1).then(function (ph) {
+        cmd({ action: "reset", email: ctx.email, code: ctx.code, ph: ph }).then(function (res) {
+          btn.disabled = false;
+          btn.textContent = "Save new password";
+          if (!res || !res.ok) return fail((res && res.error) || "Could not reset password. Please try again.");
+
+          var users = getUsers();
+          if (users[ctx.email]) {
+            users[ctx.email].pass = hash(p1);
+            localStorage.setItem("chitro:users", JSON.stringify(users));
+          }
+          renderAuthModal("login");
+          showToast("Password updated ✓ — log in now! 🎉");
+        });
+      });
+    });
+
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  /* -------- 12. 3-STATE HEADER BUTTON RENDERER -------- */
   function updateAvatarHost() {
     var host = document.getElementById("avatarHost");
     if (!host) return;
@@ -538,7 +859,6 @@
     var u = currentUser();
 
     if (u) {
-      /* অবস্থা ১: লগইন করা সক্রিয় মেম্বার -> গোল প্রোফাইল অবতার */
       var ph = avatarPhoto(u.email);
       var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
       host.innerHTML =
@@ -550,7 +870,6 @@
         renderProfileModal();
       });
     } else if (hasAnyUsers()) {
-      /* অবস্থা ২: অ্যাকাউন্ট আছে কিন্তু লগআউট -> মার্জিত [ Log In ] বাটন */
       host.innerHTML =
         '<button class="header-auth-btn login" type="button" id="tzLoginBtn">' +
           '<span>Log In</span>' +
@@ -560,10 +879,9 @@
         renderAuthModal("login");
       });
     } else {
-      /* অবস্থা ৩: একদম নতুন ভিজিটর -> আকর্ষণীয় [ ✨ Sign Up ] বাটন */
       host.innerHTML =
         '<button class="header-auth-btn signup" type="button" id="tzSignupBtn">' +
-          '<span>✨ Sign Up</span>' +
+          '<span> Sign Up</span>' +
         '</button>';
       document.getElementById("tzSignupBtn").addEventListener("click", function (e) {
         e.preventDefault();
