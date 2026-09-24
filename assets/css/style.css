@@ -1295,3 +1295,44 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
   -webkit-touch-callout: none !important;
   user-select: none !important;
 }
+
+/* 👤 হেডার সাইন আপ ও লগইন পিল বাটন */
+.header-auth-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  white-space: nowrap;
+}
+
+/* নতুন ইউজারের জন্য: আকর্ষণীয় গ্রেডিয়েন্ট সাইন আপ বাটন */
+.header-auth-btn.signup {
+  background: var(--grad, linear-gradient(135deg, #ff2daa, #ff7a00));
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255, 45, 170, 0.4);
+}
+.header-auth-btn.signup:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 6px 20px rgba(255, 45, 170, 0.55);
+}
+
+/* পুরনো ইউজারের জন্য: মার্জিত লগইন বাটন */
+.header-auth-btn.login {
+  background: var(--card-2, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.16));
+  color: var(--text, #eee);
+}
+.header-auth-btn.login:hover {
+  background: rgba(255, 95, 162, 0.12);
+  border-color: rgba(255, 95, 162, 0.4);
+  color: #ff7ec2;
+  transform: translateY(-1px);
+}
