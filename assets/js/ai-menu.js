@@ -1,17 +1,5 @@
 /* ============================================================
    TEZOFY — AI Tools Menu (v1.0)
-   ♾️ মূল আইডিয়া: লুকানো AI-টুলগুলোকে সবসময় এক ক্লিকে আনা।
-
-   কী করে:
-   ১) বটমবারের ai-hub লিংক → মেনু-ট্রিগার বাটন (চাপলেই বাটনের
-      উপরে সব টুলের পপআপ তালিকা ভেসে ওঠে)। মূল সাইটের কেন্দ্রীয়
-      .bb-ai বাটন পায় টুল-পেজের মতোই উঁচু গ্র্যাডিয়েন্ট চেহারা।
-   ২) ডেস্কটপে (≥860px) হেডারে "✨ AI Tools" পিল-বাটন — টুলগুলো
-      আর কোথাও লুকানো থাকে না, প্রতিটা পেজ থেকেই এক ক্লিক।
-
-   নতুন টুল যোগ করতে: নিচের TOOLS অ্যারেতে এক লাইন যোগ করুন,
-   অথবা যেকোনো পেজে এই স্ক্রিপ্টের আগে
-   window.TEZOFY_AI_TOOLS = [ … ] বসিয়ে দিন।
    ============================================================ */
 (function () {
   "use strict";
@@ -38,45 +26,59 @@
     ".ai-pill { display: none; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px;" +
     "  border: none; cursor: pointer; font: inherit; font-size: .84rem; font-weight: 700; color: #fff;" +
     "  background: var(--grad); box-shadow: 0 4px 16px rgba(255,45,170,.35); transition: .2s; text-decoration: none; }" +
-    ".ai-pill svg { width: 16px; height: 16px; }" +
     ".ai-pill:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(255,45,170,.5); }" +
-    ".ai-pill:active { transform: scale(.96); }" +
+    ".ai-pill svg { width: 17px; height: 17px; stroke: #fff; animation: ai-spark 2.4s ease-in-out infinite; }" +
     "@media (min-width: 860px) { .ai-pill { display: inline-flex; } }" +
+    "@keyframes ai-spark { 0%, 100% { transform: rotate(0) scale(1); } 50% { transform: rotate(12deg) scale(1.12); } }" +
 
-    /* veil + flyout */
-    ".ai-veil { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 88; opacity: 0; pointer-events: none; transition: .22s; }" +
+    "/* Backdrop veil */" +
+    ".ai-veil { position: fixed; inset: 0; background: rgba(5,6,10,.6); backdrop-filter: blur(6px);" +
+    "  -webkit-backdrop-filter: blur(6px); z-index: 120; opacity: 0; pointer-events: none;" +
+    "  transition: opacity .22s cubic-bezier(.2,.8,.2,1); }" +
     ".ai-veil.open { opacity: 1; pointer-events: auto; }" +
-    ".ai-fly { position: fixed; z-index: 89; width: min(92vw, 330px); background: var(--card);" +
-    "  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 8px;" +
-    "  opacity: 0; pointer-events: none; transition: .22s; }" +
+
+    "/* Flying menu sheet/card */" +
+    ".ai-fly { position: fixed; z-index: 121; background: var(--card, #12131a); border: 1px solid var(--border, rgba(255,255,255,.14));" +
+    "  border-radius: 20px; padding: 10px; width: min(340px, calc(100vw - 28px));" +
+    "  box-shadow: 0 20px 60px rgba(0,0,0,.65), 0 0 0 1px rgba(255,45,170,.25);" +
+    "  opacity: 0; pointer-events: none; transition: transform .24s cubic-bezier(.2,.9,.3,1), opacity .2s;" +
+    "  max-height: 84vh; overflow-y: auto; }" +
     ".ai-fly.open { opacity: 1; pointer-events: auto; }" +
-    ".ai-fly.ai-from-bar { bottom: calc(var(--bottombar-h) + env(safe-area-inset-bottom, 0px) + 16px);" +
-    "  left: 50%; transform: translateX(-50%) translateY(14px) scale(.97); transform-origin: bottom center; }" +
-    ".ai-fly.ai-from-bar.open { transform: translateX(-50%) translateY(0) scale(1); }" +
-    ".ai-fly.ai-from-head { top: calc(var(--header-h) + 8px); right: 14px; transform: translateY(-8px) scale(.97); transform-origin: top right; }" +
+
+    "/* Open from bottom-bar (mobile/all) */" +
+    ".ai-fly.ai-from-bar { bottom: calc(64px + env(safe-area-inset-bottom, 0px) + 12px); left: 50%;" +
+    "  transform: translate(-50%, 18px) scale(.96); transform-origin: bottom center; }" +
+    ".ai-fly.ai-from-bar.open { transform: translate(-50%, 0) scale(1); }" +
+
+    "/* Open from header (desktop) */" +
+    ".ai-fly.ai-from-head { top: 68px; right: 24px; transform: translateY(-12px) scale(.96); transform-origin: top right; }" +
     ".ai-fly.ai-from-head.open { transform: translateY(0) scale(1); }" +
 
-    /* flyout কন্টেন্ট */
+    "/* Items */" +
     ".ai-fly-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px 8px;" +
-    "  font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--muted-2); }" +
-    ".ai-fly-head svg { width: 14px; height: 14px; stroke: var(--pink); }" +
-    ".ai-fly-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px;" +
-    "  border-radius: var(--radius-sm); text-decoration: none; color: var(--text); transition: .16s; }" +
-    ".ai-fly-item:hover { background: var(--card-2); }" +
-    ".ai-fly-item .ic { width: 36px; height: 36px; flex: none; display: grid; place-items: center;" +
-    "  font-size: 1.12rem; background: var(--grad-soft); border: 1px solid rgba(255,45,170,.25); border-radius: 11px; }" +
-    ".ai-fly-item .tx { flex: 1 1 auto; min-width: 0; }" +
-    ".ai-fly-item .tx b { display: block; font-size: .88rem; font-weight: 700; }" +
-    ".ai-fly-item .tx small { display: block; font-size: .72rem; color: var(--muted-2); margin-top: 1px; }" +
-    ".ai-fly-item .go { flex: none; color: var(--pink); font-weight: 800; }" +
+    "  font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;" +
+    "  color: var(--muted, #8b90a0); border-bottom: 1px solid var(--border-soft, rgba(255,255,255,.08)); margin-bottom: 6px; }" +
+    ".ai-fly-head svg { width: 15px; height: 15px; stroke: #ff2daa; }" +
+    ".ai-fly-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 12px;" +
+    "  text-decoration: none; color: var(--text, #fff); transition: background .16s, transform .14s; }" +
+    ".ai-fly-item:hover { background: rgba(255,255,255,.06); transform: translateX(3px); }" +
+    ".ai-fly-item:active { transform: scale(.98); }" +
+    ".ai-fly-item .ic { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,255,255,.06);" +
+    "  display: grid; place-items: center; font-size: 1.25rem; flex: none; border: 1px solid rgba(255,255,255,.08); }" +
+    ".ai-fly-item .tx { flex: 1; min-width: 0; }" +
+    ".ai-fly-item .tx b { display: block; font-size: .92rem; font-weight: 700; line-height: 1.2; }" +
+    ".ai-fly-item .tx small { display: block; font-size: .72rem; color: var(--muted, #8b90a0); margin-top: 2px;" +
+    "  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }" +
+    ".ai-fly-item .go { font-size: .95rem; color: var(--muted, #8b90a0); transition: transform .16s, color .16s; }" +
+    ".ai-fly-item:hover .go { transform: translateX(3px); color: #ff2daa; }" +
 
-    /* কেন্দ্রীয় AI/Home বাটন → গোল, অ্যালাইনড, পালস-অ্যানিমেটেড কোর
-       (নিচে কোনো লেখা নেই; AI বাটনের কোরের মাঝে "AI" লেখা) */
+    "/* Bottombar .bb-ai প্রমোট চেহারা */" +
     "@media (max-width: 859px) {" +
     "  .bottombar .bb-ai { position: relative; }" +
-    "  .bottombar .bb-ai .bb-core { position: relative; width: 52px; height: 52px; border-radius: 999px;" +
-    "    background: var(--grad); color: #fff; display: grid; place-items: center;" +
-    "    box-shadow: 0 6px 20px rgba(255,45,170,.5); animation: bb-breathe 2.4s ease-in-out infinite; }" +
+    "  .bottombar .bb-ai .bb-core { width: 44px; height: 44px; border-radius: 999px;" +
+    "    background: var(--grad); display: grid; place-items: center;" +
+    "    box-shadow: 0 4px 16px rgba(255,45,170,.45); position: relative;" +
+    "    animation: bb-breathe 3.4s ease-in-out infinite; }" +
     "  .bottombar .bb-ai .bb-core::after { content: \"\"; position: absolute; inset: -3px; border-radius: 999px;" +
     "    border: 2px solid rgba(255,45,170,.55); animation: bb-ring 2.4s ease-out infinite; }" +
     "  .bottombar .bb-ai .bb-core svg { width: 26px; height: 26px; stroke: #fff; }" +
@@ -153,40 +155,30 @@
   function enhance() {
     ensureStyle();
 
-    /* ১) বটমবারের ai-hub লিংক → মেনু-ট্রিগার
-          (ai-hub পেজে নিজে অ্যাক্টিভ থাকলে লিংকই থাকবে) */
+    /* ১) বটমবারের ai-hub লিংক → মেনু-ট্রিগার */
     var links = document.querySelectorAll('.bottombar a[href="ai-hub.html"]');
     Array.prototype.forEach.call(links, function (a) {
       if (a.classList.contains("active")) return;
-      var b = document.createElement("button");
-      b.type = "button";
-      b.className = a.className;
-      b.setAttribute("data-ai-trigger", "bar");
-      b.setAttribute("aria-haspopup", "menu");
-      b.setAttribute("aria-expanded", "false");
-      b.setAttribute("aria-label", "TEZOFY AI tools");
-      if (a.classList.contains("bb-ai")) {
-        /* কেন্দ্রীয় AI বাটন → গোল পালস-কোর, মাঝখানে "AI" লেখা, নিচে কোনো লেবেল নেই */
-        b.innerHTML = '<b class="bb-core"><span class="bb-txt">AI</span></b>';
-      } else {
-        b.innerHTML = a.innerHTML;
-      }
-      a.parentNode.replaceChild(b, a);
-      b.addEventListener("click", function (e) { e.preventDefault(); toggle(b); });
+      a.setAttribute("data-ai-trigger", "bar");
+      a.setAttribute("aria-haspopup", "menu");
+      a.setAttribute("aria-expanded", "false");
+      a.addEventListener("click", function (e) {
+        e.preventDefault();
+        toggle(a);
+      });
     });
 
-    /* ২) ডেস্কটপ হেডার-পিল (≥860px-এ দৃশ্যমান) */
-    var ha = document.querySelector(".header-actions");
-    if (ha && !ha.querySelector(".ai-pill")) {
+    /* ২) ডেস্কটপ হেডারে "✨ AI Tools" পিল */
+    var actions = document.querySelector(".site-header .header-actions");
+    if (actions && !document.querySelector(".header-actions .ai-pill")) {
       var pill = document.createElement("button");
       pill.type = "button";
       pill.className = "ai-pill";
       pill.setAttribute("data-ai-trigger", "head");
       pill.setAttribute("aria-haspopup", "menu");
       pill.setAttribute("aria-expanded", "false");
-      pill.setAttribute("aria-label", "TEZOFY AI tools");
       pill.innerHTML = SPARK + "<span>AI Tools</span>";
-      ha.insertBefore(pill, ha.firstChild);
+      actions.insertBefore(pill, actions.firstChild);
       pill.addEventListener("click", function (e) { e.preventDefault(); toggle(pill); });
     }
   }
@@ -197,161 +189,10 @@
     enhance();
   }
 })();
-/* ============================================================
-   TEZOFY — AI Tool Pages: Profile & Auth Bridge
-   হেডারের #avatarHost-কে সচল ও প্রোফাইল মডাল ওপেন করে
-   ============================================================ */
-(function () {
-  "use strict";
-
-  function getSession() {
-    try { return JSON.parse(localStorage.getItem("chitro:session")); } catch (e) { return null; }
-  }
-  function getUsers() {
-    try { return JSON.parse(localStorage.getItem("chitro:users")) || {}; } catch (e) { return {}; }
-  }
-  function currentUser() {
-    var s = getSession();
-    return s ? getUsers()[s] || null : null;
-  }
-  function avatarPhoto(email) {
-    try { return JSON.parse(localStorage.getItem("chitro:avatar:" + email)) || ""; } catch (e) { return ""; }
-  }
-  function streak() {
-    try {
-      var v = JSON.parse(localStorage.getItem("chitro:visits")) || [];
-      if (!v.length) return 0;
-      var DAY = 86400000, n = 0, d = new Date(), today = d.toISOString().slice(0, 10);
-      if (v[v.length - 1] !== today) d = new Date(d.getTime() - DAY);
-      while (true) {
-        var s = d.toISOString().slice(0, 10);
-        if (v.indexOf(s) !== -1) { n++; d = new Date(d.getTime() - DAY); } else break;
-      }
-      return n;
-    } catch (e) { return 0; }
-  }
-
-  var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-
-  var ov = null;
-  function ensureOverlay() {
-    if (ov) return ov;
-    ov = document.createElement("div");
-    ov.className = "auth-overlay";
-    ov.id = "tzAuthOverlay";
-    document.body.appendChild(ov);
-    ov.addEventListener("click", function (e) {
-      if (e.target === ov) close();
-    });
-    return ov;
-  }
-
-  function close() {
-    if (ov) {
-      ov.classList.remove("open");
-      document.body.style.overflow = "";
-    }
-  }
-
-  function renderModal() {
-    ensureOverlay();
-    var u = currentUser();
-    if (u) {
-      var ph = avatarPhoto(u.email);
-      var st = streak();
-      var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
-      var since = u.created ? new Date(u.created).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "member";
-      
-      ov.innerHTML =
-        '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Profile">' +
-          '<div class="sheet-handle"></div>' +
-          '<div style="display:flex;justify-content:flex-end">' +
-            '<button class="icon-btn" type="button" id="tzCloseProfile" aria-label="Close">' + CLOSE_SVG + '</button>' +
-          '</div>' +
-          '<div class="profile-hero">' +
-            '<span class="pf-ring">' +
-              '<div class="profile-avatar big">' +
-                (ph ? '<img class="av-main" src="' + ph + '" alt="">' : initial) +
-              '</div>' +
-            '</span>' +
-            '<div class="ph-info">' +
-              '<h2>' + (u.name || "Creator") + '</h2>' +
-              '<p>' + (u.email || "") + ' · since ' + since + '</p>' +
-              '<div class="pill-row">' +
-                '<span class="streak-pill">🔥 ' + st + ' day' + (st === 1 ? '' : 's') + ' streak</span>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div class="p-actions">' +
-            '<a class="p-action" href="saved.html">⭐ <span>My saved prompts</span> <span class="right">→</span></a>' +
-            '<a class="p-action" href="index.html">🏠 <span>Back to Home</span> <span class="right">→</span></a>' +
-            '<button class="p-action danger" type="button" id="tzLogoutBtn">🚪 <span>Log out</span></button>' +
-          '</div>' +
-        '</div>';
-
-      document.getElementById("tzCloseProfile").addEventListener("click", close);
-      document.getElementById("tzLogoutBtn").addEventListener("click", function () {
-        localStorage.setItem("chitro:session", "null");
-        close();
-        updateAvatarHost();
-      });
-    } else {
-      ov.innerHTML =
-        '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Sign In">' +
-          '<div class="sheet-handle"></div>' +
-          '<div style="display:flex;justify-content:flex-end">' +
-            '<button class="icon-btn" type="button" id="tzCloseAuth" aria-label="Close">' + CLOSE_SVG + '</button>' +
-          '</div>' +
-          '<div style="text-align:center;padding:12px 0 20px;">' +
-            '<div style="width:54px;height:54px;border-radius:50%;background:var(--grad-soft);display:inline-grid;place-items:center;margin:0 auto 12px;font-size:1.5rem;">👤</div>' +
-            '<h2 style="font-size:1.2rem;font-weight:800;margin-bottom:6px;">Sign in to TEZOFY</h2>' +
-            '<p style="font-size:.82rem;color:var(--muted);max-width:280px;margin:0 auto 16px;">Access your saved prompts, sync across devices & enjoy full creator tools.</p>' +
-            '<a class="btn primary" href="index.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:999px;background:var(--grad);color:#fff;text-decoration:none;font-weight:700;">Continue on Home Page →</a>' +
-          '</div>' +
-        '</div>';
-      document.getElementById("tzCloseAuth").addEventListener("click", close);
-    }
-    ov.classList.add("open");
-    document.body.style.overflow = "hidden";
-  }
-
-  function updateAvatarHost() {
-    var host = document.getElementById("avatarHost");
-    if (!host) return;
-    var u = currentUser();
-    if (!u) {
-      host.innerHTML =
-        '<button class="avatar-btn" type="button" aria-label="Sign in" id="tzAvatarBtn">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-            '<circle cx="12" cy="8" r="4"/><path d="M4 21c.9-3.8 4-6 8-6s7.1 2.2 8 6"/>' +
-          '</svg>' +
-        '</button>';
-    } else {
-      var ph = avatarPhoto(u.email);
-      var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
-      host.innerHTML =
-        '<button class="avatar-btn logged" type="button" aria-label="Profile" id="tzAvatarBtn">' +
-          (ph ? '<img class="avatar-ph" src="' + ph + '" alt="' + initial + '">' : initial) +
-        '</button>';
-    }
-    var btn = document.getElementById("tzAvatarBtn");
-    if (btn) {
-      btn.addEventListener("click", function (e) {
-        e.preventDefault();
-        renderModal();
-      });
-    }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", updateAvatarHost);
-  } else {
-    updateAvatarHost();
-  }
-})();
 
 /* ============================================================
    TEZOFY — AI Tool Pages: 1000% Exact Auth Engine (Cloud & Social)
+   Official Brand Logo + Smooth Zero-Flicker Tab Switching
    Google Sign-In + Facebook + Email Auth + Profile Dashboard
    ============================================================ */
 (function () {
@@ -477,7 +318,6 @@
   }
 
   var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
-  var SPARK_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>';
 
   var ov = null;
   function ensureOverlay() {
@@ -555,10 +395,10 @@
     document.body.style.overflow = "hidden";
   }
 
-  /* ২. ১০০% আসল অথ মডাল (Google + Facebook + Email Sign Up / Log In) */
-  function renderAuthModal(mode) {
+  /* ২. ১০০% আসল অথ মডাল (ব্র্যান্ড লোগো + স্মুথ জিরো-ফ্লিকার সুইচিং) */
+  function renderAuthModal(initialMode) {
     ensureOverlay();
-    mode = mode === "signup" ? "signup" : "login";
+    var currentMode = initialMode === "signup" ? "signup" : "login";
 
     ov.innerHTML =
       '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Account">' +
@@ -567,7 +407,7 @@
           '<button class="icon-btn" type="button" id="tzCloseAuth" aria-label="Close">' + CLOSE_SVG + '</button>' +
         '</div>' +
         '<div class="auth-head">' +
-          '<span class="brand-mark">' + SPARK_SVG + '</span>' +
+          '<span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>' +
           '<h2>Welcome to TEZOFY</h2>' +
           '<span class="brand-eyebrow">✦ PREMIUM AI PROMPT STUDIO</span>' +
           '<p>Save prompts, unlock members-only designs & keep your streak — free forever.</p>' +
@@ -581,39 +421,70 @@
         '</div>' +
         '<div class="auth-divider"><span>OR WITH EMAIL</span></div>' +
         '<div class="auth-tabs">' +
-          '<button type="button" class="' + (mode === "login" ? "active" : "") + '" id="tzTabLogin">Log In</button>' +
-          '<button type="button" class="' + (mode === "signup" ? "active" : "") + '" id="tzTabSignup">Sign Up</button>' +
+          '<button type="button" id="tzTabLogin">Log In</button>' +
+          '<button type="button" id="tzTabSignup">Sign Up</button>' +
         '</div>' +
         '<form id="tzAuthForm" novalidate>' +
-          (mode === "signup" ? '<div class="field"><label for="tzName">YOUR NAME</label><input id="tzName" type="text" placeholder="e.g. Rahim Ahmed" autocomplete="name"></div>' : '') +
+          '<div class="field" id="tzNameField"><label for="tzName">YOUR NAME</label><input id="tzName" type="text" placeholder="e.g. Rahim Ahmed" autocomplete="name"></div>' +
           '<div class="field"><label for="tzEmail">EMAIL</label><input id="tzEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>' +
-          '<div class="field"><label for="tzPass">PASSWORD</label><input id="tzPass" type="password" placeholder="' + (mode === "signup" ? "6+ chars: letter + number" : "•••••••••••••") + '" autocomplete="' + (mode === "signup" ? "new-password" : "current-password") + '"></div>' +
+          '<div class="field"><label for="tzPass">PASSWORD</label><input id="tzPass" type="password" placeholder="•••••••••••••" autocomplete="current-password"></div>' +
           '<div class="auth-error" id="tzAuthError"></div>' +
-          '<button class="btn auth-submit" type="submit">' + (mode === "signup" ? "Create Free Account" : "Log In") + '</button>' +
+          '<button class="btn auth-submit" id="tzSubmitBtn" type="submit">Log In</button>' +
         '</form>' +
-        (mode === "login" ? '<button type="button" class="guest-link" id="tzForgotLink">🔑 Forgot password? →</button>' : '') +
+        '<button type="button" class="guest-link" id="tzForgotLink">🔑 Forgot password? →</button>' +
         '<button type="button" class="guest-link" id="tzGuestLink">Continue as guest for now →</button>' +
         '<p class="auth-note">🔒 Free forever. Every email is verified with a one-time code —<br>we only keep an encrypted password hash, never your actual password.</p>' +
       '</div>';
 
+    var tabLogin = document.getElementById("tzTabLogin");
+    var tabSignup = document.getElementById("tzTabSignup");
+    var nameField = document.getElementById("tzNameField");
+    var passInput = document.getElementById("tzPass");
+    var submitBtn = document.getElementById("tzSubmitBtn");
+    var forgotBtn = document.getElementById("tzForgotLink");
+    var errEl = document.getElementById("tzAuthError");
+
+    /* 🎯 স্মুথ ট্যাব সুইচিং: পেজ না কাঁপিয়ে ফ্রেমলেস পরিবর্তন */
+    function setTab(mode) {
+      currentMode = mode;
+      errEl.textContent = "";
+      errEl.classList.remove("show");
+      if (mode === "signup") {
+        tabSignup.classList.add("active");
+        tabLogin.classList.remove("active");
+        nameField.style.display = "";
+        passInput.placeholder = "6+ chars: letter + number";
+        submitBtn.textContent = "Create Free Account";
+        forgotBtn.style.display = "none";
+      } else {
+        tabLogin.classList.add("active");
+        tabSignup.classList.remove("active");
+        nameField.style.display = "none";
+        passInput.placeholder = "•••••••••••••";
+        submitBtn.textContent = "Log In";
+        forgotBtn.style.display = "";
+      }
+    }
+
+    setTab(currentMode);
+
+    tabLogin.addEventListener("click", function () { setTab("login"); });
+    tabSignup.addEventListener("click", function () { setTab("signup"); });
+
     document.getElementById("tzCloseAuth").addEventListener("click", close);
     document.getElementById("tzGuestLink").addEventListener("click", close);
-    document.getElementById("tzTabLogin").addEventListener("click", function () { renderAuthModal("login"); });
-    document.getElementById("tzTabSignup").addEventListener("click", function () { renderAuthModal("signup"); });
 
-    var forgotBtn = document.getElementById("tzForgotLink");
     if (forgotBtn) {
       forgotBtn.addEventListener("click", function () {
         alert("To reset your password, please continue from the Home Page or contact support.");
       });
     }
 
-    /* Google Sign In Render */
+    /* Google Sign In Render (লোড হবে মাত্র একবার) */
     renderGoogleBtn(document.getElementById("tzGBtn"), handleSocialSuccess);
 
     /* Facebook Login Handler */
     document.getElementById("tzFbBtn").addEventListener("click", function () {
-      var errEl = document.getElementById("tzAuthError");
       loginFacebook(handleSocialSuccess, function (msg) {
         errEl.textContent = msg;
         errEl.classList.add("show");
@@ -623,7 +494,6 @@
     /* Email / Password Form Submit */
     document.getElementById("tzAuthForm").addEventListener("submit", function (e) {
       e.preventDefault();
-      var errEl = document.getElementById("tzAuthError");
       errEl.textContent = "";
       errEl.classList.remove("show");
 
@@ -637,7 +507,7 @@
 
       var users = getUsers();
 
-      if (mode === "signup") {
+      if (currentMode === "signup") {
         var name = (document.getElementById("tzName").value || "").trim() || email.split("@")[0];
         if (users[email]) return fail("An account with this email already exists. Try logging in.");
         users[email] = { name: name, email: email, pass: hash(pass), created: Date.now() };
