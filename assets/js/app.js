@@ -1239,7 +1239,7 @@
       custNow.addEventListener("click", () => {
         if (!currentUser()) {
           toast("Sign up free to unlock customization ✨");
-          if (window.__chitroOpenAuth) window.__chitroOpenAuth();
+          if (window.__chitroOpenAuth) window.__chitroOpenAuth("signup");
           return;
         }
         custPanel.hidden = false;
