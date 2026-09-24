@@ -205,17 +205,17 @@
     ov.id = "authOverlay";
     document.body.appendChild(ov);
 
-    function open() { renderAuth(); ov.classList.add("open"); document.body.style.overflow = "hidden"; }
+        function open(mode = "login") { renderAuth(mode); ov.classList.add("open"); document.body.style.overflow = "hidden"; }
     function close() { ov.classList.remove("open"); document.body.style.overflow = ""; }
 
-    window.__chitroOpenAuth = open;
+    window.__chitroOpenAuth = (mode = "signup") => open(mode);
 
-    function socialHTML() {
+      function socialHTML() {
       if (!window.CloudAuth || !CloudAuth.socialEnabled()) return "";
       var buttons = "";
-      if (CloudAuth.googleConfigured()) buttons += '<div id="gBtn" class="g-btn-slot"></div>';
-      if (CloudAuth.fbReady()) buttons += '<button type="button" class="social-btn fb" id="fbBtn"><svg viewBox="0 0 24 24" width="18" height="18" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg><span>Continue with Facebook</span></button>';
-      return '<div class="social-row">' + buttons + '</div><div class="auth-divider"><span>or with email</span></div>';
+      if (CloudAuth.googleConfigured()) buttons += '<div id="gBtn" class="g-btn-circle" title="Continue with Google"></div>';
+      if (CloudAuth.fbReady()) buttons += '<button type="button" class="social-circle-btn fb" id="fbBtn" title="Continue with Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" width="22" height="22" fill="#fff" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.9 11.9v-8.4H7.1V12h3V9.4c0-3 1.8-4.7 4.5-4.7 1.3 0 2.7.2 2.7.2v3h-1.5c-1.5 0-2 .9-2 1.9V12h3.3l-.5 3.5h-2.8v8.4A12 12 0 0 0 24 12z"/></svg></button>';
+      return '<div class="auth-divider"><span>OR CONTINUE WITH</span></div><div class="social-circle-row">' + buttons + '</div>';
     }
 
     function unlockRefresh() { setTimeout(() => { if ($(".lock-overlay") && window.__chitroRerender) window.__chitroRerender(); }, 300); }
@@ -249,86 +249,139 @@
       toast("Welcome, " + u.name.split(" ")[0] + "! 🎉");
     }
 
-    function renderAuth(mode = "login") {
+        function renderAuth(initialMode = "login") {
+      let currentMode = initialMode === "signup" ? "signup" : "login";
       ov.innerHTML = `
         <div class="auth-card" role="dialog" aria-modal="true" aria-label="Account">
           <div class="sheet-handle"></div>
           <div style="display:flex;justify-content:flex-end"><button class="icon-btn" data-close-auth aria-label="Close">${I.close}</button></div>
           <div class="auth-head">
-            <span class="brand-mark">${I.spark}</span>
+            <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo" style="width:28px;height:28px;object-fit:contain"></span>
             <h2>Welcome to ${SITE.name}</h2>
             <span class="brand-eyebrow">✦ Premium AI Prompt Studio</span>
             <p>Save prompts, unlock members-only designs & keep your streak — free forever.</p>
           </div>
-          ${socialHTML()}
           <div class="auth-tabs">
-            <button class="${mode === "login" ? "active" : ""}" data-tab="login">Log In</button>
-            <button class="${mode === "signup" ? "active" : ""}" data-tab="signup">Sign Up</button>
+            <button type="button" class="${currentMode === "login" ? "active" : ""}" data-tab="login">Log In</button>
+            <button type="button" class="${currentMode === "signup" ? "active" : ""}" data-tab="signup">Sign Up</button>
           </div>
           <form id="authForm" novalidate>
-            ${mode === "signup" ? `<div class="field"><label for="aName">Your Name</label><input id="aName" type="text" placeholder="e.g. Rahim Ahmed" autocomplete="name"></div>` : ""}
+            <div class="field" id="nameField" style="${currentMode === "signup" ? "" : "display:none"}"><label for="aName">Your Name</label><input id="aName" type="text" placeholder="e.g. Rahim Ahmed" autocomplete="name"></div>
             <div class="field"><label for="aEmail">Email</label><input id="aEmail" type="email" placeholder="you@example.com" autocomplete="email"></div>
-            <div class="field"><label for="aPass">Password</label><input id="aPass" type="password" placeholder="${mode === "signup" ? "6+ chars: letter + number" : "Your password"}" autocomplete="${mode === "signup" ? "new-password" : "current-password"}"></div>
+            <div class="field"><label for="aPass">Password</label><input id="aPass" type="password" placeholder="${currentMode === "signup" ? "6+ chars: letter + number" : "Your password"}" autocomplete="${currentMode === "signup" ? "new-password" : "current-password"}"></div>
             <div class="auth-error" id="authError"></div>
-            <button class="btn auth-submit" type="submit">${mode === "signup" ? "Create Free Account" : "Log In"}</button>
+            <button class="btn auth-submit" id="authSubmitBtn" type="submit">${currentMode === "signup" ? "Create Free Account" : "Log In"}</button>
           </form>
-          ${mode === "login" ? '<button type="button" class="guest-link" id="forgotLink">🔑 Forgot password? →</button>' : ""}
+          <button type="button" class="guest-link" id="forgotLink" style="${currentMode === "login" ? "" : "display:none"}">🔑 Forgot password? →</button>
+          ${socialHTML()}
           <button class="guest-link" data-close-auth>Continue as guest for now →</button>
           <p class="auth-note">🔒 Free forever. Every email is verified with a one-time code —<br>we only keep an encrypted password hash, never your actual password.</p>
         </div>`;
 
-      $$("[data-tab]", ov).forEach((b) => b.addEventListener("click", () => renderAuth(b.dataset.tab)));
+      const tabLogin = $("[data-tab='login']", ov);
+      const tabSignup = $("[data-tab='signup']", ov);
+      const nameField = $("#nameField", ov);
+      const passInput = $("#aPass", ov);
+      const submitBtn = $("#authSubmitBtn", ov);
+      const forgotBtn = $("#forgotLink", ov);
+      const errEl = $("#authError", ov);
+
+      /* 🎯 ফ্লিকার-মুক্ত ইনস্ট্যান্ট সুইচ */
+      function setTab(m) {
+        currentMode = m;
+        errEl.textContent = "";
+        errEl.classList.remove("show");
+        if (m === "signup") {
+          tabSignup.classList.add("active");
+          tabLogin.classList.remove("active");
+          nameField.style.display = "";
+          passInput.placeholder = "6+ chars: letter + number";
+          passInput.autocomplete = "new-password";
+          submitBtn.textContent = "Create Free Account";
+          if (forgotBtn) forgotBtn.style.display = "none";
+        } else {
+          tabLogin.classList.add("active");
+          tabSignup.classList.remove("active");
+          nameField.style.display = "none";
+          passInput.placeholder = "Your password";
+          passInput.autocomplete = "current-password";
+          submitBtn.textContent = "Log In";
+          if (forgotBtn) forgotBtn.style.display = "";
+        }
+      }
+
+      tabLogin.addEventListener("click", () => setTab("login"));
+      tabSignup.addEventListener("click", () => setTab("signup"));
+
       $$("[data-close-auth]", ov).forEach((b) => b.addEventListener("click", close));
-      var fg = $("#forgotLink", ov);
-      if (fg) fg.addEventListener("click", () => renderForgotStep(($("#aEmail", ov).value || "").trim().toLowerCase()));
+      if (forgotBtn) forgotBtn.addEventListener("click", () => renderForgotStep(($("#aEmail", ov).value || "").trim().toLowerCase()));
       ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
 
       $("#authForm", ov).addEventListener("submit", (e) => {
         e.preventDefault();
         const email = ($("#aEmail", ov).value || "").trim().toLowerCase();
         const pass = $("#aPass", ov).value || "";
-        const errEl = $("#authError", ov);
         const fail = (m) => { errEl.textContent = m; errEl.classList.add("show"); };
-        const EMAIL_RX = /^[a-z0-9.!#$%&'*+\/?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
+        const EMAIL_RX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!EMAIL_RX.test(email) || email.length > 100) return fail("Please enter a valid real email address (e.g. name@gmail.com).");
         if (!pass) return fail("Please enter your password.");
 
-        /* 🔑 সাইনআপ — OTP ভেরিফিকেশন ছাড়া সম্পন্নই হবে না */
-        if (mode === "signup") {
+        /* 🔑 সাইনআপ — OTP ভেরিফিকেশন */
+        if (currentMode === "signup") {
           const name = ($("#aName", ov).value || "").trim();
           if (name.length < 3) return fail("Please write your full name (at least 3 letters).");
           if (/[\d<>{}]/.test(name)) return fail("Name shouldn't contain numbers or symbols.");
           if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(pass)) return fail("Password must be 6+ characters with a letter and a number.");
           if (window.CloudAuth && CloudAuth.isDisposable(email)) return fail("Temporary email addresses aren't allowed — please use your real email (Gmail is perfect).");
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Sending code…";
           const begin = () => {
             errEl.classList.remove("show");
             CloudAuth.cmd({ action: "otp", kind: "signup", email: email, name: name }).then((res) => {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Create Free Account";
               if (!res || !res.ok) return fail((res && res.error) || "Something went wrong — please try again.");
               renderOtpStep({ purpose: "signup", email: email, name: name, pass: pass });
             });
           };
           if (window.CloudAuth && CloudAuth.check) {
             return CloudAuth.check(email).then((res) => {
-              if (res && res.banned) return fail("⛔ এই অ্যাকাউন্ট ব্যানড — সহায়তার জন্য যোগাযোগ করুন।");
+              if (res && res.banned) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Create Free Account";
+                return fail("⛔ This account is banned — please contact for support.");
+              }
               begin();
             });
           }
           return begin();
         }
 
-        /* 🔓 লগইন — ডিভাইস হিসাব না মিললে সার্ভার হিসাব মেলাই */
+        /* 🔓 লগইন */
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Logging in…";
         const localTry = login(email, pass);
         const afterOk = (nm) => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Log In";
           const u = currentUser();
           if (window.CloudAuth) CloudAuth.collect({ name: (u && u.name) || nm || email, email, provider: "email", page: location.pathname });
           close(); refreshAvatar(); unlockRefresh(); toast("Welcome back, " + ((((u && u.name) || nm || "").split(" ")[0]) || "friend") + "! 👋");
         };
         const doLogin = () => {
           if (localTry.ok) return afterOk();
-          if (!(window.CloudAuth && CloudAuth.cmd && CloudAuth.hashPass)) return fail(localTry.err || "Email or password doesn't match our records.");
+          if (!(window.CloudAuth && CloudAuth.cmd && CloudAuth.hashPass)) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Log In";
+            return fail(localTry.err || "Email or password doesn't match our records.");
+          }
           CloudAuth.hashPass(email, pass).then((ph) =>
             CloudAuth.cmd({ action: "login", email: email, ph: ph }).then((res) => {
-              if (!res || !res.ok) return fail((res && res.error) || "Email or password doesn't match our records.");
+              if (!res || !res.ok) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Log In";
+                return fail((res && res.error) || "Email or password doesn't match our records.");
+              }
               const list = users();
               list[email] = { name: res.name || email.split("@")[0], email: email, pass: hash(pass), created: Date.now(), via: "email" };
               store.set("users", list); store.set("session", email);
@@ -338,7 +391,11 @@
         };
         if (window.CloudAuth && CloudAuth.check) {
           return CloudAuth.check(email).then((res) => {
-            if (res && res.banned) return fail("⛔ This account is banned — please contact support.");
+            if (res && res.banned) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = "Log In";
+              return fail("⛔ This account is banned — please contact support.");
+            }
             doLogin();
           });
         }
@@ -349,12 +406,10 @@
         CloudAuth.googleRender($("#gBtn", ov), socialSuccess);
         var fbBtn = $("#fbBtn", ov);
         if (fbBtn) fbBtn.addEventListener("click", function () {
-          var errEl = $("#authError", ov);
           CloudAuth.fbLogin(socialSuccess, function (m) { errEl.textContent = m; errEl.classList.add("show"); });
         });
       }
     }
-
     /* ---------- 🔢 v2.9 GATEKEEPER: OTP স্টেপ / ফরগেট / নতুন পাসওয়ার্ড ---------- */
     function escH(sx) { return String(sx == null ? "" : sx).replace(/[&<>"]/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[m])); }
 
