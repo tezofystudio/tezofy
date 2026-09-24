@@ -349,3 +349,228 @@
     updateAvatarHost();
   }
 })();
+
+/* ============================================================
+   TEZOFY — AI Tool Pages: Smart 3-State Auth & Profile Bridge
+   ============================================================ */
+(function () {
+  "use strict";
+
+  function getSession() {
+    try { return JSON.parse(localStorage.getItem("chitro:session")); } catch (e) { return null; }
+  }
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem("chitro:users")) || {}; } catch (e) { return {}; }
+  }
+  function currentUser() {
+    var s = getSession();
+    return s ? getUsers()[s] || null : null;
+  }
+  function hasAnyUsers() {
+    return Object.keys(getUsers()).length > 0;
+  }
+  function avatarPhoto(email) {
+    try { return JSON.parse(localStorage.getItem("chitro:avatar:" + email)) || ""; } catch (e) { return ""; }
+  }
+  function streak() {
+    try {
+      var v = JSON.parse(localStorage.getItem("chitro:visits")) || [];
+      if (!v.length) return 0;
+      var DAY = 86400000, n = 0, d = new Date(), today = d.toISOString().slice(0, 10);
+      if (v[v.length - 1] !== today) d = new Date(d.getTime() - DAY);
+      while (true) {
+        var s = d.toISOString().slice(0, 10);
+        if (v.indexOf(s) !== -1) { n++; d = new Date(d.getTime() - DAY); } else break;
+      }
+      return n;
+    } catch (e) { return 0; }
+  }
+  function hash(s) {
+    var h = 0; for (var i = 0; i < s.length; i++) { h = (h << 5) - h + s.charCodeAt(i); h |= 0; }
+    return "h" + Math.abs(h).toString(36) + s.length;
+  }
+
+  var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>';
+
+  var ov = null;
+  function ensureOverlay() {
+    if (ov) return ov;
+    ov = document.createElement("div");
+    ov.className = "auth-overlay";
+    ov.id = "tzAuthOverlay";
+    document.body.appendChild(ov);
+    ov.addEventListener("click", function (e) {
+      if (e.target === ov) close();
+    });
+    return ov;
+  }
+
+  function close() {
+    if (ov) {
+      ov.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+  }
+
+  /* ১. প্রোফাইল ড্যাশবোর্ড (শুধুমাত্র যারা ইতিমধ্যে লগইন আছেন) */
+  function renderProfileModal() {
+    ensureOverlay();
+    var u = currentUser();
+    if (!u) { renderAuthModal("signup"); return; }
+
+    var ph = avatarPhoto(u.email);
+    var st = streak();
+    var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
+    var since = u.created ? new Date(u.created).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "member";
+
+    ov.innerHTML =
+      '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Profile">' +
+        '<div class="sheet-handle"></div>' +
+        '<div style="display:flex;justify-content:flex-end">' +
+          '<button class="icon-btn" type="button" id="tzCloseProfile" aria-label="Close">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<div class="profile-hero">' +
+          '<span class="pf-ring">' +
+            '<div class="profile-avatar big">' +
+              (ph ? '<img class="av-main" src="' + ph + '" alt="">' : initial) +
+            '</div>' +
+          '</span>' +
+          '<div class="ph-info">' +
+            '<h2>' + (u.name || "Creator") + '</h2>' +
+            '<p>' + (u.email || "") + ' · since ' + since + '</p>' +
+            '<div class="pill-row">' +
+              '<span class="streak-pill">🔥 ' + st + ' day' + (st === 1 ? '' : 's') + ' streak</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="p-actions">' +
+          '<a class="p-action" href="saved.html">⭐ <span>My saved prompts</span> <span class="right">→</span></a>' +
+          '<a class="p-action" href="index.html">🏠 <span>Back to Home</span> <span class="right">→</span></a>' +
+          '<button class="p-action danger" type="button" id="tzLogoutBtn">🚪 <span>Log out</span></button>' +
+        '</div>' +
+      '</div>';
+
+    document.getElementById("tzCloseProfile").addEventListener("click", close);
+    document.getElementById("tzLogoutBtn").addEventListener("click", function () {
+      localStorage.setItem("chitro:session", "null");
+      close();
+      updateAvatarHost();
+    });
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  /* ২. আসল সাইন আপ ও লগইন ফর্ম (গেস্ট ও নতুন ইউজারের জন্য) */
+  function renderAuthModal(mode) {
+    ensureOverlay();
+    mode = mode || "signup";
+
+    ov.innerHTML =
+      '<div class="auth-card" role="dialog" aria-modal="true" aria-label="Account">' +
+        '<div class="sheet-handle"></div>' +
+        '<div style="display:flex;justify-content:flex-end">' +
+          '<button class="icon-btn" type="button" id="tzCloseAuth" aria-label="Close">' + CLOSE_SVG + '</button>' +
+        '</div>' +
+        '<div class="auth-head" style="text-align:center;margin-bottom:18px;">' +
+          '<div style="width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,#ff2daa,#ff7a00);display:inline-grid;place-items:center;color:#fff;font-size:1.4rem;margin:0 auto 8px;">✦</div>' +
+          '<h2 style="font-size:1.24rem;font-weight:800;margin:0 0 4px;">' + (mode === "signup" ? "Create your account" : "Welcome back") + '</h2>' +
+          '<p style="font-size:.82rem;color:var(--muted,#aaa);margin:0;">Save prompts, sync favorites & unlock unlimited AI tools.</p>' +
+        '</div>' +
+        '<div class="auth-tabs" style="display:flex;gap:4px;background:rgba(255,255,255,.06);padding:4px;border-radius:12px;margin-bottom:16px;">' +
+          '<button type="button" id="tzTabSignup" style="flex:1;padding:8px;border:none;border-radius:9px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;' + (mode === "signup" ? "background:#ff2daa;color:#fff;" : "background:none;color:#aaa;") + '">Sign Up</button>' +
+          '<button type="button" id="tzTabLogin" style="flex:1;padding:8px;border:none;border-radius:9px;font:inherit;font-size:.84rem;font-weight:700;cursor:pointer;' + (mode === "login" ? "background:#ff2daa;color:#fff;" : "background:none;color:#aaa;") + '">Log In</button>' +
+        '</div>' +
+        '<form id="tzAuthForm" style="display:grid;gap:12px;" novalidate>' +
+          (mode === "signup" ? '<div class="field"><label style="display:block;font-size:.76rem;font-weight:700;color:var(--muted,#aaa);margin-bottom:4px;">Your Name</label><input id="tzName" type="text" placeholder="e.g. Sanjoy" required style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1px solid var(--border,rgba(255,255,255,.16));background:rgba(255,255,255,.05);color:#fff;font:inherit;"></div>' : '') +
+          '<div class="field"><label style="display:block;font-size:.76rem;font-weight:700;color:var(--muted,#aaa);margin-bottom:4px;">Email</label><input id="tzEmail" type="email" placeholder="you@example.com" required style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1px solid var(--border,rgba(255,255,255,.16));background:rgba(255,255,255,.05);color:#fff;font:inherit;"></div>' +
+          '<div class="field"><label style="display:block;font-size:.76rem;font-weight:700;color:var(--muted,#aaa);margin-bottom:4px;">Password</label><input id="tzPass" type="password" placeholder="6+ characters" required style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1px solid var(--border,rgba(255,255,255,.16));background:rgba(255,255,255,.05);color:#fff;font:inherit;"></div>' +
+          '<div id="tzAuthError" style="color:#ff6b6b;font-size:.8rem;min-height:16px;"></div>' +
+          '<button type="submit" style="width:100%;padding:12px;border-radius:999px;border:none;background:linear-gradient(135deg,#ff2daa,#ff7a00);color:#fff;font:inherit;font-size:.9rem;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(255,45,170,.4);">' + (mode === "signup" ? "Create Free Account →" : "Log In →") + '</button>' +
+        '</form>' +
+      '</div>';
+
+    document.getElementById("tzCloseAuth").addEventListener("click", close);
+    document.getElementById("tzTabSignup").addEventListener("click", function () { renderAuthModal("signup"); });
+    document.getElementById("tzTabLogin").addEventListener("click", function () { renderAuthModal("login"); });
+
+    document.getElementById("tzAuthForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var errEl = document.getElementById("tzAuthError");
+      errEl.textContent = "";
+
+      var email = (document.getElementById("tzEmail").value || "").trim().toLowerCase();
+      var pass = document.getElementById("tzPass").value || "";
+      if (!email || !pass) { errEl.textContent = "Please fill in all fields."; return; }
+      if (pass.length < 6) { errEl.textContent = "Password must be at least 6 characters."; return; }
+
+      var users = getUsers();
+
+      if (mode === "signup") {
+        var name = (document.getElementById("tzName").value || "").trim() || email.split("@")[0];
+        if (users[email]) { errEl.textContent = "An account with this email already exists. Try logging in."; return; }
+        users[email] = { name: name, email: email, pass: hash(pass), created: Date.now() };
+        localStorage.setItem("chitro:users", JSON.stringify(users));
+        localStorage.setItem("chitro:session", JSON.stringify(email));
+        close();
+        updateAvatarHost();
+      } else {
+        var u = users[email];
+        if (!u || u.pass !== hash(pass)) { errEl.textContent = "Email or password doesn't match our records."; return; }
+        localStorage.setItem("chitro:session", JSON.stringify(email));
+        close();
+        updateAvatarHost();
+      }
+    });
+
+    ov.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+
+  /* ৩. হেডারের স্মার্ট বাটন রেন্ডারার */
+  function updateAvatarHost() {
+    var host = document.getElementById("avatarHost");
+    if (!host) return;
+
+    var u = currentUser();
+
+    if (u) {
+      /* অবস্থা ১: লগইন করা ইউজার -> শুধুমাত্র তখনই গোল প্রোফাইল আইকন */
+      var ph = avatarPhoto(u.email);
+      var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
+      host.innerHTML =
+        '<button class="avatar-btn logged" type="button" aria-label="Profile: ' + (u.name || "") + '" id="tzProfileBtn">' +
+          (ph ? '<img class="avatar-ph" src="' + ph + '" alt="' + initial + '">' : initial) +
+        '</button>';
+      document.getElementById("tzProfileBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        renderProfileModal();
+      });
+    } else if (hasAnyUsers()) {
+      /* অবস্থা ২: অ্যাকাউন্ট আছে কিন্তু লগআউট -> [ Log In ] বাটন */
+      host.innerHTML =
+        '<button class="header-auth-btn login" type="button" id="tzLoginBtn">' +
+          '<span>Log In</span>' +
+        '</button>';
+      document.getElementById("tzLoginBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        renderAuthModal("login");
+      });
+    } else {
+      /* অবস্থা ৩: একদম নতুন ভিজিটর -> আকর্ষণীয় [ ✨ Sign Up ] বাটন */
+      host.innerHTML =
+        '<button class="header-auth-btn signup" type="button" id="tzSignupBtn">' +
+          '<span>✨ Sign Up</span>' +
+        '</button>';
+      document.getElementById("tzSignupBtn").addEventListener("click", function (e) {
+        e.preventDefault();
+        renderAuthModal("signup");
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", updateAvatarHost);
+  } else {
+    updateAvatarHost();
+  }
+})();
