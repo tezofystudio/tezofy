@@ -417,31 +417,66 @@ input { font-family: inherit; }
   justify-content: center;
 }
 
-/* ব্লার ব্যাকগ্রাউন্ড রিমুভ + ইমেজের চারকোণায় প্রিমিয়াম হালকা রাউন্ড */
+/* ===== 🖼️ অটো ইমেজ রেশিও (4:5, 9:16, 1:1) + নো-ব্লার + হালকা রাউন্ড কর্নার ===== */
 .detail-img {
   position: relative;
-  background: transparent;
-  border: none;
-  border-radius: 18px;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto;
+  background: transparent !important;
+  border: none !important;
+  min-height: auto;
+  max-height: none;
 }
 
+/* পেছনের ঝাপসা/ব্লার ডুপ্লিকেট ইমেজ সম্পূর্ণ রিমুভ */
 .detail-img img.fill {
-  display: none;
+  display: none !important;
 }
 
+/* রঙিন বর্ডার ফ্রেম — ৪:৫ বা ৯:১৬ ইমেজের আসল সাইজ অনুযায়ী অটো মানিয়ে নিবে */
 .detail-img .hero-ring {
-  border-radius: 18px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px;           /* রঙিন ফ্রেমের বর্ডার থিকনেস */
+  border-radius: 18px;    /* ফ্রেমের চারকোণায় সফট রাউন্ড */
   overflow: hidden;
+  box-sizing: border-box;
+  line-height: 0;
+  max-width: 100%;
 }
 
+/* মূল ফটো — কোনো ক্রপ বা চ্যাপ্টা না হয়ে আসল রেশিও বজায় রাখবে */
 .detail-img img.main {
-  position: relative; 
+  position: relative;
   z-index: 1;
-  border-radius: 16px;
   display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 76vh;       /* স্ক্রিনের সাথে মানানসই সর্বোচ্চ উচ্চতা */
+  object-fit: contain;    /* ৪:৫ ও ৯:১৬ সব রেশিওতে নো-ক্রপ অটো ডিসপ্লে */
+  border-radius: 15px;    /* ফ্রেমের ভেতরে ছবির হালকা রাউন্ড কর্নার */
+  padding: 0;
+  box-sizing: border-box;
+  transition: transform .38s ease;
 }
 
+.detail-img:hover img.main {
+  transform: scale(1.012);
+}
+
+/* মোবাইলের জন্য অপ্টিমাইজড ভিউ */
+@media (max-width: 860px) {
+  .detail-img img.main {
+    max-height: 65vh;
+  }
+}
    
   /* ✨ UPGRADE: Auto size - shows original aspect ratio */
   width: auto;
@@ -489,6 +524,8 @@ button.meta-chip.liked svg { fill: var(--pink); stroke: var(--pink); }
   border-radius: 12px; padding: 15px;
   font-size: .87rem; line-height: 1.7; color: #d4d4d8;
   white-space: pre-wrap; word-break: break-word;
+
+   
   /* ✨ UPGRADE: Fixed height with scrollable content */
   max-height: 240px;
   overflow-y: auto;
