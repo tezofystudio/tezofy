@@ -416,19 +416,31 @@ input { font-family: inherit; }
   align-items: center;
   justify-content: center;
 }
-/* ব্লার ব্যাকগ্রাউন্ড সম্পূর্ণ রিমুভ — ক্লিন ও শার্প ইমেজ ডিসপ্লে */
+
+/* ব্লার ব্যাকগ্রাউন্ড রিমুভ + ইমেজের চারকোণায় প্রিমিয়াম হালকা রাউন্ড */
 .detail-img {
+  position: relative;
   background: transparent;
   border: none;
+  border-radius: 18px;
+  overflow: hidden;
 }
 
 .detail-img img.fill {
   display: none;
 }
 
+.detail-img .hero-ring {
+  border-radius: 18px;
+  overflow: hidden;
+}
+
 .detail-img img.main {
   position: relative; 
   z-index: 1;
+  border-radius: 16px;
+  display: block;
+}
 
    
   /* ✨ UPGRADE: Auto size - shows original aspect ratio */
