@@ -1094,7 +1094,7 @@
     }
   }
 
-      /* ---------- page: template (detail with horizontal swipe engine) ---------- */
+    /* ---------- page: template (detail with horizontal swipe engine) ---------- */
   function pageTemplate(overrideId) {
     const pId = overrideId || param("id");
     const p = byId(pId) || PROMPTS[0];
@@ -1102,7 +1102,14 @@
     pushRecent(p.id);
     const likedInit = () => !!likeMap()[p.id];
 
-    /* 🔄 ক্যাটাগরি ফিল্টার (ক্র্যাশ-প্রুফ সেফগার্ডসহ সব ইমেজ আসবে) */
+    /* 🔄 ১০০ ইমেজের লিমিট মুক্ত: ক্যাটাগরির সমস্ত নতুন ও রিমোট প্রম্পট লোড হবে */
+    try {
+      var cachedRemote = store.get("remoteData", null);
+      if (cachedRemote && typeof applyRemoteData === "function" && PROMPTS.length <= 100) {
+        applyRemoteData(cachedRemote);
+      }
+    } catch (e) {}
+
     const activeCat = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
     const catPrompts = (activeCat && typeof PROMPTS !== "undefined")
       ? PROMPTS.filter((x) => x && x.cats && Array.isArray(x.cats) && x.cats.includes(activeCat))
@@ -1114,15 +1121,12 @@
     const prevP = swipeList[prevIdx] || p;
     const nextP = swipeList[nextIdx] || p;
 
-       $("#detailRoot").innerHTML = `
-      <div class="detail-top">
-        <button class="back-btn" id="backBtn">${I.left}<span>Back</span></button>
-      </div>
+        $("#detailRoot").innerHTML = `
       <div class="detail-layout">
-        <!-- 🖼️ সোয়াইপ ক্যারোসেল + TikTok স্টাইল কাচের মতো স্বচ্ছ অ্যাকশন বার + থাম্বনেইল বার -->
+        <!-- 🖼️ বাম কলাম: ডেস্কটপে স্টিকি থাকবে, নিচে স্বচ্ছ বাটন ও থাম্বনেইল বার -->
         <div class="detail-img-wrap">
           <div class="detail-img reveal" id="detailImgBox">
-            <!-- ফ্লোটিং পূর্ববর্তী ও পরবর্তী বাটন (অটো-হাইড) -->
+            <!-- ডেস্কটপ অ্যারো বাটন (মোবাইলে সম্পূর্ণ বন্ধ থাকবে) -->
             <button type="button" class="swipe-arrow-btn prev" id="swipePrevBtn" aria-label="Previous prompt" title="Previous">‹</button>
             <button type="button" class="swipe-arrow-btn next" id="swipeNextBtn" aria-label="Next prompt" title="Next">›</button>
 
@@ -1132,56 +1136,42 @@
               <span class="badge-cat">${esc((typeof catName === "function" ? catName(activeCat) : "") || "Category")}</span>
             </div>
 
-            <!-- 📱 ইমেজের ওপরের ডান পাশে TikTok / Reels স্টাইল কাচের মতো স্বচ্ছ অ্যাকশন রেল -->
-            <div class="floating-glass-actions">
-              <!-- ১. লাভ / লাইক বাটন -->
-              <div class="glass-action-item">
-                <button type="button" class="glass-action-btn ${likedInit() ? "liked" : ""}" id="likeBtn" aria-label="Like prompt">
-                  ${I.heart}
-                </button>
-                <span class="glass-action-label" id="likeCount">${fmt(getLikes(p))}</span>
-              </div>
+            <!-- 💖 লাভ বৃষ্টির অ্যানিমেশন বক্স -->
+            <div class="love-rain-box" id="loveRainBox"></div>
 
-              <!-- ২. সেভ বাটন -->
-              <div class="glass-action-item">
-                <button type="button" class="glass-action-btn ${isSaved(p.id) ? "saved on" : ""}" id="saveBtn" aria-label="Save prompt">
-                  ${I.bookmark}
-                </button>
-                <span class="glass-action-label" id="saveLabel"><span>${isSaved(p.id) ? "Saved" : "Save"}</span></span>
-              </div>
-
-              <!-- ৩. শেয়ার বাটন -->
-              <div class="glass-action-item">
-                <button type="button" class="glass-action-btn" id="shareBtn" aria-label="Share prompt">
-                  ${I.share}
-                </button>
-                <span class="glass-action-label">Share</span>
-              </div>
-
-              <!-- ৪. হোয়াটসঅ্যাপ বাটন -->
-              <div class="glass-action-item">
-                <button type="button" class="glass-action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">
-                  ${I.whatsapp}
-                </button>
-                <span class="glass-action-label">WA</span>
-              </div>
-
-              <!-- ৫. আপনার ওয়াটারমার্কযুক্ত ডাউনলোড বাটন -->
-              <div class="glass-action-item">
-                <button type="button" class="glass-action-btn img-dl-btn" id="dlImgBtn" aria-label="Download image" title="Download image">
-                  ${I.download}
-                </button>
-                <span class="glass-action-label">Save HD</span>
-              </div>
-            </div>
-
-            <!-- 🛡️ মূল ইমেজ, ড্র্যাগ প্রোটেকশন ও সিকিউরিটি শিল্ড (অক্ষুণ্ণ) -->
+            <!-- 🛡️ ৪:৫ ও ৯:১৬ অ্যাডাপ্টিভ ইমেজ + সিকিউরিটি শিল্ড -->
             <img class="fill" aria-hidden="true" src="${p.img}" alt="" draggable="false">
             <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
               <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image" draggable="false">
             </span>
             <div class="img-shield" id="imgShield" aria-hidden="true"></div>
           </div>
+
+          <!-- 📱 ইমেজের নিচে স্বচ্ছ ও পরিচ্ছন্ন অ্যাকশন বাটন বার (কোনো গোল ব্যাকগ্রাউন্ড নেই) -->
+          <div class="clean-action-bar">
+            <!-- ১. লাভ / লাইক বাটন -->
+            <button type="button" class="clean-action-btn ${likedInit() ? "liked" : ""}" id="likeBtn" aria-label="Like prompt">
+              ${I.heart}
+              <span id="likeCount">${fmt(getLikes(p))}</span>
+            </button>
+
+            <!-- ২. সেভ বাটন -->
+            <button type="button" class="clean-action-btn ${isSaved(p.id) ? "saved on" : ""}" id="saveBtn" aria-label="Save prompt">
+              ${I.bookmark}
+              <span id="saveLabel"><span>${isSaved(p.id) ? "Saved" : "Save"}</span></span>
+            </button>
+
+            <!-- ৩. শেয়ার বাটন -->
+            <button type="button" class="clean-action-btn" id="shareBtn" aria-label="Share prompt">
+              ${I.share}
+              <span>Share</span>
+            </button>
+
+            <!-- ৪. হোয়াটসঅ্যাপ বাটন -->
+            <button type="button" class="clean-action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">
+              ${I.whatsapp}
+              <span>WA</span>
+            </button>
 
           <!-- 🎞️ ক্যাটাগরির সমস্ত ইমেজের অনুভূমিক থাম্বনেইল স্ট্রিপ -->
           <div class="swipe-strip-bar">
@@ -1568,8 +1558,36 @@
       });
     }
 
-           /* ============================================================
-       🏹 ১. নেভিগেশন তীর বাটন অটো-হাইড ইঞ্জিন (Auto-Hide on Idle)
+        /* ============================================================
+       💖 লাভ বৃষ্টির অ্যানিমেশন ফাংশন (Love Rain Generator)
+       ============================================================ */
+    function triggerLoveRain() {
+      const rainBox = $("#loveRainBox");
+      if (!rainBox) return;
+      const emojis = ["❤️", "💖", "💕", "✨", "💗", "🌸", "🔥"];
+      const totalHearts = 22; // ২২টি লাভ ইমোজি একসাথে ঝরে পড়বে
+
+      for (let i = 0; i < totalHearts; i++) {
+        const heart = document.createElement("span");
+        heart.className = "falling-heart";
+        heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        const leftPercent = Math.random() * 90 + 5; // ৫% থেকে ৯৫% এর মধ্যে
+        const duration = 1.0 + Math.random() * 0.9;  // ১ থেকে ১.৯ সেকেন্ডে পড়বে
+        const delay = Math.random() * 0.35;          // প্রাকৃতিক ভিন্ন ভিন্ন সময়ে পড়বে
+        const size = 18 + Math.random() * 18;        // ১৮px থেকে ৩৬px সাইজ
+
+        heart.style.left = leftPercent + "%";
+        heart.style.fontSize = size + "px";
+        heart.style.animationDuration = duration + "s";
+        heart.style.animationDelay = delay + "s";
+
+        rainBox.appendChild(heart);
+        setTimeout(() => heart.remove(), (duration + delay) * 1000);
+      }
+    }
+
+    /* ============================================================
+       🏹 ডেস্কটপ তীর বাটন ২.৫ সেকেন্ড অটো-হাইড টাইমার
        ============================================================ */
     let idleTimer = null;
     const imgEl = $("#detailImgBox");
@@ -1579,7 +1597,7 @@
       imgEl.classList.remove("idle");
       clearTimeout(idleTimer);
       idleTimer = setTimeout(() => {
-        imgEl.classList.add("idle"); // ২.৫ সেকেন্ড পর তীর স্বয়ংক্রিয়ভাবে অদৃশ্য হবে
+        imgEl.classList.add("idle");
       }, 2500);
     }
 
@@ -1591,7 +1609,7 @@
     }
 
     /* ============================================================
-       ❤️ ২. TikTok স্টাইল লাইক, সেভ, শেয়ার ও ওয়াটসঅ্যাপ লিসেনার (১০০% নিরাপদ)
+       ❤️ স্বচ্ছ অ্যাকশন বাটন লিসেনার (লাভ রেইনসহ)
        ============================================================ */
     $("#likeBtn")?.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1602,7 +1620,10 @@
       $("#likeBtn")?.classList.toggle("liked", active);
       const total = fmt(getLikes(p));
       if ($("#likeCount")) $("#likeCount").textContent = total;
-      if (active) toast("Added to likes ❤️");
+      if (active) {
+        toast("Added to likes ❤️");
+        triggerLoveRain(); // 💖 লাভ বৃষ্টির চমৎকার অ্যানিমেশন শুরু হবে
+      }
       resetIdleTimer();
     });
 
@@ -1645,7 +1666,7 @@
     });
 
     /* ============================================================
-       🚀 ৩. সোয়াইপ ও কুইক-সুইচ ইঞ্জিন (Zero-Reload Transition)
+       🚀 সোয়াইপ ও কুইক-সুইচ ইঞ্জিন (Zero-Reload Transition)
        ============================================================ */
     function goToPrompt(targetId, direction = 'next') {
       if (!targetId || targetId === p.id) return;
@@ -1693,7 +1714,7 @@
       });
     });
 
-    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (শিল্ডের ওপর দিয়েও কাজ করবে)
+    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (তীর বাটন ছাড়াই নিখুঁত কাজ করবে)
     if (imgEl) {
       let touchStartX = 0, touchStartY = 0;
       imgEl.addEventListener("touchstart", (e) => {
