@@ -1095,6 +1095,7 @@
   }
 
     /* ---------- page: template (detail with horizontal swipe engine) ---------- */
+    /* ---------- page: template (detail with horizontal swipe engine) ---------- */
   function pageTemplate(overrideId) {
     const pId = overrideId || param("id");
     const p = byId(pId) || PROMPTS[0];
@@ -1102,10 +1103,10 @@
     pushRecent(p.id);
     const likedInit = () => !!likeMap()[p.id];
 
-    /* 🔄 সোয়াইপ তালিকা: একই ক্যাটাগরির ছবিগুলো বা সমস্ত ছবি */
-    const activeCat = param("c") || (p.cats && p.cats[0]);
+    /* 🔄 ক্যাটাগরি ফিল্টার: শুধুমাত্র বর্তমান প্রম্পটের ক্যাটাগরির সমস্ত ইমেজ আসবে (নো ১০০ লিমিট) */
+    const activeCat = param("c") || (p.cats && p.cats.length ? p.cats[0] : null);
     const catPrompts = activeCat ? PROMPTS.filter((x) => x.cats && x.cats.includes(activeCat)) : [];
-    const swipeList = (catPrompts.length > 1) ? catPrompts : PROMPTS;
+    const swipeList = (catPrompts.length > 0) ? catPrompts : PROMPTS;
     const curIdx = Math.max(0, swipeList.findIndex((x) => x.id === p.id));
     const prevIdx = (curIdx - 1 + swipeList.length) % swipeList.length;
     const nextIdx = (curIdx + 1) % swipeList.length;
@@ -1113,46 +1114,73 @@
     const nextP = swipeList[nextIdx];
 
     $("#detailRoot").innerHTML = `
-      <div class="detail-top">
+            <div class="detail-top">
         <button class="back-btn" id="backBtn">${I.left}<span>Back</span></button>
-        <div class="detail-actions">
-          <button class="action-btn ${isSaved(p.id) ? "on" : ""}" id="saveBtn" aria-label="Save prompt">${I.bookmark}<span>${isSaved(p.id) ? "Saved" : "Save"}</span></button>
-          <button class="action-btn" id="shareBtn" aria-label="Share prompt">${I.share}<span>Share</span></button>
-          <button class="action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">${I.whatsapp}</button>
-        </div>
       </div>
-         <div class="detail-layout">
-        <!-- 🖼️ সোয়াইপ ক্যারোসেল + সিকিউরিটি শিল্ড + ডাউনলোড বাটন + থাম্বনেইল বার -->
+      <div class="detail-layout">
+        <!-- 🖼️ সোয়াইপ ক্যারোসেল + TikTok স্টাইল অ্যাকশন বার + থাম্বনেইল স্ট্রিপ -->
         <div class="detail-img-wrap">
           <div class="detail-img reveal" id="detailImgBox">
-            <!-- ফ্লোটিং পূর্ববর্তী বাটন -->
+            <!-- ফ্লোটিং পূর্ববর্তী বাটন (অটো-হাইড সুবিধাসহ) -->
             <button type="button" class="swipe-arrow-btn prev" id="swipePrevBtn" aria-label="Previous prompt" title="Previous">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
             </button>
 
-            <!-- ফ্লোটিং পরবর্তী বাটন -->
+            <!-- ফ্লোটিং পরবর্তী বাটন (অটো-হাইড সুবিধাসহ) -->
             <button type="button" class="swipe-arrow-btn next" id="swipeNextBtn" aria-label="Next prompt" title="Next">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
 
-            <!-- ফ্লোটিং কাউন্টার ব্যাজ -->
+            <!-- ছবির উপরের বাম পাশের কাউন্টার ও ক্যাটাগরি নাম -->
             <div class="swipe-counter-badge">
               <span>${curIdx + 1} / ${swipeList.length}</span>
-              <span class="badge-hint">Swipe ‹ ›</span>
+              <span class="badge-cat">${esc(catName(activeCat) || "Category")}</span>
             </div>
 
-            <!-- 🛡️ আপনার মূল ইমেজ, শিল্ড ও ডাউনলোড বাটন (অক্ষুণ্ণ রাখা হয়েছে) -->
+            <!-- 📱 ইমেজের ওপরের ডান পাশে TikTok / Reels স্টাইল কাচের মতো স্বচ্ছ অ্যাকশন বার -->
+            <div class="floating-glass-actions">
+              <!-- ১. লাভ / লাইক বাটন -->
+              <div class="glass-action-item">
+                <button type="button" class="glass-action-btn ${likedInit() ? "liked" : ""}" id="imgLikeBtn" aria-label="Like prompt">
+                  ${I.heart}
+                </button>
+                <span class="glass-action-label" id="imgLikeCount">${fmt(getLikes(p))}</span>
+              </div>
+
+              <!-- ২. সেভ বাটন -->
+              <div class="glass-action-item">
+                <button type="button" class="glass-action-btn ${isSaved(p.id) ? "saved" : ""}" id="imgSaveBtn" aria-label="Save prompt">
+                  ${I.bookmark}
+                </button>
+                <span class="glass-action-label" id="imgSaveLabel">${isSaved(p.id) ? "Saved" : "Save"}</span>
+              </div>
+
+              <!-- ৩. শেয়ার বাটন -->
+              <div class="glass-action-item">
+                <button type="button" class="glass-action-btn" id="imgShareBtn" aria-label="Share prompt">
+                  ${I.share}
+                </button>
+                <span class="glass-action-label">Share</span>
+              </div>
+
+              <!-- ৪. আপনার ওয়াটারমার্কযুক্ত ডাউনলোড বাটন -->
+              <div class="glass-action-item">
+                <button type="button" class="glass-action-btn img-dl-btn" id="dlImgBtn" aria-label="Download image" title="Download image">
+                  ${I.download}
+                </button>
+                <span class="glass-action-label">Save HD</span>
+              </div>
+            </div>
+
+            <!-- 🛡️ মূল ইমেজ, ড্র্যাগ প্রোটেকশন ও সিকিউরিটি শিল্ড -->
             <img class="fill" aria-hidden="true" src="${p.img}" alt="" draggable="false">
             <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
               <img class="main" src="${p.img}" alt="${esc(p.title)} — AI generated example image" draggable="false">
             </span>
             <div class="img-shield" id="imgShield" aria-hidden="true"></div>
-            <button class="img-dl-btn" id="dlImgBtn" type="button" aria-label="Download image" title="Download image">
-              ${I.download}
-            </button>
           </div>
 
-          <!-- 🎞️ নিচের অনুভূমিক থাম্বনেইল স্ট্রিপ -->
+          <!-- 🎞️ ক্যাটাগরির সমস্ত ইমেজের অনুভূমিক থাম্বনেইল স্ট্রিপ -->
           <div class="swipe-strip-bar">
             <div class="swipe-strip-scroll" id="swipeStripScroll">
               ${swipeList.map((item) => `
@@ -1537,18 +1565,99 @@
       });
     }
 
+        /* ============================================================
+       🏹 ১. নেভিগেশন তীর বাটন অটো-হাইড ইঞ্জিন (Auto-Hide on Idle)
+       ============================================================ */
+    let idleTimer = null;
+    const imgEl = $("#detailImgBox");
+
+    function resetIdleTimer() {
+      if (!imgEl) return;
+      imgEl.classList.remove("idle");
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => {
+        imgEl.classList.add("idle"); // ২.৫ সেকেন্ড কোনো টাচ না থাকলে তীর অদৃশ্য হবে
+      }, 2500);
+    }
+
+    if (imgEl) {
+      imgEl.addEventListener("mousemove", resetIdleTimer, { passive: true });
+      imgEl.addEventListener("touchstart", resetIdleTimer, { passive: true });
+      imgEl.addEventListener("click", resetIdleTimer, { passive: true });
+      resetIdleTimer();
+    }
+
     /* ============================================================
-       🚀 🔄 সোয়াইপ ও কুইক-সুইচ ইঞ্জিন (Zero-Reload Transition)
+       ❤️ ২. TikTok স্টাইল লাইক, সেভ ও শেয়ার বাটন হ্যান্ডলার
+       ============================================================ */
+    // লাইক বাটন
+    const imgLikeBtn = $("#imgLikeBtn");
+    if (imgLikeBtn) {
+      imgLikeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const m = likeMap();
+        m[p.id] = !m[p.id];
+        store.set("likes", m);
+        const active = !!m[p.id];
+        imgLikeBtn.classList.toggle("liked", active);
+        $("#likeBtn")?.classList.toggle("liked", active);
+        const total = fmt(getLikes(p));
+        $("#imgLikeCount").textContent = total;
+        if ($("#likeCount")) $("#likeCount").textContent = total;
+        if (active) toast("Added to likes ❤️");
+        resetIdleTimer();
+      });
+    }
+
+    // সেভ বাটন
+    const imgSaveBtn = $("#imgSaveBtn");
+    if (imgSaveBtn) {
+      imgSaveBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        let list = savedList();
+        if (list.includes(p.id)) {
+          list = list.filter((x) => x !== p.id);
+          store.set("saved", list);
+          imgSaveBtn.classList.remove("saved");
+          $("#imgSaveLabel").textContent = "Save";
+          toast("Removed from saved");
+        } else {
+          list.push(p.id);
+          store.set("saved", list);
+          imgSaveBtn.classList.add("saved");
+          $("#imgSaveLabel").textContent = "Saved";
+          toast("Saved! Find it in the Saved tab 🔖");
+        }
+        resetIdleTimer();
+      });
+    }
+
+    // শেয়ার বাটন
+    const imgShareBtn = $("#imgShareBtn");
+    if (imgShareBtn) {
+      imgShareBtn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const shareUrl = await resolveShareUrl(p);
+        const data = { title: p.title, url: shareUrl };
+        if (navigator.share) {
+          try { await navigator.share(data); } catch (err) {}
+        } else {
+          copyText(shareUrl, () => toast("Link copied to clipboard ↗️"));
+        }
+        resetIdleTimer();
+      });
+    }
+
+    /* ============================================================
+       🚀 ৩. সোয়াইপ ও কুইক-সুইচ ইঞ্জিন (Zero-Reload Transition)
        ============================================================ */
     function goToPrompt(targetId, direction = 'next') {
       if (!targetId || targetId === p.id) return;
 
-      // ইউআরএল রিলোড ছাড়া আপডেট হবে (ব্রাউজার হিস্ট্রি ঠিক থাকবে)
       const url = new URL(window.location.href);
       url.searchParams.set("id", targetId);
       history.replaceState(null, "", url.toString());
 
-      // স্লাইড-আউট অ্যানিমেশন
       const imgBox = $("#detailImgBox");
       if (imgBox) {
         imgBox.classList.add(direction === 'next' ? 'slide-out-left' : 'slide-out-right');
@@ -1564,17 +1673,23 @@
       }, 120);
     }
 
-    // বর্তমান ছবিটি থাম্বনেইল বারে সেন্টারে স্ক্রোল করানো
+    // থাম্বনেইল বারে বর্তমান ছবিটিকে সেন্টারে স্ক্রোল করানো
     const curThumb = $(`#thumb-${p.id}`);
     if (curThumb) {
       curThumb.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
     }
 
-    // ফ্লোটিং তীর বাটনে ক্লিক
-    $("#swipePrevBtn")?.addEventListener("click", () => goToPrompt(prevP.id, 'prev'));
-    $("#swipeNextBtn")?.addEventListener("click", () => goToPrompt(nextP.id, 'next'));
+    // ফ্লোটিং তীর বাটন ক্লিক
+    $("#swipePrevBtn")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      goToPrompt(prevP.id, 'prev');
+    });
+    $("#swipeNextBtn")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      goToPrompt(nextP.id, 'next');
+    });
 
-    // থাম্বনেইল বারের যেকোনো ছবিতে ক্লিকে সরাসরি সেই প্রম্পটে যাওয়া
+    // থাম্বনেইলে ক্লিকে সরাসরি সেই ছবিতে যাওয়া
     $$(".strip-thumb-item").forEach((thumb) => {
       thumb.addEventListener("click", () => {
         const tid = thumb.getAttribute("data-id");
@@ -1585,8 +1700,7 @@
       });
     });
 
-    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (শিল্ডের উপর দিয়েও নির্ভুল কাজ করবে)
-    const imgEl = $("#detailImgBox");
+    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (শিল্ডের ওপর দিয়েও কাজ করবে)
     if (imgEl) {
       let touchStartX = 0, touchStartY = 0;
       imgEl.addEventListener("touchstart", (e) => {
@@ -1599,7 +1713,6 @@
         if (e.changedTouches.length !== 1) return;
         const diffX = e.changedTouches[0].clientX - touchStartX;
         const diffY = e.changedTouches[0].clientY - touchStartY;
-        // অন্তত ৩৮px আড়াআড়ি সোয়াইপ হলে ট্রানজিশন চালু হবে
         if (Math.abs(diffX) > 38 && Math.abs(diffX) > Math.abs(diffY) * 1.3) {
           if (diffX < 0) goToPrompt(nextP.id, 'next'); // বামে সোয়াইপ -> পরবর্তী ছবি
           else goToPrompt(prevP.id, 'prev');           // ডানে সোয়াইপ -> পূর্ববর্তী ছবি
@@ -1607,7 +1720,7 @@
       }, { passive: true });
     }
 
-    // 💻 ডেস্কটপে কীবোর্ড অ্যারো কী দিয়ে ছবি পরিবর্তন
+    // 💻 ডেস্কটপে কীবোর্ড অ্যারো কী দিয়ে সোয়াইপ
     function onKeySwipe(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
       if (e.key === 'ArrowRight') { window.removeEventListener('keydown', onKeySwipe); goToPrompt(nextP.id, 'next'); }
