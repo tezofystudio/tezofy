@@ -1094,22 +1094,42 @@
     }
   }
 
-    /* ---------- page: template (detail with horizontal swipe engine) ---------- */
+     /* ---------- page: template (detail with horizontal swipe engine) ---------- */
   function pageTemplate(overrideId) {
     const pId = overrideId || param("id");
-    const p = byId(pId) || PROMPTS[0];
+    let p = byId(pId);
+
+    /* 🔄 নতুন বা রিমোট প্রম্পট তাৎক্ষণিক লোড করার অটো-সিঙ্ক */
+    if (!p) {
+      try {
+        const cached = store.get("remoteData", null);
+        if (cached && typeof applyRemoteData === "function") {
+          applyRemoteData(cached);
+          p = byId(pId);
+        }
+      } catch (e) {}
+    }
+
+    // যদি মেমোরিতে না থাকে তবে গুগল শিট থেকে লাইভ রিফ্রেশ
+    if (!p && typeof AUTH_CONFIG !== "undefined" && AUTH_CONFIG.sheetUrl) {
+      fetch(String(AUTH_CONFIG.sheetUrl) + "?action=prompts&t=" + Date.now())
+        .then((r) => r.json())
+        .then((data) => {
+          if (data && Array.isArray(data.prompts)) {
+            store.set("remoteData", data);
+            applyRemoteData(data);
+            if (byId(pId)) pageTemplate(pId);
+          }
+        })
+        .catch(() => {});
+    }
+
+    p = p || PROMPTS[0];
     document.title = `${p.title} — ${SITE.name}`;
     pushRecent(p.id);
     const likedInit = () => !!likeMap()[p.id];
 
-    /* 🔄 ১০০ ইমেজের লিমিট মুক্ত: ক্যাটাগরির সমস্ত নতুন ও রিমোট প্রম্পট লোড হবে */
-    try {
-      var cachedRemote = store.get("remoteData", null);
-      if (cachedRemote && typeof applyRemoteData === "function" && PROMPTS.length <= 100) {
-        applyRemoteData(cachedRemote);
-      }
-    } catch (e) {}
-
+    /* 🔄 ক্যাটাগরি ফিল্টার: কোনো ১০০ লিমিট ছাড়া সমস্ত প্রম্পট */
     const activeCat = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
     const catPrompts = (activeCat && typeof PROMPTS !== "undefined")
       ? PROMPTS.filter((x) => x && x.cats && Array.isArray(x.cats) && x.cats.includes(activeCat))
@@ -1121,12 +1141,12 @@
     const prevP = swipeList[prevIdx] || p;
     const nextP = swipeList[nextIdx] || p;
 
-        $("#detailRoot").innerHTML = `
+            $("#detailRoot").innerHTML = `
       <div class="detail-layout">
-        <!-- 🖼️ বাম কলাম: ডেস্কটপে স্টিকি থাকবে, নিচে স্বচ্ছ বাটন ও থাম্বনেইল বার -->
+        <!-- 🖼️ বাম কলাম: ডেস্কটপে স্টিকি থাকবে -->
         <div class="detail-img-wrap">
           <div class="detail-img reveal" id="detailImgBox">
-            <!-- ডেস্কটপ অ্যারো বাটন (মোবাইলে সম্পূর্ণ বন্ধ থাকবে) -->
+            <!-- ডেস্কটপ অ্যারো বাটন (মোবাইলে সম্পূর্ণ বন্ধ) -->
             <button type="button" class="swipe-arrow-btn prev" id="swipePrevBtn" aria-label="Previous prompt" title="Previous">‹</button>
             <button type="button" class="swipe-arrow-btn next" id="swipeNextBtn" aria-label="Next prompt" title="Next">›</button>
 
@@ -1139,6 +1159,39 @@
             <!-- 💖 লাভ বৃষ্টির অ্যানিমেশন বক্স -->
             <div class="love-rain-box" id="loveRainBox"></div>
 
+            <!-- 📱 বড় ইমেজের ওপর ডান পাশে স্বচ্ছ ও নিরেট টিকটক স্টাইল বাটন রেল (কোনো গোল শ্যাডো নেই) -->
+            <div class="floating-glass-actions">
+              <!-- ১. লাভ / লাইক বাটন -->
+              <button type="button" class="clean-action-btn ${likedInit() ? "liked" : ""}" id="likeBtn" aria-label="Like prompt">
+                ${I.heart}
+                <span id="likeCount">${fmt(getLikes(p))}</span>
+              </button>
+
+              <!-- ২. সেভ বাটন -->
+              <button type="button" class="clean-action-btn ${isSaved(p.id) ? "saved on" : ""}" id="saveBtn" aria-label="Save prompt">
+                ${I.bookmark}
+                <span id="saveLabel"><span>${isSaved(p.id) ? "Saved" : "Save"}</span></span>
+              </button>
+
+              <!-- ৩. শেয়ার বাটন -->
+              <button type="button" class="clean-action-btn" id="shareBtn" aria-label="Share prompt">
+                ${I.share}
+                <span>Share</span>
+              </button>
+
+              <!-- ৪. হোয়াটসঅ্যাপ বাটন -->
+              <button type="button" class="clean-action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">
+                ${I.whatsapp}
+                <span>WA</span>
+              </button>
+
+              <!-- ৫. আপনার ওয়াটারমার্কযুক্ত ডাউনলোড বাটন -->
+              <button type="button" class="clean-action-btn img-dl-btn" id="dlImgBtn" aria-label="Download image" title="Download image">
+                ${I.download}
+                <span>Save HD</span>
+              </button>
+            </div>
+
             <!-- 🛡️ ৪:৫ ও ৯:১৬ অ্যাডাপ্টিভ ইমেজ + সিকিউরিটি শিল্ড -->
             <img class="fill" aria-hidden="true" src="${p.img}" alt="" draggable="false">
             <span class="hero-ring" style="--ogH:${Math.floor(Math.random() * 360)}">
@@ -1146,32 +1199,6 @@
             </span>
             <div class="img-shield" id="imgShield" aria-hidden="true"></div>
           </div>
-
-          <!-- 📱 ইমেজের নিচে স্বচ্ছ ও পরিচ্ছন্ন অ্যাকশন বাটন বার (কোনো গোল ব্যাকগ্রাউন্ড নেই) -->
-          <div class="clean-action-bar">
-            <!-- ১. লাভ / লাইক বাটন -->
-            <button type="button" class="clean-action-btn ${likedInit() ? "liked" : ""}" id="likeBtn" aria-label="Like prompt">
-              ${I.heart}
-              <span id="likeCount">${fmt(getLikes(p))}</span>
-            </button>
-
-            <!-- ২. সেভ বাটন -->
-            <button type="button" class="clean-action-btn ${isSaved(p.id) ? "saved on" : ""}" id="saveBtn" aria-label="Save prompt">
-              ${I.bookmark}
-              <span id="saveLabel"><span>${isSaved(p.id) ? "Saved" : "Save"}</span></span>
-            </button>
-
-            <!-- ৩. শেয়ার বাটন -->
-            <button type="button" class="clean-action-btn" id="shareBtn" aria-label="Share prompt">
-              ${I.share}
-              <span>Share</span>
-            </button>
-
-            <!-- ৪. হোয়াটসঅ্যাপ বাটন -->
-            <button type="button" class="clean-action-btn" id="waBtn" aria-label="Share on WhatsApp" style="color:#4ade80">
-              ${I.whatsapp}
-              <span>WA</span>
-            </button>
 
           <!-- 🎞️ ক্যাটাগরির সমস্ত ইমেজের অনুভূমিক থাম্বনেইল স্ট্রিপ -->
           <div class="swipe-strip-bar">
@@ -1558,23 +1585,23 @@
       });
     }
 
-        /* ============================================================
+           /* ============================================================
        💖 লাভ বৃষ্টির অ্যানিমেশন ফাংশন (Love Rain Generator)
        ============================================================ */
     function triggerLoveRain() {
       const rainBox = $("#loveRainBox");
       if (!rainBox) return;
       const emojis = ["❤️", "💖", "💕", "✨", "💗", "🌸", "🔥"];
-      const totalHearts = 22; // ২২টি লাভ ইমোজি একসাথে ঝরে পড়বে
+      const totalHearts = 22; // ২২টি লাভ ইমোজি একসাথে ইমেজের ওপর পড়বে
 
       for (let i = 0; i < totalHearts; i++) {
         const heart = document.createElement("span");
         heart.className = "falling-heart";
         heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-        const leftPercent = Math.random() * 90 + 5; // ৫% থেকে ৯৫% এর মধ্যে
-        const duration = 1.0 + Math.random() * 0.9;  // ১ থেকে ১.৯ সেকেন্ডে পড়বে
-        const delay = Math.random() * 0.35;          // প্রাকৃতিক ভিন্ন ভিন্ন সময়ে পড়বে
-        const size = 18 + Math.random() * 18;        // ১৮px থেকে ৩৬px সাইজ
+        const leftPercent = Math.random() * 88 + 6;
+        const duration = 1.0 + Math.random() * 0.9;
+        const delay = Math.random() * 0.35;
+        const size = 18 + Math.random() * 18;
 
         heart.style.left = leftPercent + "%";
         heart.style.fontSize = size + "px";
@@ -1622,7 +1649,7 @@
       if ($("#likeCount")) $("#likeCount").textContent = total;
       if (active) {
         toast("Added to likes ❤️");
-        triggerLoveRain(); // 💖 লাভ বৃষ্টির চমৎকার অ্যানিমেশন শুরু হবে
+        triggerLoveRain(); // 💖 লাইক দিলেই ইমেজের ওপর লাভ বৃষ্টি শুরু হবে
       }
       resetIdleTimer();
     });
@@ -1714,7 +1741,7 @@
       });
     });
 
-    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (তীর বাটন ছাড়াই নিখুঁত কাজ করবে)
+    // 📱 মোবাইলে টাচ সোয়াইপ লিসেনার (কোনো তীর বাটন ছাড়াই নিখুঁত সোয়াইপ)
     if (imgEl) {
       let touchStartX = 0, touchStartY = 0;
       imgEl.addEventListener("touchstart", (e) => {
