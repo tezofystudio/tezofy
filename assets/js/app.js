@@ -1141,6 +1141,21 @@
     }
 
     p = p || PROMPTS[0];
+      document.title = `${p.title} — ${SITE.name}`;
+    pushRecent(p.id);
+    const likedInit = () => !!likeMap()[p.id];
+
+    /* 🔄 ক্যাটাগরি ফিল্টার: কোনো ১০০ লিমিট ছাড়া সমস্ত প্রম্পট */
+    const activeCat = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
+    const catPrompts = (activeCat && typeof PROMPTS !== "undefined")
+      ? PROMPTS.filter((x) => x && x.cats && Array.isArray(x.cats) && x.cats.includes(activeCat))
+      : [];
+    const swipeList = (catPrompts && catPrompts.length > 0) ? catPrompts : (PROMPTS && PROMPTS.length > 0 ? PROMPTS : [p]);
+    const curIdx = Math.max(0, swipeList.findIndex((x) => x && x.id === p.id));
+    const prevIdx = (curIdx - 1 + swipeList.length) % swipeList.length;
+    const nextIdx = (curIdx + 1) % swipeList.length;
+    const prevP = swipeList[prevIdx] || p;
+    const nextP = swipeList[nextIdx] || p;
 
             $("#detailRoot").innerHTML = `
       <div class="detail-layout">
