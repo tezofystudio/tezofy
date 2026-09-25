@@ -187,13 +187,13 @@
     var pct = next ? Math.min(100, Math.round(((score - tier.min) / (next.min - tier.min)) * 100)) : 100;
     return { tier: tier, next: next, score: score, pct: pct, toGo: next ? next.min - score : 0 };
   }
-  var RING_THEMES = [
-    { grad: "conic-gradient(from 0deg,#ff2daa,#ff7a00,#ffd36e,#ff2daa)", dur: "3.2s", dir: "normal" },
-    { grad: "conic-gradient(from 0deg,#22d3ee,#6366f1,#a855f7,#22d3ee)", dur: "2.8s", dir: "reverse" },
-    { grad: "conic-gradient(from 0deg,#34d399 0 42%,transparent 42% 50%,#3b82f6 50% 92%,transparent 92% 100%)", dur: "1.9s", dir: "normal" },
-    { grad: "conic-gradient(from 0deg,transparent 0 60%,#f472b6 78%,#fde68a 90%,#ffffff 94%,transparent 95%)", dur: "1.6s", dir: "normal" },
-    { grad: "conic-gradient(from 0deg,#fde047,#22c55e,#14b8a6,#fde047)", dur: "4.4s", dir: "reverse" },
-    { grad: "conic-gradient(from 0deg,#f43f5e 0 24%,transparent 24% 34%,#fb923c 34% 58%,transparent 58% 68%,#e879f9 68% 92%,transparent 92% 100%)", dur: "2.4s", dir: "reverse" }
+   var RING_THEMES = [
+    { grad: "conic-gradient(from 0deg, #ff2daa, #ff7a00, #ffd36e, #22d3ee, #ff2daa)", dur: "2.6s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg, #22d3ee, #6366f1, #a855f7, #ec4899, #22d3ee)", dur: "2.4s", dir: "reverse" },
+    { grad: "conic-gradient(from 0deg, #10b981, #3b82f6, #8b5cf6, #f59e0b, #10b981)", dur: "2.8s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg, #ff007a, #7928ca, #0070f3, #00dfd8, #ff007a)", dur: "2.2s", dir: "reverse" },
+    { grad: "conic-gradient(from 0deg, #fde047, #22c55e, #06b6d4, #3b82f6, #fde047)", dur: "2.8s", dir: "normal" },
+    { grad: "conic-gradient(from 0deg, #f43f5e, #fb923c, #facc15, #a855f7, #f43f5e)", dur: "2.4s", dir: "reverse" }
   ];
   function camIcon() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3.2l1.8-2.7h6l1.8 2.7H20v11H4z"/><circle cx="12" cy="13" r="3.4"/></svg>';
