@@ -491,144 +491,202 @@ input { font-family: inherit; }
 }
 .detail-img:hover img.main { transform: scale(1.012); }
 /* ============================================================
-   ✨ Detail Page: Swipeable Carousel, Auto-Hide Arrows & TikTok Glass Actions
+   ✨ Detail Page: Adaptive Image (4:5 & 9:16), Love Rain & Clean Actions
    ============================================================ */
 .detail-img-wrap {
   position: relative;
   width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
+/* 🖥️ ডেস্কটপে ইমেজ ফিক্সড (Sticky) থাকবে, শুধু ডান পাশের প্রম্পট স্ক্রোল হবে */
+@media (min-width: 1024px) {
+  .detail-layout {
+    display: grid !important;
+    grid-template-columns: minmax(380px, 1.15fr) minmax(0, 1fr) !important;
+    gap: 40px !important;
+    align-items: start !important;
+  }
+  .detail-img-wrap {
+    position: sticky !important;
+    top: 84px !important;
+    align-self: start !important;
+  }
+}
+
+/* 🖼️ ৪:৫ এবং ৯:১৬ উভয় সাইজের ইমেজ সুন্দরভাবে ফিট হওয়ার ফ্রেম */
 .detail-img {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #0c0c12;
+  min-height: 380px;
+  max-height: 72vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   touch-action: pan-y !important;
   user-select: none;
   -webkit-user-select: none;
   transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
 }
 
-/* 🏹 নেভিগেশন তীর বাটন ও অটো-হাইড ট্রানজিশন */
-.swipe-arrow-btn {
+/* অ্যাম্বিয়েন্ট কালার ব্লার (৯:১৬ এবং ৪:৫ এর সাইডের ফাঁকা স্পেস রঙিন আভায় ভরিয়ে রাখবে) */
+.detail-img img.fill {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(18, 18, 24, 0.72);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 9;
-  opacity: 1;
-  visibility: visible;
-  transition: opacity .35s ease, visibility .35s ease, background .2s, transform .2s;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-}
-.swipe-arrow-btn:hover {
-  background: rgba(255, 45, 170, 0.85);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-50%) scale(1.08);
-}
-.swipe-arrow-btn:active { transform: translateY(-50%) scale(0.94); }
-.swipe-arrow-btn.prev { left: 12px; }
-.swipe-arrow-btn.next { right: 12px; }
-.swipe-arrow-btn svg { width: 20px; height: 20px; }
-
-/* ⏱️ ২.৫ সেকেন্ড স্থির থাকলে বাটন স্বয়ংক্রিয়ভাবে অদৃশ্য হবে */
-.detail-img.idle .swipe-arrow-btn {
-  opacity: 0;
-  visibility: hidden;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+  object-fit: cover;
+  filter: blur(32px) brightness(0.38) saturate(1.25);
+  transform: scale(1.06);
   pointer-events: none;
 }
 
-/* 📱 TikTok / Reels স্টাইল কাচের মতো স্বচ্ছ অ্যাকশন রেল (ডান পাশে) */
-.floating-glass-actions {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 10;
+/* মূল ইমেজ: রেশিও না ভেঙে সম্পূর্ণ সাইজ অক্ষুণ্ণ রাখবে */
+.detail-img img.main {
+  position: relative;
+  z-index: 2;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 14px;
+  display: block;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 }
 
-.glass-action-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+/* 🏹 মোবাইল বা ওয়েব অ্যাপে তীর বাটন সম্পূর্ণ বাদ (Disable) */
+.swipe-arrow-btn {
+  display: none !important;
 }
 
-.glass-action-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(18, 18, 24, 0.65);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #ffffff;
+/* 💻 শুধুমাত্র ডেস্কটপ ব্রাউজারে তীর বাটন শো করবে এবং ২.৫ সেকেন্ড পর অটো-হাইড হবে */
+@media (min-width: 1024px) {
+  .swipe-arrow-btn {
+    display: flex !important;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(18, 18, 24, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #ffffff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .35s ease, visibility .35s ease, background .2s, transform .2s;
+  }
+  .swipe-arrow-btn:hover {
+    background: rgba(255, 45, 170, 0.85);
+    transform: translateY(-50%) scale(1.08);
+  }
+  .swipe-arrow-btn.prev { left: 12px; }
+  .swipe-arrow-btn.next { right: 12px; }
+  .detail-img.idle .swipe-arrow-btn {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+/* 📱 ইমেজের ঠিক নিচের স্বচ্ছ ও পরিষ্কার বাটন বার (কোনো গোল কালো শ্যাডো নেই) */
+.clean-action-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
+  padding: 12px 6px 6px;
+  width: 100%;
+}
+
+.clean-action-btn {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
   cursor: pointer;
-  transition: transform .2s cubic-bezier(.2,.8,.2,1), background .2s, border-color .2s, color .2s;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  padding: 0;
+  padding: 6px 12px;
+  transition: color .2s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
 }
-.glass-action-btn svg {
-  width: 20px;
-  height: 20px;
+.clean-action-btn svg {
+  width: 24px;
+  height: 24px;
   stroke: currentColor;
   stroke-width: 2.2;
   fill: none;
-  transition: fill .2s, stroke .2s, transform .2s;
+  transition: stroke .2s, fill .2s, transform .2s;
 }
-
-.glass-action-btn:hover {
-  background: rgba(35, 35, 48, 0.88);
-  transform: scale(1.08);
-  border-color: rgba(255, 255, 255, 0.35);
-}
-.glass-action-btn:active { transform: scale(0.92); }
-
-/* ❤️ লাইক অ্যাক্টিভ স্টেট */
-.glass-action-btn.liked {
-  color: #ff2daa !important;
-  border-color: rgba(255, 45, 170, 0.6) !important;
-  background: rgba(255, 45, 170, 0.22) !important;
-}
-.glass-action-btn.liked svg {
-  fill: #ff2daa !important;
-  stroke: #ff2daa !important;
-  transform: scale(1.1);
-}
-
-/* 🔖 সেভ অ্যাক্টিভ স্টেট */
-.glass-action-btn.saved, .glass-action-btn.on {
-  color: #fbbf24 !important;
-  border-color: rgba(251, 191, 36, 0.6) !important;
-  background: rgba(251, 191, 36, 0.2) !important;
-}
-.glass-action-btn.saved svg, .glass-action-btn.on svg {
-  fill: #fbbf24 !important;
-  stroke: #fbbf24 !important;
-}
-
-/* অ্যাকশন বাটন টেক্সট লেবেল */
-.glass-action-label {
-  font-size: 0.68rem;
-  font-weight: 700;
+.clean-action-btn:hover {
   color: #ffffff;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+  transform: translateY(-2px);
+}
+.clean-action-btn:active {
+  transform: scale(0.92);
+}
+.clean-action-btn span {
+  font-size: 0.72rem;
+  font-weight: 700;
   letter-spacing: 0.02em;
 }
 
-/* 🏷️ ছবির উপরের বাম পাশের কাউন্টার ব্যাজ */
+/* ❤️ লাইক অ্যাক্টিভ স্টেট */
+.clean-action-btn.liked {
+  color: #ff2daa !important;
+}
+.clean-action-btn.liked svg {
+  fill: #ff2daa !important;
+  stroke: #ff2daa !important;
+  filter: drop-shadow(0 0 8px rgba(255, 45, 170, 0.6));
+}
+
+/* 🔖 সেভ অ্যাক্টিভ স্টেট */
+.clean-action-btn.saved, .clean-action-btn.on {
+  color: #fbbf24 !important;
+}
+.clean-action-btn.saved svg, .clean-action-btn.on svg {
+  fill: #fbbf24 !important;
+  stroke: #fbbf24 !important;
+  filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+}
+
+/* 💖 লাভ রেইন (Heart Shower) অ্যানিমেশন */
+.love-rain-box {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 25;
+  overflow: hidden;
+}
+.falling-heart {
+  position: absolute;
+  top: -30px;
+  user-select: none;
+  pointer-events: none;
+  animation: fallDown linear forwards;
+}
+@keyframes fallDown {
+  0% { transform: translateY(0) rotate(0deg) scale(0.6); opacity: 1; }
+  50% { transform: translateY(220px) rotate(22deg) scale(1.15); opacity: 0.95; }
+  100% { transform: translateY(480px) rotate(-25deg) scale(0.85); opacity: 0; }
+}
+
+/* 🏷️ ছবির উপরের কাউন্টার ব্যাজ */
 .swipe-counter-badge {
   position: absolute;
   top: 14px;
@@ -657,33 +715,51 @@ input { font-family: inherit; }
   margin-left: 2px;
 }
 
-/* স্মুথ ট্রানজিশন অ্যানিমেশন */
-.slide-out-left { transform: translateX(-35px); opacity: 0; }
-.slide-out-right { transform: translateX(35px); opacity: 0; }
-.slide-in-right { animation: slideInR .24s cubic-bezier(.2,.8,.2,1) forwards; }
-.slide-in-left { animation: slideInL .24s cubic-bezier(.2,.8,.2,1) forwards; }
-@keyframes slideInR { from { transform: translateX(35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes slideInL { from { transform: translateX(-35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
 /* থাম্বনেইল স্ট্রিপ */
-.swipe-strip-bar { margin-top: 10px; width: 100%; overflow: hidden; }
+.swipe-strip-bar {
+  margin-top: 6px;
+  width: 100%;
+  overflow: hidden;
+}
 .swipe-strip-scroll {
-  display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth;
-  padding: 4px 2px 8px; -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin; scrollbar-color: rgba(255, 45, 170, 0.35) transparent;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 4px 2px 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 45, 170, 0.35) transparent;
 }
 .swipe-strip-scroll::-webkit-scrollbar { height: 4px; }
 .swipe-strip-scroll::-webkit-scrollbar-thumb { background: rgba(255, 45, 170, 0.35); border-radius: 4px; }
 
 .strip-thumb-item {
-  flex: 0 0 62px; height: 76px; border-radius: 12px; overflow: hidden;
-  border: 2px solid transparent; background: var(--card); cursor: pointer; padding: 0;
+  flex: 0 0 62px;
+  height: 76px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: var(--card);
+  cursor: pointer;
+  padding: 0;
+  position: relative;
   transition: transform .18s, border-color .18s, box-shadow .18s, opacity .18s;
   opacity: 0.65;
 }
-.strip-thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.strip-thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .strip-thumb-item:hover { opacity: 0.95; transform: translateY(-2px); }
-.strip-thumb-item.active { opacity: 1; border-color: var(--pink); box-shadow: 0 0 12px rgba(255, 45, 170, 0.55); transform: scale(1.05); }
+.strip-thumb-item.active {
+  opacity: 1;
+  border-color: var(--pink);
+  box-shadow: 0 0 12px rgba(255, 45, 170, 0.55);
+  transform: scale(1.05);
+}
 .detail-head { margin-top: 18px; }
 .detail-head h1 { font-size: clamp(1.4rem, 6vw, 2rem); font-weight: 800; letter-spacing: -.03em; }
 .detail-head .sub { color: var(--muted); font-size: .88rem; margin-top: 8px; }
