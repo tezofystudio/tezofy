@@ -416,14 +416,21 @@ input { font-family: inherit; }
   align-items: center;
   justify-content: center;
 }
-/* v2.4b — blurred cinematic backdrop + NO-CROP original image (any ratio fits) */
-.detail-img img.fill {
-  position: absolute; inset: -6%; width: 112%; height: 112%;
-  object-fit: cover; filter: blur(26px) brightness(.42) saturate(1.25);
-  transform: scale(1.05);
+/* ব্লার ব্যাকগ্রাউন্ড সম্পূর্ণ রিমুভ — ক্লিন ও শার্প ইমেজ ডিসপ্লে */
+.detail-img {
+  background: transparent;
+  border: none;
 }
+
+.detail-img img.fill {
+  display: none;
+}
+
 .detail-img img.main {
-  position: relative; z-index: 1;
+  position: relative; 
+  z-index: 1;
+
+   
   /* ✨ UPGRADE: Auto size - shows original aspect ratio */
   width: auto;
   max-width: 100%;
@@ -1562,3 +1569,14 @@ input, textarea, select { font-size: 16px !important; } /* stops iOS/Android foc
 .social-btn.fb { background: #1877f2 !important; color: #fff !important; border-color: #1877f2 !important; }
 .g-btn-slot { min-height: 36px !important; width: 100% !important; display: flex !important; justify-content: center !important; }
 .auth-note { font-size: 0.63rem !important; line-height: 1.2 !important; color: var(--muted) !important; text-align: center !important; margin-top: 3px !important; }
+
+/* ===== ২. কাস্টমাইজ বাটনের সাবটাইটেল: এক লাইনে, ছোট ও হালকা অফ-লাইট কালার ===== */
+.cust-sub {
+  font-size: clamp(0.56rem, 2.2vw, 0.65rem) !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  margin-top: 8px !important;
+  white-space: nowrap !important;               
+  letter-spacing: 0.02em !important;
+  text-align: center !important;
+  display: block !important;
+}
