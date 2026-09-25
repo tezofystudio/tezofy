@@ -498,9 +498,12 @@ input { font-family: inherit; }
   width: 100%;
   max-width: 480px;
   margin: 0 auto;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
 }
 
-/* 🖥️ ডেস্কটপে ইমেজ ফিক্সড (Sticky) থাকবে, শুধু ডান পাশের প্রম্পট স্ক্রোল হবে */
+/* 🖥️ ডেস্কটপে পুরো ইমেজ কলাম স্টিকি থাকবে এবং ছোট ছবির স্ট্রিপ বড় ছবির নিচেই থাকবে */
 @media (min-width: 1024px) {
   .detail-layout {
     display: grid !important;
@@ -512,6 +515,10 @@ input { font-family: inherit; }
     position: sticky !important;
     top: 84px !important;
     align-self: start !important;
+  }
+  .detail-img {
+    position: relative !important;
+    top: auto !important;
   }
 }
 
@@ -600,18 +607,19 @@ input { font-family: inherit; }
   }
 }
 
-/* 📱 বড় ইমেজের ওপর ডান পাশে টিকটক স্টাইল অ্যাকশন রেল */
+/* 📱 বড় ইমেজের ওপর ডান পাশে স্বচ্ছ ও নিরেট টিকটক স্টাইল অ্যাকশন রেল */
 .floating-glass-actions {
   position: absolute !important;
   right: 14px !important;
-  bottom: 22px !important;
+  bottom: 20px !important;
   display: flex !important;
   flex-direction: column !important;
+  align-items: center !important;
   gap: 14px !important;
   z-index: 10 !important;
 }
 
-/* কোনো গোল কালো বা ধূসর ব্যাকগ্রাউন্ড শ্যাডো নেই — শুধুই ক্রিস্টাল স্বচ্ছ আইকন */
+/* আইকনগুলো চিকন, স্লিম ও প্রিমিয়াম লুক (কোনো গোল ব্যাকগ্রাউন্ড নেই) */
 .clean-action-btn {
   background: transparent !important;
   border: none !important;
@@ -628,10 +636,10 @@ input { font-family: inherit; }
   filter: drop-shadow(0 2px 7px rgba(0, 0, 0, 0.85)) !important;
 }
 .clean-action-btn svg {
-  width: 28px !important;
-  height: 28px !important;
+  width: 24px !important;
+  height: 24px !important;
   stroke: #ffffff !important;
-  stroke-width: 2.2 !important;
+  stroke-width: 1.75 !important; /* হালকা ও চিকন প্রফেশনাল স্ট্রোক */
   fill: none !important;
   transition: transform .2s cubic-bezier(.2,.8,.2,1), stroke .2s, fill .2s !important;
 }
@@ -642,11 +650,26 @@ input { font-family: inherit; }
   transform: scale(0.88) !important;
 }
 .clean-action-btn span {
-  font-size: 0.68rem !important;
+  font-size: 0.65rem !important;
   font-weight: 700 !important;
   color: #ffffff !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95) !important;
   letter-spacing: 0.02em !important;
+}
+
+/* 📥 ডাউনলোড বাটন নিখুঁত অ্যালাইনমেন্ট — লাইক, সেভ, শেয়ার, WA এর ঠিক নিচে ভার্টিকালি এলাইন */
+.clean-action-btn.img-dl-btn {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  display: flex !important;
 }
 
 /* ❤️ লাইক অ্যাক্টিভ স্টেট */
@@ -663,7 +686,7 @@ input { font-family: inherit; }
   filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.85)) !important;
 }
 
-/* 💖 লাভ রেইন (Heart Shower) অ্যানিমেশন */
+/* 💖 লাভ রেইন (Heart Shower) অ্যানিমেশন — পুরো ছবি জুড়ে সাবলীল বৃষ্টি */
 .love-rain-box {
   position: absolute !important;
   inset: 0 !important;
@@ -676,12 +699,24 @@ input { font-family: inherit; }
   top: -30px !important;
   user-select: none !important;
   pointer-events: none !important;
-  animation: fallDown linear forwards !important;
+  animation-name: fallDown !important;
+  animation-timing-function: linear !important;
+  animation-fill-mode: forwards !important;
+  z-index: 30 !important;
 }
 @keyframes fallDown {
-  0% { transform: translateY(0) rotate(0deg) scale(0.6); opacity: 1; }
-  50% { transform: translateY(220px) rotate(22deg) scale(1.15); opacity: 0.95; }
-  100% { transform: translateY(480px) rotate(-25deg) scale(0.85); opacity: 0; }
+  0% {
+    transform: translateY(0) rotate(0deg) scale(0.6);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(280px) rotate(24deg) scale(1.2);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateY(680px) rotate(-28deg) scale(0.85);
+    opacity: 0;
+  }
 }
 
 /* 🏷️ ছবির উপরের কাউন্টার ব্যাজ */
