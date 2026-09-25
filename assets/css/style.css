@@ -491,22 +491,21 @@ input { font-family: inherit; }
 }
 .detail-img:hover img.main { transform: scale(1.012); }
 /* ============================================================
-   ✨ Detail Page: Swipe Carousel, Navigation Buttons & Strip
+   ✨ Detail Page: Swipeable Carousel, Auto-Hide Arrows & TikTok Glass Actions
    ============================================================ */
 .detail-img-wrap {
   position: relative;
   width: 100%;
 }
 
-/* সোয়াইপ ও টাচ স্ক্রোল ফ্রেন্ডলি প্রোপার্টি */
 .detail-img {
-  touch-action: pan-y !important; /* উল্লম্ব পেজ স্ক্রোল অক্ষুণ্ণ রেখে মসৃণ সোয়াইপ নিশ্চিত করবে */
+  touch-action: pan-y !important;
   user-select: none;
   -webkit-user-select: none;
   transition: transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s ease;
 }
 
-/* ফ্লোটিং নেভিগেশন বাটন (‹ এবং ›) */
+/* 🏹 নেভিগেশন তীর বাটন ও অটো-হাইড ট্রানজিশন */
 .swipe-arrow-btn {
   position: absolute;
   top: 50%;
@@ -523,9 +522,11 @@ input { font-family: inherit; }
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 10;
-  transition: background .2s, transform .2s, border-color .2s;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  z-index: 9;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity .35s ease, visibility .35s ease, background .2s, transform .2s;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 .swipe-arrow-btn:hover {
   background: rgba(255, 45, 170, 0.85);
@@ -539,35 +540,128 @@ input { font-family: inherit; }
 .swipe-arrow-btn.next { right: 12px; }
 .swipe-arrow-btn svg { width: 20px; height: 20px; }
 
-/* ছবির উপরের ফ্লোটিং কাউন্টার ব্যাজ */
+/* ⏱️ ২.৫ সেকেন্ড স্থির থাকলে বাটন স্বয়ংক্রিয়ভাবে অদৃশ্য হবে */
+.detail-img.idle .swipe-arrow-btn {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 📱 TikTok / Reels স্টাইল কাচের মতো স্বচ্ছ অ্যাকশন রেল (ডান পাশে) */
+.floating-glass-actions {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10; /* শিল্ডের উপরে থাকবে যাতে অনায়াসে ট্যাপ করা যায় */
+}
+
+.glass-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.glass-action-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(18, 18, 24, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform .2s cubic-bezier(.2,.8,.2,1), background .2s, border-color .2s, color .2s;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  padding: 0;
+}
+.glass-action-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  fill: none;
+  transition: fill .2s, stroke .2s, transform .2s;
+}
+
+.glass-action-btn:hover {
+  background: rgba(35, 35, 48, 0.88);
+  transform: scale(1.08);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.glass-action-btn:active {
+  transform: scale(0.92);
+}
+
+/* ❤️ লাইক অ্যাক্টিভ স্টেট */
+.glass-action-btn.liked {
+  color: #ff2daa;
+  border-color: rgba(255, 45, 170, 0.6);
+  background: rgba(255, 45, 170, 0.22);
+}
+.glass-action-btn.liked svg {
+  fill: #ff2daa;
+  stroke: #ff2daa;
+  transform: scale(1.1);
+}
+
+/* 🔖 সেভ অ্যাক্টিভ স্টেট */
+.glass-action-btn.saved {
+  color: #fbbf24;
+  border-color: rgba(251, 191, 36, 0.6);
+  background: rgba(251, 191, 36, 0.2);
+}
+.glass-action-btn.saved svg {
+  fill: #fbbf24;
+  stroke: #fbbf24;
+}
+
+/* অ্যাকশন বাটন টেক্সট লেবেল */
+.glass-action-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
+  letter-spacing: 0.02em;
+}
+
+/* 🏷️ ছবির উপরের বাম পাশের কাউন্টার ব্যাজ */
 .swipe-counter-badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 14px;
+  left: 14px;
   z-index: 10;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(15, 15, 20, 0.75);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  gap: 6px;
+  background: rgba(15, 15, 20, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   padding: 5px 12px;
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 700;
   color: #ffffff;
-  letter-spacing: 0.02em;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   pointer-events: none;
 }
-.swipe-counter-badge .badge-hint {
-  font-size: 0.68rem;
+.swipe-counter-badge .badge-cat {
   color: #ffb0da;
-  font-weight: 600;
-  opacity: 0.9;
+  font-size: 0.7rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  padding-left: 6px;
+  margin-left: 2px;
 }
 
-/* স্মুথ সোয়াইপ ট্রানজিশন অ্যানিমেশন */
+/* স্মুথ ট্রানজিশন অ্যানিমেশন */
 .slide-out-left { transform: translateX(-35px); opacity: 0; }
 .slide-out-right { transform: translateX(35px); opacity: 0; }
 .slide-in-right { animation: slideInR .24s cubic-bezier(.2,.8,.2,1) forwards; }
@@ -575,7 +669,7 @@ input { font-family: inherit; }
 @keyframes slideInR { from { transform: translateX(35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideInL { from { transform: translateX(-35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* ছবির নিচের হরিজন্টাল থাম্বনেইল স্ট্রিপ */
+/* ছবির নিচের থাম্বনেইল স্ট্রিপ */
 .swipe-strip-bar {
   margin-top: 10px;
   width: 100%;
