@@ -553,22 +553,13 @@
     document.getElementById("tzCloseAuth").addEventListener("click", close);
     document.getElementById("tzGuestLink").addEventListener("click", close);
 
-    /* Forgot Password Click */
+     /* Forgot Password Click */
     forgotBtn.addEventListener("click", function () {
       var preset = (document.getElementById("tzEmail").value || "").trim().toLowerCase();
       renderForgotStep(preset);
     });
 
     renderGoogleBtn(document.getElementById("tzGBtn"), handleSocialSuccess);
-        google.accounts.id.renderButton(container, {
-        type: "standard",
-        shape: "pill",
-        theme: "outline",
-        size: "large",
-        text: "continue_with",
-        width: Math.min(container.clientWidth || 320, 360),
-        logo_alignment: "left"
-      });
 
     document.getElementById("tzFbBtn").addEventListener("click", function () {
       loginFacebook(handleSocialSuccess, function (msg) {
