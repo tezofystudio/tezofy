@@ -27,7 +27,12 @@
   const getLikes = (p) => p.likes + (likeMap()[p.id] ? 1 : 0);
   const savedList = () => store.get("saved", []);
   const isSaved = (id) => savedList().includes(id);
-  const byId = (id) => PROMPTS.find((p) => p.id === id);
+  const byId = (id) => {
+    if (!id) return null;
+    const cleanId = String(id).replace(/^rp-/, "");
+    return PROMPTS.find((p) => p && (p.id === id || p.id === cleanId || String(p.id).replace(/^rp-/, "") === cleanId));
+  };
+
   const catName = (id) => (CATEGORIES.find((c) => c.id === id) || {}).name || id;
   const param = (k) => new URLSearchParams(location.search).get(k);
 
@@ -1099,7 +1104,7 @@
     const pId = overrideId || param("id");
     let p = byId(pId);
 
-    /* 🔄 নতুন বা রিমোট প্রম্পট তাৎক্ষণিক লোড করার অটো-সিঙ্ক */
+   /* 🔄 নতুন বা রিমোট প্রম্পট তাৎক্ষণিক লোড করার অটো-সিঙ্ক */
     if (!p) {
       try {
         const cached = store.get("remoteData", null);
@@ -1110,8 +1115,15 @@
       } catch (e) {}
     }
 
-    // যদি মেমোরিতে না থাকে তবে গুগল শিট থেকে লাইভ রিফ্রেশ
+    // যদি মেমোরিতে না থাকে তবে গুগল শিট থেকে লাইভ রিফ্রেশ + প্রিমিয়াম লোডার
     if (!p && typeof AUTH_CONFIG !== "undefined" && AUTH_CONFIG.sheetUrl) {
+      const root = $("#detailRoot");
+      if (root) {
+        root.innerHTML = `<div style="min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:var(--muted)">
+          <div style="width:42px;height:42px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite"></div>
+          <p style="font-size:.92rem;font-weight:600">Loading prompt details...</p>
+        </div>`;
+      }
       fetch(String(AUTH_CONFIG.sheetUrl) + "?action=prompts&t=" + Date.now())
         .then((r) => r.json())
         .then((data) => {
@@ -1119,27 +1131,16 @@
             store.set("remoteData", data);
             applyRemoteData(data);
             if (byId(pId)) pageTemplate(pId);
+            else if (PROMPTS && PROMPTS[0]) pageTemplate(PROMPTS[0].id);
           }
         })
-        .catch(() => {});
+        .catch(() => {
+          if (PROMPTS && PROMPTS[0]) pageTemplate(PROMPTS[0].id);
+        });
+      return;
     }
 
     p = p || PROMPTS[0];
-    document.title = `${p.title} — ${SITE.name}`;
-    pushRecent(p.id);
-    const likedInit = () => !!likeMap()[p.id];
-
-    /* 🔄 ক্যাটাগরি ফিল্টার: কোনো ১০০ লিমিট ছাড়া সমস্ত প্রম্পট */
-    const activeCat = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
-    const catPrompts = (activeCat && typeof PROMPTS !== "undefined")
-      ? PROMPTS.filter((x) => x && x.cats && Array.isArray(x.cats) && x.cats.includes(activeCat))
-      : [];
-    const swipeList = (catPrompts && catPrompts.length > 0) ? catPrompts : (PROMPTS && PROMPTS.length > 0 ? PROMPTS : [p]);
-    const curIdx = Math.max(0, swipeList.findIndex((x) => x && x.id === p.id));
-    const prevIdx = (curIdx - 1 + swipeList.length) % swipeList.length;
-    const nextIdx = (curIdx + 1) % swipeList.length;
-    const prevP = swipeList[prevIdx] || p;
-    const nextP = swipeList[nextIdx] || p;
 
             $("#detailRoot").innerHTML = `
       <div class="detail-layout">
@@ -1359,7 +1360,7 @@
       }
     }
 
-    $("#backBtn").addEventListener("click", () => {
+       $("#backBtn")?.addEventListener("click", () => {
       if (history.length > 1) history.back();
       else location.href = "index.html";
     });
@@ -1367,51 +1368,20 @@
     function doCopy() {
       copyText(composeFinal(), () => {
         bumpCopies(p.id);
-        $("#useCount").textContent = fmt(getUses(p));
+        const uc = $("#useCount");
+        if (uc) uc.textContent = fmt(getUses(p));
         toast("Prompt copied! Paste it into your AI tool");
         const btn = $("#copyBtn"); const big = $("#bigCopy");
-        btn.innerHTML = I.check + "<span>Copied!</span>";
-        big.innerHTML = I.check + "<span>Copied to Clipboard</span>";
+        if (btn) btn.innerHTML = I.check + "<span>Copied!</span>";
+        if (big) big.innerHTML = I.check + "<span>Copied to Clipboard</span>";
         setTimeout(() => {
-          btn.innerHTML = I.copy + "<span>Copy</span>";
-          big.innerHTML = I.copy + "<span>Copy Prompt</span>";
+          if (btn) btn.innerHTML = I.copy + "<span>Copy</span>";
+          if (big) big.innerHTML = I.copy + "<span>Copy Prompt</span>";
         }, 1600);
       });
     }
-    $("#copyBtn").addEventListener("click", doCopy);
-    $("#bigCopy").addEventListener("click", doCopy);
-
-    $("#likeBtn").addEventListener("click", () => {
-      const m = likeMap(); m[p.id] = !m[p.id]; store.set("likes", m);
-      $("#likeBtn").classList.toggle("liked", m[p.id]);
-      $("#likeCount").textContent = fmt(getLikes(p));
-      if (m[p.id]) toast("Added to likes");
-    });
-
-    $("#saveBtn").addEventListener("click", () => {
-      let list = savedList();
-      if (list.includes(p.id)) {
-        list = list.filter((x) => x !== p.id); store.set("saved", list);
-        $("#saveBtn").classList.remove("on"); $("#saveBtn span").textContent = "Save";
-        toast("Removed from saved");
-      } else {
-        list.push(p.id); store.set("saved", list);
-        $("#saveBtn").classList.add("on"); $("#saveBtn span").textContent = "Saved";
-        toast("Saved! Find it in the Saved tab");
-      }
-    });
-
-    $("#shareBtn").addEventListener("click", async () => {
-      const shareUrl = await resolveShareUrl(p);
-      const data = { title: p.title, url: shareUrl }; // link-only bubble → the OG card does the talking
-      if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
-      else copyText(shareUrl, () => toast("Link copied to clipboard"));
-    });
-
-    $("#waBtn").addEventListener("click", async () => {
-      const text = await resolveShareUrl(p); // clean link-only → WhatsApp renders the big preview card under it
-      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
-    });
+    $("#copyBtn")?.addEventListener("click", doCopy);
+    $("#bigCopy")?.addEventListener("click", doCopy);
                 
     /* 🛡️ ব্রাউজারের লং-প্রেস ও রাইট-ক্লিক নিষ্ক্রিয়করণ */
     const shield = $("#imgShield");
