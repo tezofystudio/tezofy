@@ -1573,28 +1573,28 @@
            /* ============================================================
        💖 লাভ বৃষ্টির অ্যানিমেশন ফাংশন (Love Rain Generator)
        ============================================================ */
-    function triggerLoveRain() {
+     function triggerLoveRain() {
       const rainBox = $("#loveRainBox");
       if (!rainBox) return;
       const emojis = ["❤️", "💖", "💕", "✨", "💗", "🌸", "🔥"];
-      const totalHearts = 22; // ২২টি লাভ ইমোজি একসাথে ইমেজের ওপর পড়বে
+      const totalHearts = 25; // ২৫টি লাভ ইমোজি পুরো ইমেজের ওপর পড়বে
 
       for (let i = 0; i < totalHearts; i++) {
         const heart = document.createElement("span");
         heart.className = "falling-heart";
         heart.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         const leftPercent = Math.random() * 88 + 6;
-        const duration = 1.0 + Math.random() * 0.9;
+        const duration = 1.2 + Math.random() * 0.9;
         const delay = Math.random() * 0.35;
-        const size = 18 + Math.random() * 18;
+        const size = 18 + Math.random() * 16;
 
         heart.style.left = leftPercent + "%";
         heart.style.fontSize = size + "px";
-        heart.style.animationDuration = duration + "s";
-        heart.style.animationDelay = delay + "s";
+        heart.style.setProperty("animation-duration", duration + "s", "important");
+        heart.style.setProperty("animation-delay", delay + "s", "important");
 
         rainBox.appendChild(heart);
-        setTimeout(() => heart.remove(), (duration + delay) * 1000);
+        setTimeout(() => heart.remove(), (duration + delay + 0.3) * 1000);
       }
     }
 
@@ -1623,20 +1623,22 @@
     /* ============================================================
        ❤️ স্বচ্ছ অ্যাকশন বাটন লিসেনার (লাভ রেইনসহ)
        ============================================================ */
-    $("#likeBtn")?.addEventListener("click", (e) => {
-      e.stopPropagation();
+     function toggleLikeAction(e) {
+      if (e) e.stopPropagation();
       const m = likeMap();
       m[p.id] = !m[p.id];
       store.set("likes", m);
       const active = !!m[p.id];
-      $("#likeBtn")?.classList.toggle("liked", active);
+      $$("#likeBtn, .meta-chip#likeBtn").forEach((btn) => btn.classList.toggle("liked", active));
       const total = fmt(getLikes(p));
-      if ($("#likeCount")) $("#likeCount").textContent = total;
-      if (active) {
-        toast("Added to likes ❤️");
-        triggerLoveRain(); // 💖 লাইক দিলেই ইমেজের ওপর লাভ বৃষ্টি শুরু হবে
-      }
+      $$("#likeCount").forEach((c) => c.textContent = total);
+      if (active) toast("Added to likes ❤️");
+      triggerLoveRain(); // 💖 লাইক বাটনে চাপলেই লাভ বৃষ্টির অ্যানিমেশন হবে
       resetIdleTimer();
+    }
+
+    $$("#likeBtn, .meta-chip#likeBtn").forEach((btn) => {
+      btn.addEventListener("click", toggleLikeAction);
     });
 
     $("#saveBtn")?.addEventListener("click", (e) => {
