@@ -533,9 +533,7 @@ input { font-family: inherit; }
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-50%) scale(1.08);
 }
-.swipe-arrow-btn:active {
-  transform: translateY(-50%) scale(0.94);
-}
+.swipe-arrow-btn:active { transform: translateY(-50%) scale(0.94); }
 .swipe-arrow-btn.prev { left: 12px; }
 .swipe-arrow-btn.next { right: 12px; }
 .swipe-arrow-btn svg { width: 20px; height: 20px; }
@@ -554,15 +552,15 @@ input { font-family: inherit; }
   right: 14px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  z-index: 10; /* শিল্ডের উপরে থাকবে যাতে অনায়াসে ট্যাপ করা যায় */
+  gap: 10px;
+  z-index: 10;
 }
 
 .glass-action-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
 }
 
 .glass-action-btn {
@@ -596,31 +594,29 @@ input { font-family: inherit; }
   transform: scale(1.08);
   border-color: rgba(255, 255, 255, 0.35);
 }
-.glass-action-btn:active {
-  transform: scale(0.92);
-}
+.glass-action-btn:active { transform: scale(0.92); }
 
 /* ❤️ লাইক অ্যাক্টিভ স্টেট */
 .glass-action-btn.liked {
-  color: #ff2daa;
-  border-color: rgba(255, 45, 170, 0.6);
-  background: rgba(255, 45, 170, 0.22);
+  color: #ff2daa !important;
+  border-color: rgba(255, 45, 170, 0.6) !important;
+  background: rgba(255, 45, 170, 0.22) !important;
 }
 .glass-action-btn.liked svg {
-  fill: #ff2daa;
-  stroke: #ff2daa;
+  fill: #ff2daa !important;
+  stroke: #ff2daa !important;
   transform: scale(1.1);
 }
 
 /* 🔖 সেভ অ্যাক্টিভ স্টেট */
-.glass-action-btn.saved {
-  color: #fbbf24;
-  border-color: rgba(251, 191, 36, 0.6);
-  background: rgba(251, 191, 36, 0.2);
+.glass-action-btn.saved, .glass-action-btn.on {
+  color: #fbbf24 !important;
+  border-color: rgba(251, 191, 36, 0.6) !important;
+  background: rgba(251, 191, 36, 0.2) !important;
 }
-.glass-action-btn.saved svg {
-  fill: #fbbf24;
-  stroke: #fbbf24;
+.glass-action-btn.saved svg, .glass-action-btn.on svg {
+  fill: #fbbf24 !important;
+  stroke: #fbbf24 !important;
 }
 
 /* অ্যাকশন বাটন টেক্সট লেবেল */
@@ -669,54 +665,25 @@ input { font-family: inherit; }
 @keyframes slideInR { from { transform: translateX(35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 @keyframes slideInL { from { transform: translateX(-35px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-/* ছবির নিচের থাম্বনেইল স্ট্রিপ */
-.swipe-strip-bar {
-  margin-top: 10px;
-  width: 100%;
-  overflow: hidden;
-}
+/* থাম্বনেইল স্ট্রিপ */
+.swipe-strip-bar { margin-top: 10px; width: 100%; overflow: hidden; }
 .swipe-strip-scroll {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  padding: 4px 2px 8px;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 45, 170, 0.35) transparent;
+  display: flex; gap: 8px; overflow-x: auto; scroll-behavior: smooth;
+  padding: 4px 2px 8px; -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; scrollbar-color: rgba(255, 45, 170, 0.35) transparent;
 }
 .swipe-strip-scroll::-webkit-scrollbar { height: 4px; }
 .swipe-strip-scroll::-webkit-scrollbar-thumb { background: rgba(255, 45, 170, 0.35); border-radius: 4px; }
 
 .strip-thumb-item {
-  flex: 0 0 62px;
-  height: 76px;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 2px solid transparent;
-  background: var(--card);
-  cursor: pointer;
-  padding: 0;
-  position: relative;
+  flex: 0 0 62px; height: 76px; border-radius: 12px; overflow: hidden;
+  border: 2px solid transparent; background: var(--card); cursor: pointer; padding: 0;
   transition: transform .18s, border-color .18s, box-shadow .18s, opacity .18s;
   opacity: 0.65;
 }
-.strip-thumb-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.strip-thumb-item:hover {
-  opacity: 0.95;
-  transform: translateY(-2px);
-}
-.strip-thumb-item.active {
-  opacity: 1;
-  border-color: var(--pink);
-  box-shadow: 0 0 12px rgba(255, 45, 170, 0.55);
-  transform: scale(1.05);
-}
+.strip-thumb-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.strip-thumb-item:hover { opacity: 0.95; transform: translateY(-2px); }
+.strip-thumb-item.active { opacity: 1; border-color: var(--pink); box-shadow: 0 0 12px rgba(255, 45, 170, 0.55); transform: scale(1.05); }
 .detail-head { margin-top: 18px; }
 .detail-head h1 { font-size: clamp(1.4rem, 6vw, 2rem); font-weight: 800; letter-spacing: -.03em; }
 .detail-head .sub { color: var(--muted); font-size: .88rem; margin-top: 8px; }
