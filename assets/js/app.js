@@ -1234,7 +1234,7 @@
             <div class="meta-row">
               <span class="meta-chip">${I.copy}<span id="useCount">${fmt(getUses(p))}</span>&nbsp;copies</span>
               <button class="meta-chip ${likedInit() ? "liked" : ""}" id="likeBtn">${I.heart}<span id="likeCount">${fmt(getLikes(p))}</span>&nbsp;likes</button>
-              <a class="meta-chip cat-chip" href="category.html?c=${p.cats[0]}">in ${esc(catName(p.cats[0]))}</a>
+              <a class="meta-chip cat-chip" href="category.html?c=${p.cats[0]}">in ${esc(catName(p.cats[0]))}</a>${(typeof TezoTopic !== "undefined" && TezoTopic.of(p)) ? `<span class="meta-chip">${esc(TezoTopic.nameOf(p))}</span>` : ""}
             </div>
           </div>
 
