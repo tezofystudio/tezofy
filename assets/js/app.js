@@ -21,10 +21,10 @@
   const fmt = (n) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "K" : String(n));
   const extraCopies = () => store.get("copies", {});
   const totalCopiesMade = () => Object.values(extraCopies()).reduce((a, b) => a + b, 0);
-  const getUses = (p) => p.uses + (extraCopies()[p.id] || 0);
+  const getUses = (p) => ((window.TezoStats ? TezoStats.copies(p.id) : 0) + (extraCopies()[p.id] || 0)); /* ✚ TEZO */
   const likeMap = () => store.get("likes", {});
   const likeCount = () => Object.values(likeMap()).filter(Boolean).length;
-  const getLikes = (p) => p.likes + (likeMap()[p.id] ? 1 : 0);
+  const getLikes = (p) => ((window.TezoStats ? TezoStats.likes(p.id) : 0) + (likeMap()[p.id] ? 1 : 0)); /* ✚ TEZO */
   const savedList = () => store.get("saved", []);
   const isSaved = (id) => savedList().includes(id);
   const byId = (id) => {
@@ -810,7 +810,15 @@
         <a class="see-all" href="${link}">See All ${I.right}</a>
       </div>`;
   }
-  const getCat = (id) => PROMPTS.filter((p) => p.cats.includes(id)).sort((a, b) => getUses(b) - getUses(a));
+  const getCat = (id) => { /* ✚ TEZO: trending/popular এখন আসল ব্যবহার থেকে অটো */
+    if (window.TezoStats && (id === "trending" || id === "popular")) {
+      const live = TezoStats.collection(id);
+      if (live.length) return live;
+      if (id === "trending") return PROMPTS.filter((p) => p.isNew);
+      return [];
+    }
+    return PROMPTS.filter((p) => p.cats.includes(id)).sort((a, b) => getUses(b) - getUses(a));
+  };
 
   /* ---------- clipboard ---------- */
   function copyText(text, done) {
@@ -827,6 +835,7 @@
   }
   function bumpCopies(id) {
     const all = extraCopies(); all[id] = (all[id] || 0) + 1; store.set("copies", all);
+    if (window.TezoStats) TezoStats.track("copy", id); /* ✚ TEZO */
   }
 
   /* ---------- recent ---------- */
@@ -1143,6 +1152,7 @@
     p = p || PROMPTS[0];
       document.title = `${p.title} — ${SITE.name}`;
     pushRecent(p.id);
+    if (window.TezoStats) TezoStats.track("view", p.id); /* ✚ TEZO */
     const likedInit = () => !!likeMap()[p.id];
 
     /* 🔄 ক্যাটাগরি ফিল্টার: কোনো ১০০ লিমিট ছাড়া সমস্ত প্রম্পট */
@@ -1628,6 +1638,7 @@
       const m = likeMap();
       m[p.id] = !m[p.id];
       store.set("likes", m);
+      if (window.TezoStats) TezoStats.track(m[p.id] ? "like" : "unlike", p.id); /* ✚ TEZO */
       const active = !!m[p.id];
       $$("#likeBtn, .meta-chip#likeBtn").forEach((btn) => btn.classList.toggle("liked", active));
       const total = fmt(getLikes(p));
@@ -1873,6 +1884,7 @@
         const m = likeMap();
         if (m[p.id]) { delete m[p.id]; } else { m[p.id] = true; }
         store.set("likes", m);
+        if (window.TezoStats) TezoStats.track(m[p.id] ? "like" : "unlike", p.id); /* ✚ TEZO */
         b.classList.toggle("on", !!m[p.id]);
         toast(m[p.id] ? "Added to favorites ❤️" : "Removed from favorites");
       }
@@ -1949,6 +1961,8 @@
       tagline: r.tagline || "Free AI image prompt — copy & customize on TEZOFY.",
       img: String(r.img),
       cats: rpList(r.cats),
+      topic: (r.topic && typeof r.topic === "string") ? r.topic.slice(0, 60) : undefined, /* ✚ TEZO */
+      sub: (r.sub && typeof r.sub === "string") ? r.sub.slice(0, 60) : undefined, /* ✚ TEZO */
       tags: rpList(r.tags),
       prompt: String(r.prompt),
       about: r.about || (String(r.title) + " — a TEZOFY community prompt, free to copy and customize."),
