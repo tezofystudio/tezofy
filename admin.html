@@ -89,7 +89,7 @@ code { background: var(--card-2); border: 1px solid var(--border); border-radius
 a { color: var(--primary); }
 
 /* ============ LAYOUT: SIDEBAR + MAIN ============ */
-.console { display: flex; min-height: 100vh; }
+.console { display: flex; min-height: 100vh; max-width: 1760px; margin: 0 auto; }
 .sidebar {
   flex: none; width: 264px;
   background: linear-gradient(180deg, var(--side) 0%, var(--side-2) 100%);
@@ -103,8 +103,14 @@ a { color: var(--primary); }
 .side-logo img { width: 40px; height: 40px; border-radius: 12px; box-shadow: var(--glow); }
 .side-logo .side-name { font-size: 1.06rem; font-weight: 800; color: #fff; letter-spacing: .02em; }
 .side-logo .side-tag { display: block; font-size: .7rem; color: var(--side-text-2); font-weight: 600; text-transform: uppercase; letter-spacing: .12em; }
-.side-nav { display: flex; flex-direction: column; gap: 4px; }
-.side-label { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .14em; color: var(--side-text-2); padding: 12px 10px 4px; }
+.side-nav { display: flex; flex-direction: column; gap: 2px; }
+.side-group { display: flex; flex-direction: column; gap: 2px; }
+.side-ghead { display: flex; align-items: center; gap: 8px; width: 100%; background: transparent; border: 0; color: var(--side-text-2); font-family: inherit; font-size: .68rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; padding: 12px 10px 6px; cursor: pointer; transition: color .15s; }
+.side-ghead:hover { color: #fff; }
+.side-ghead .chev { margin-left: auto; font-style: normal; font-size: .78rem; transition: transform .18s; }
+.side-group:not(.open) .side-ghead .chev { transform: rotate(-90deg); }
+.side-group:not(.open) .side-gbody { display: none; }
+.side-gbody { display: grid; gap: 4px; }
 .adm-tab {
   display: flex; align-items: center; gap: 11px;
   width: 100%; text-align: left;
@@ -126,10 +132,10 @@ a { color: var(--primary); }
 .side-link.wide { grid-column: 1 / -1; }
 
 .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-.topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 30px 0; }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 34px 0; }
 .topbar .crumb { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
 .topbar .crumb b { color: var(--text); }
-.content { padding: 14px 30px 34px; display: flex; flex-direction: column; gap: 16px; max-width: 1180px; width: 100%; margin: 0 auto; }
+.content { padding: 14px 34px 42px; display: flex; flex-direction: column; gap: 16px; width: 100%; }
 .adm-panel { animation: panelIn .28s ease; }
 @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 .adm-foot { text-align: center; color: var(--muted); font-size: .76rem; padding: 26px 10px 8px; margin: 0; }
@@ -306,9 +312,8 @@ td { color: var(--text); }
 .seg button.on { background: var(--grad); color: #fff; box-shadow: var(--glow); }
 
 /* chip bar with arrows (category filter) */
-.pro-chipbar { position: relative; display: flex; align-items: center; gap: 8px; }
-.pro-chipbar .track { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px; scrollbar-width: none; flex: 1; }
-.pro-chipbar .track::-webkit-scrollbar { display: none; }
+.pro-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 2px; }
+.pro-chips.subs { margin-top: 8px; padding-top: 10px; border-top: 1px dashed var(--border); }
 .pro-chip { background: var(--card); border: 1px solid var(--border); color: var(--muted); border-radius: 999px; padding: 7px 13px; font-size: .75rem; font-weight: 700; cursor: pointer; white-space: nowrap; font-family: inherit; transition: .15s; }
 .pro-chip:hover { border-color: var(--primary); color: var(--primary); }
 .pro-chip.on { background: var(--grad); color: #fff; border-color: transparent; box-shadow: var(--glow); }
@@ -325,12 +330,14 @@ td { color: var(--text); }
 .pro-rail { position: relative; }
 .pro-rail .strip { display: flex; gap: 12px; overflow-x: auto; padding: 6px 2px 12px; scroll-behavior: smooth; scrollbar-width: none; }
 .pro-rail .strip::-webkit-scrollbar { display: none; }
-.pro-card { flex: 0 0 168px; width: 168px; background: var(--card); border: 1px solid var(--border); border-radius: 15px; overflow: hidden; box-shadow: var(--shadow-sm); transition: .18s; display: flex; flex-direction: column; }
+.pro-card { flex: 0 0 180px; width: 180px; background: var(--card); border: 1px solid var(--border); border-radius: 15px; overflow: hidden; box-shadow: var(--shadow-sm); transition: .18s; display: flex; flex-direction: column; }
 .pro-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
-.pro-card .im { position: relative; height: 118px; background: var(--card-2); }
+.pro-card .im { position: relative; height: 122px; background: var(--card-2); }
 .pro-card .im img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pro-card .bd { padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
 .pro-card .tt { font-size: .78rem; font-weight: 750; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
+.pro-card .sb { font-size: .67rem; color: var(--muted); font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-height: 1em; }
+.pro-card .act a, .pro-card .act button { flex: 1; padding: 7px 0; }
 .pro-card .act { display: flex; gap: 5px; margin-top: auto; }
 .pro-card .act a, .pro-card .act button { flex: 1; text-align: center; text-decoration: none; }
 .pro-badge { position: absolute; top: 7px; left: 7px; display: flex; gap: 4px; }
@@ -421,6 +428,9 @@ td { color: var(--text); }
   .sidebar { width: 100%; height: auto; position: static; padding: 14px 14px 10px; }
   .side-logo { padding-bottom: 12px; margin-bottom: 10px; }
   .side-nav { flex-direction: row; overflow-x: auto; padding-bottom: 6px; }
+  .side-group { display: contents; }
+  .side-ghead { display: none; }
+  .side-gbody { display: flex; flex-direction: row; gap: 6px; }
   .adm-tab { width: auto; white-space: nowrap; padding: 9px 13px; }
   .adm-tab .n { display: none; }
   .side-bottom { margin-top: 8px; padding-top: 10px; }
@@ -457,34 +467,41 @@ td { color: var(--text); }
       <div><span class="side-name">TEZOFY</span><span class="side-tag">Master Console</span></div>
     </div>
 
-    <div class="side-label">Content</div>
     <nav class="side-nav">
-      <button class="adm-tab on" data-tab="prompts">📝 Prompts</button>
-      <button class="adm-tab" data-tab="form">➕ Add / Edit</button>
-      <button class="adm-tab" data-tab="cats">🗂️ Categories</button>
-      <button class="adm-tab" data-tab="topics">🧭 Topics</button>
-    </nav>
-
-    <div class="side-label">Audience</div>
-    <nav class="side-nav">
-      <button class="adm-tab" data-tab="users">👥 Users</button>
-      <button class="adm-tab" data-tab="ban">🚫 Ban List</button>
-      <button class="adm-tab" data-tab="emails">📧 Emails</button>
-    </nav>
-
-    <div class="side-label">Analytics</div>
-    <nav class="side-nav">
-      <button class="adm-tab" data-tab="analytics">📊 Overview</button>
-      <button class="adm-tab" data-tab="pstats">🔥 Prompt Stats</button>
-      <button class="adm-tab" data-tab="dates">📅 Date Explorer</button>
-    </nav>
-
-    <div class="side-label">Site Systems</div>
-    <nav class="side-nav">
-      <button class="adm-tab" data-tab="pages">🌐 Site Pages</button>
-      <button class="adm-tab" data-tab="share">🖼 Share Pages</button>
-      <button class="adm-tab" data-tab="tools">⚡ AI Tools</button>
-      <button class="adm-tab" data-tab="settings">⚙️ Settings</button>
+      <div class="side-group open" data-group="content">
+        <button class="side-ghead" type="button" aria-expanded="true"><span>📁 Content</span><i class="chev">▾</i></button>
+        <div class="side-gbody">
+          <button class="adm-tab on" data-tab="prompts">📝 Prompts</button>
+          <button class="adm-tab" data-tab="form">➕ Add / Edit</button>
+          <button class="adm-tab" data-tab="cats">🗂️ Categories</button>
+          <button class="adm-tab" data-tab="topics">🧭 Topics</button>
+        </div>
+      </div>
+      <div class="side-group open" data-group="audience">
+        <button class="side-ghead" type="button" aria-expanded="true"><span>👥 Audience</span><i class="chev">▾</i></button>
+        <div class="side-gbody">
+          <button class="adm-tab" data-tab="users">👥 Users</button>
+          <button class="adm-tab" data-tab="ban">🚫 Ban List</button>
+          <button class="adm-tab" data-tab="emails">📧 Emails</button>
+        </div>
+      </div>
+      <div class="side-group open" data-group="analytics">
+        <button class="side-ghead" type="button" aria-expanded="true"><span>📊 Analytics</span><i class="chev">▾</i></button>
+        <div class="side-gbody">
+          <button class="adm-tab" data-tab="analytics">📊 Overview</button>
+          <button class="adm-tab" data-tab="pstats">🔥 Prompt Stats</button>
+          <button class="adm-tab" data-tab="dates">📅 Date Explorer</button>
+        </div>
+      </div>
+      <div class="side-group open" data-group="systems">
+        <button class="side-ghead" type="button" aria-expanded="true"><span>🌐 Site Systems</span><i class="chev">▾</i></button>
+        <div class="side-gbody">
+          <button class="adm-tab" data-tab="pages">🌐 Site Pages</button>
+          <button class="adm-tab" data-tab="share">🖼 Share Pages</button>
+          <button class="adm-tab" data-tab="tools">⚡ AI Tools</button>
+          <button class="adm-tab" data-tab="settings">⚙️ Settings</button>
+        </div>
+      </div>
     </nav>
 
     <div class="side-bottom">
@@ -2037,9 +2054,10 @@ td { color: var(--text); }
   var CRUMBS = { prompts: "Prompts", form: "Add / Edit", cats: "Categories", topics: "Topics", users: "Users", ban: "Ban List", emails: "Emails", analytics: "Analytics Overview", pstats: "Prompt Stats", dates: "Date Explorer", pages: "Site Pages", share: "Share Pages", tools: "AI Tools", settings: "Settings" };
 
   /* ================================================================
-     PROMPTS EXPLORER — search + category chips + scrollable rails
+     PROMPTS EXPLORER — topic + sub-category explorer, category
+     grouping and flat list, all with live search.
      ================================================================ */
-  var E = { q: "", cat: "all", view: prefs().view === "list" ? "list" : "rows", renderKey: "" };
+  var E = { q: "", mode: prefs().mode || "topic", cat: "all", topic: "all", sub: "all" };
 
   function catMap() {
     var m = {};
@@ -2048,6 +2066,20 @@ td { color: var(--text); }
     return m;
   }
   function prompts() { return P.list || []; }
+  function trendingSet() {
+    var s = {};
+    if (S.padmin && S.padmin.rows) S.padmin.rows.forEach(function (r) { if (r.score7 > 0) s[r.id] = true; });
+    return s;
+  }
+  function topics() { return (typeof TOPICS !== "undefined" && TOPICS) || []; }
+  function topicOf(id) { return topics().filter(function (x) { return x.id === id; })[0]; }
+  function topicName(id) { var t = topicOf(id); return t ? t.name : id; }
+  function topicIcon(id) { var t = topicOf(id); return t ? (t.icon || "📁") : "📁"; }
+  function subName(tid, sid) {
+    var t = topicOf(tid);
+    var s = t && (t.subs || []).filter(function (x) { return x.id === sid; })[0];
+    return s ? s.name : sid;
+  }
   function loadPrompts() {
     return api("prompts").then(function (d) {
       if (d && d.ok) {
@@ -2059,50 +2091,58 @@ td { color: var(--text); }
       renderTools();
     }).catch(function () { /* keep whatever we have */ });
   }
-  function trendingSet() {
-    var s = {};
-    if (S.padmin && S.padmin.rows) S.padmin.rows.forEach(function (r) { if (r.score7 > 0) s[r.id] = true; });
-    return s;
-  }
+
   function pMatches(p) {
-    if (E.cat !== "all") {
-      var cats = p.cats || [];
-      if (E.cat === "__none" ? cats.length > 0 : cats.indexOf(E.cat) < 0) return false;
-    }
     if (E.q) {
       var hay = (p.title + " " + (p.tagline || "") + " " + (p.tags || "") + " " + p.id).toLowerCase();
       if (hay.indexOf(E.q) < 0) return false;
     }
+    if (E.mode === "cat") {
+      if (E.cat !== "all" && (p.cats || []).indexOf(E.cat) < 0) return false;
+    } else if (E.mode === "topic") {
+      if (E.topic !== "all") {
+        if (E.topic === "__none") { if (p.topic) return false; }
+        else if (p.topic !== E.topic) return false;
+        if (E.topic !== "__none" && E.sub !== "all") {
+          if (E.sub === "__none") { if (p.sub) return false; }
+          else if (p.sub !== E.sub) return false;
+        }
+      }
+    }
     return true;
   }
-  function cardHtml(p, hot) {
+
+  function cardHtml(p, hot, cm) {
     var badges = "";
     if (p.isNew) badges += "<i>NEW</i>";
     if (p.membersOnly) badges += "<i>🔒</i>";
     if (p.og) badges += '<i class="ok">OG</i>';
     if (hot[p.id]) badges += '<i class="hot">🔥</i>';
-    var im = p.img
-      ? '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.opacity=.15">'
-      : "";
+    var im = p.img ? '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.opacity=.15">' : "";
+    var sub = E.mode === "topic"
+      ? (p.cats || []).map(function (c) { return cm[c] ? cm[c].icon : ""; }).join(" ").replace(/\s+/g, " ").trim() || "no category"
+      : (p.topic ? topicIcon(p.topic) + " " + topicName(p.topic) + (p.sub ? " › " + subName(p.topic, p.sub) : "") : "no topic yet");
     return '<div class="pro-card">' +
-      '<div class="im" data-meta="' + esc(p.id) + '" title="Click for prompt stats & details">' + im + (badges ? '<div class="pro-badge">' + badges + "</div>" : "") + "</div>" +
+      '<div class="im" data-meta="' + esc(p.id) + '" title="Click for stats & details">' + im + (badges ? '<div class="pro-badge">' + badges + "</div>" : "") + "</div>" +
       '<div class="bd"><div class="tt" title="' + esc(p.title) + '">' + esc(p.title) + "</div>" +
+      '<div class="sb" title="' + esc(sub) + '">' + esc(sub) + "</div>" +
       '<div class="act">' +
-      '<button class="adm-ghost xs" type="button" data-meta="' + esc(p.id) + '" title="Prompt stats">📊</button>' +
-      '<a class="adm-ghost xs" href="template.html?id=rp-' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">View</a>' +
-      '<button class="adm-ghost xs" type="button" data-edit="' + esc(p.id) + '">Edit</button>' +
-      '<button class="adm-ghost xs danger" type="button" data-del="' + esc(p.id) + '">Del</button>' +
+      '<button class="adm-ghost xs" type="button" data-meta="' + esc(p.id) + '" title="Stats & details">📊</button>' +
+      '<a class="adm-ghost xs" href="template.html?id=rp-' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener" title="View on site">👁</a>' +
+      '<button class="adm-ghost xs" type="button" data-edit="' + esc(p.id) + '" title="Edit prompt">✏️</button>' +
+      '<button class="adm-ghost xs danger" type="button" data-del="' + esc(p.id) + '" title="Delete prompt">🗑</button>' +
       "</div></div></div>";
   }
   function rowHtml(p, cm, hot) {
-    var labels = (p.cats || []).map(function (c) { return (cm[c] ? cm[c].icon + " " + cm[c].name : c); }).join(" · ");
+    var cats = (p.cats || []).map(function (c) { return (cm[c] ? cm[c].icon + " " + cm[c].name : c); }).join(" · ");
+    var tline = p.topic ? topicIcon(p.topic) + " " + topicName(p.topic) + (p.sub ? " › " + subName(p.topic, p.sub) : "") : "no topic yet";
     var flags = (p.isNew ? " 🆕" : "") + (p.membersOnly ? " 🔒" : "") + (p.og ? " 🖼" : "") + (hot[p.id] ? " 🔥" : "");
     return '<div class="adm-item">' +
-      '<img data-meta="' + esc(p.id) + '" title="Click for prompt stats & details" src="' + esc(p.img || "") + '" alt="" loading="lazy" onerror="this.style.opacity=.15">' +
+      '<img data-meta="' + esc(p.id) + '" title="Click for stats & details" src="' + esc(p.img || "") + '" alt="" loading="lazy" onerror="this.style.opacity=.15">' +
       '<div class="adm-item-body"><b>' + esc(p.title) + flags + "</b>" +
-      '<span class="adm-muted small">' + esc(labels || "no category") + "</span></div>" +
+      '<span class="adm-muted small">' + esc(cats || "no category") + " · " + esc(tline) + "</span></div>" +
       '<div class="adm-item-actions">' +
-      '<button class="adm-ghost xs" type="button" data-meta="' + esc(p.id) + '" title="Prompt stats">📊</button>' +
+      '<button class="adm-ghost xs" type="button" data-meta="' + esc(p.id) + '" title="Stats & details">📊</button>' +
       '<a class="adm-ghost xs" href="template.html?id=rp-' + encodeURIComponent(p.id) + '" target="_blank" rel="noopener">View</a>' +
       '<button class="adm-ghost xs" type="button" data-edit="' + esc(p.id) + '">Edit</button>' +
       '<button class="adm-ghost xs danger" type="button" data-del="' + esc(p.id) + '">Del</button>' +
@@ -2112,82 +2152,138 @@ td { color: var(--text); }
   function toolbarHtml() {
     return '<div class="adm-row between" style="margin-top:0">' +
       '<input id="peSearch" type="text" placeholder="🔍 Search title, tagline, tag or id…" style="max-width:340px" value="' + esc(E.q) + '">' +
-      '<div class="seg" id="peView">' +
-      '<button data-v="rows" type="button"' + (E.view === "rows" ? ' class="on"' : "") + '>▦ Groups</button>' +
-      '<button data-v="list" type="button"' + (E.view === "list" ? ' class="on"' : "") + ">☰ List</button>" +
+      '<div class="seg" id="peMode">' +
+      '<button data-m="topic" type="button"' + (E.mode === "topic" ? ' class="on"' : "") + '>🧭 By Topic</button>' +
+      '<button data-m="cat" type="button"' + (E.mode === "cat" ? ' class="on"' : "") + '>🗂️ By Category</button>' +
+      '<button data-m="list" type="button"' + (E.mode === "list" ? ' class="on"' : "") + '>☰ List</button>' +
       "</div></div>";
   }
-  function chipsHtml(list, cm) {
-    var counts = {}, order = [], noneCount = 0;
-    list.forEach(function (p) {
-      var cats = p.cats || [];
-      if (!cats.length) { noneCount++; return; }
-      cats.forEach(function (c) {
-        if (counts[c] == null) { counts[c] = 0; order.push(c); }
-        counts[c]++;
+  function chipHtml(id, on, label, count) {
+    return '<button class="pro-chip' + (on ? " on" : "") + '" data-x="' + esc(id) + '" type="button">' + esc(label) + ' <span class="c">' + count + "</span></button>";
+  }
+
+  function filtersHtml() {
+    var list = prompts();
+    var html = "";
+    if (E.mode === "cat") {
+      var cm = catMap();
+      var counts = {}, order = [];
+      list.forEach(function (p) {
+        (p.cats || []).forEach(function (c) {
+          if (counts[c] == null) { counts[c] = 0; order.push(c); }
+          counts[c]++;
+        });
       });
-    });
-    order.sort(function (a, b) { return counts[b] - counts[a]; });
-    return '<div class="pro-chipbar">' +
-      '<button class="pro-arrow" data-scroll="-1" type="button" title="scroll left">‹</button>' +
-      '<div class="track" id="peChips">' +
-      '<button class="pro-chip' + (E.cat === "all" ? " on" : "") + '" data-cat="all" type="button">All <span class="c">' + list.length + "</span></button>" +
-      order.map(function (c) {
+      order.sort(function (a, b) { return counts[b] - counts[a]; });
+      html += '<div class="pro-chips" id="peChips">' + chipHtml("all", E.cat === "all", "All categories", list.length);
+      order.forEach(function (c) {
         var m = cm[c] || { icon: "", name: c };
-        return '<button class="pro-chip' + (E.cat === c ? " on" : "") + '" data-cat="' + esc(c) + '" type="button">' + esc(m.icon + " " + m.name) + ' <span class="c">' + counts[c] + "</span></button>";
-      }).join("") +
-      (noneCount ? '<button class="pro-chip' + (E.cat === "__none" ? " on" : "") + '" data-cat="__none" type="button">✨ No category <span class="c">' + noneCount + "</span></button>" : "") +
+        html += chipHtml(c, E.cat === c, m.icon + " " + m.name, counts[c]);
+      });
+      html += "</div>";
+      return html;
+    }
+    /* topic mode */
+    var tc = {}, tOrder = [], untagged = 0;
+    list.forEach(function (p) {
+      if (p.topic) { tc[p.topic] = (tc[p.topic] || 0) + 1; if (tOrder.indexOf(p.topic) < 0) tOrder.push(p.topic); }
+      else untagged++;
+    });
+    tOrder.sort(function (a, b) { return tc[b] - tc[a]; });
+    html += '<div class="pro-chips" id="peChips">' + chipHtml("all", E.topic === "all", "All topics", list.length);
+    tOrder.forEach(function (id) { html += chipHtml(id, E.topic === id, topicIcon(id) + " " + topicName(id), tc[id]); });
+    if (untagged) html += chipHtml("__none", E.topic === "__none", "⭐ To assign", untagged);
+    html += "</div>";
+    if (E.topic !== "all" && E.topic !== "__none") {
+      var t = topicOf(E.topic);
+      var subs = (t && t.subs) || [];
+      var sc = {}, noSub = 0, total = 0;
+      list.forEach(function (p) {
+        if (p.topic !== E.topic) return;
+        total++;
+        if (p.sub) sc[p.sub] = (sc[p.sub] || 0) + 1; else noSub++;
+      });
+      var sOrder = subs.map(function (s) { return s.id; }).filter(function (id) { return sc[id]; });
+      Object.keys(sc).forEach(function (id) { if (sOrder.indexOf(id) < 0) sOrder.push(id); });
+      html += '<div class="pro-chips subs" id="peSubs">' + chipHtml("all", E.sub === "all", "All subs", total);
+      sOrder.forEach(function (id) { html += chipHtml(id, E.sub === id, subName(E.topic, id), sc[id]); });
+      if (noSub) html += chipHtml("__none", E.sub === "__none", "No sub", noSub);
+      html += "</div>";
+    }
+    if (untagged && E.topic === "all") {
+      html += '<p class="pro-note" style="margin:10px 0 0">⭐ <b>' + untagged + " prompt" + (untagged === 1 ? "" : "s") + "</b> still need" + (untagged === 1 ? "s" : "") + " a topic — open one (✏️ Edit → 🤖 Auto detects it automatically). Untagged prompts keep working on the site as usual.</p>";
+    }
+    return html;
+  }
+
+  function railHtml(key, items, icon, name, cm, hot) {
+    return '<div class="pro-group"><div class="pro-group-h">' +
+      '<span class="ic">' + esc(icon) + "</span><b>" + esc(name) + '</b><span class="n">' + items.length + '</span>' +
+      '<span style="margin-left:auto"></span>' +
+      '<button class="pro-arrow" data-rail="-1" type="button" title="scroll left">‹</button>' +
+      '<button class="pro-arrow" data-rail="1" type="button" title="scroll right">›</button>' +
       "</div>" +
-      '<button class="pro-arrow" data-scroll="1" type="button" title="scroll right">›</button>' +
-      "</div>";
+      '<div class="pro-rail"><div class="strip">' + items.map(function (p) { return cardHtml(p, hot, cm); }).join("") + "</div></div></div>";
   }
   function resultsHtml(shown, cm, hot) {
     var list = prompts();
     if (!list.length) return '<div class="adm-empty">No remote prompts yet.<br>Open <b>➕ Add / Edit</b> and publish your first prompt — or check the API connection.</div>';
-    if (!shown.length) return '<div class="adm-empty">Nothing matches your search <b>' + esc(E.q || "…") + "</b>.<br>Try another word or pick a different category.</div>";
-    if (E.view === "list") return '<div class="adm-list">' + shown.map(function (p) { return rowHtml(p, cm, hot); }).join("") + "</div>";
-    var groups = [];
-    if (E.cat === "all" || E.cat === "__none") {
-      var counts = {}, order = [];
-      list.forEach(function (p) {
-        (p.cats || []).forEach(function (c) { if (counts[c] == null) { counts[c] = 0; order.push(c); } });
-      });
-      if (E.cat === "all") groups = order;
-      if (list.some(function (p) { return !(p.cats || []).length; })) { if (E.cat === "all" || E.cat === "__none") groups.push("__none"); }
-    } else groups = [E.cat];
+    if (!shown.length) return '<div class="adm-empty">Nothing matches your filters <b>' + esc(E.q || "…") + "</b>.<br>Try another word or pick a different filter above.</div>";
+    if (E.mode === "list") return '<div class="adm-list">' + shown.map(function (p) { return rowHtml(p, cm, hot); }).join("") + "</div>";
     var html = "";
-    groups.forEach(function (g) {
-      var items = shown.filter(function (p) {
-        var cats = p.cats || [];
-        return g === "__none" ? !cats.length : cats.indexOf(g) >= 0;
+    if (E.mode === "cat") {
+      var groups = E.cat === "all" ? (function () {
+        var counts = {}, order = [];
+        list.forEach(function (p) {
+          (p.cats || []).forEach(function (c) { if (counts[c] == null) { counts[c] = 0; order.push(c); } });
+        });
+        order.sort(function (a, b) { return counts[b] - counts[a]; });
+        return order;
+      })() : [E.cat];
+      groups.forEach(function (g) {
+        var items = shown.filter(function (p) { return (p.cats || []).indexOf(g) >= 0; });
+        if (!items.length) return;
+        var m = cm[g] || { icon: "📁", name: g };
+        html += railHtml(g, items, m.icon, m.name, cm, hot);
       });
+      return html || '<div class="adm-empty">Nothing in this view — try All categories.</div>';
+    }
+    /* topic mode */
+    var groups = [];
+    if (E.topic === "all") {
+      var tc = {}, tOrder = [], unt = 0;
+      list.forEach(function (p) {
+        if (p.topic) { tc[p.topic] = (tc[p.topic] || 0) + 1; if (tOrder.indexOf(p.topic) < 0) tOrder.push(p.topic); }
+        else unt++;
+      });
+      tOrder.sort(function (a, b) { return tc[b] - tc[a]; });
+      groups = tOrder;
+      if (unt) groups.push("__none");
+    } else groups = [E.topic];
+    groups.forEach(function (g) {
+      var items = shown.filter(function (p) { return g === "__none" ? !p.topic : p.topic === g; });
       if (!items.length) return;
-      var m = g === "__none" ? { icon: "✨", name: "No category" } : (cm[g] || { icon: "📁", name: g });
-      html += '<div class="pro-group"><div class="pro-group-h">' +
-        '<span class="ic">' + esc(m.icon) + "</span><b>" + esc(m.name) + '</b><span class="n">' + items.length + '</span>' +
-        '<span style="margin-left:auto"></span>' +
-        '<button class="pro-arrow" data-rail="-1" type="button" title="scroll left">‹</button>' +
-        '<button class="pro-arrow" data-rail="1" type="button" title="scroll right">›</button>' +
-        "</div>" +
-        '<div class="pro-rail"><div class="strip">' + items.map(function (p) { return cardHtml(p, hot); }).join("") + "</div></div></div>";
+      var icon = g === "__none" ? "⭐" : topicIcon(g);
+      var name = g === "__none" ? "To assign — no topic yet" : topicName(g);
+      html += railHtml(g, items, icon, name, cm, hot);
     });
-    return html || '<div class="adm-empty">Nothing in this view — try All.</div>';
+    return html || '<div class="adm-empty">Nothing in this view — try All topics.</div>';
   }
 
   function renderPromptsUI(full) {
     var el = $("#pList");
     if (!el) return;
-    var list = prompts();
     var cm = catMap();
     var hot = trendingSet();
     var wrap = el.querySelector(".pro-wrap");
     if (full || !wrap) {
-      el.innerHTML = '<!--PRO-UI--><div class="pro-wrap">' + toolbarHtml() + chipsHtml(list, cm) + '<div id="peResults"></div></div>';
+      el.innerHTML = '<!--PRO-UI--><div class="pro-wrap">' + toolbarHtml() + '<div id="peFilters">' + filtersHtml() + '</div><div id="peResults"></div></div>';
     } else {
-      $$(".pro-chip", el).forEach(function (c) { c.classList.toggle("on", c.dataset.cat === E.cat); });
-      $$("#peView button", el).forEach(function (b) { b.classList.toggle("on", b.dataset.v === E.view); });
+      $$("#peMode button", el).forEach(function (b) { b.classList.toggle("on", b.dataset.m === E.mode); });
+      var f = el.querySelector("#peFilters");
+      if (f) f.innerHTML = filtersHtml();
     }
-    var shown = list.filter(pMatches);
+    var shown = prompts().filter(pMatches);
     var res = el.querySelector("#peResults");
     if (res) res.innerHTML = resultsHtml(shown, cm, hot);
     renderTopics();
@@ -2209,18 +2305,27 @@ td { color: var(--text); }
       var mo = new MutationObserver(function () { enhancePrompts(); });
       mo.observe(pList, { childList: true });
     }
-    /* clicks inside the explorer (search / chips / view / arrows) */
     document.addEventListener("click", function (e) {
       var t = e.target;
       if (!t || !t.closest) return;
-      var chip = t.closest("[data-cat]");
-      if (chip && chip.classList.contains("pro-chip")) { E.cat = chip.dataset.cat; renderPromptsUI(); return; }
-      var v = t.closest("#peView button");
-      if (v) { E.view = v.dataset.v; var p = prefs(); p.view = E.view; savePrefs(p); renderPromptsUI(); return; }
-      var sc = t.closest("[data-scroll]");
-      if (sc) {
-        var tr = $("#peChips");
-        if (tr) tr.scrollBy({ left: Number(sc.dataset.scroll) * 320, behavior: "smooth" });
+      var modeBtn = t.closest("#peMode button");
+      if (modeBtn) {
+        var m = modeBtn.dataset.m;
+        if (m !== E.mode) {
+          E.mode = m; E.cat = "all"; E.topic = "all"; E.sub = "all";
+          var p = prefs(); p.mode = m; savePrefs(p);
+          renderPromptsUI();
+        }
+        return;
+      }
+      var subChip = t.closest("#peSubs .pro-chip");
+      if (subChip) { E.sub = subChip.dataset.x; renderPromptsUI(); return; }
+      var chipBtn = t.closest("#peChips .pro-chip");
+      if (chipBtn) {
+        var x = chipBtn.dataset.x;
+        if (E.mode === "cat") E.cat = x;
+        else { E.topic = x; E.sub = "all"; }
+        renderPromptsUI();
         return;
       }
       var rb = t.closest("[data-rail]");
@@ -2240,6 +2345,40 @@ td { color: var(--text); }
     /* when the original console refreshes its list, refresh ours too */
     var rb2 = $("#refreshBtn");
     if (rb2) rb2.addEventListener("click", function () { loadPrompts(); });
+  }
+
+  /* ================================================================
+     SIDEBAR ACCORDION — collapsible menu groups (persisted)
+     ================================================================ */
+  function setGroupOpen(g, open) {
+    if (!g) return;
+    g.classList.toggle("open", open);
+    var h = g.querySelector(".side-ghead");
+    if (h) h.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  function initSideNav() {
+    $$(".side-ghead").forEach(function (h) {
+      h.addEventListener("click", function () {
+        var g = h.closest(".side-group");
+        var open = !g.classList.contains("open");
+        setGroupOpen(g, open);
+        var p = prefs();
+        p.closed = p.closed || {};
+        if (open) delete p.closed[g.dataset.group];
+        else p.closed[g.dataset.group] = true;
+        savePrefs(p);
+      });
+    });
+    var p = prefs();
+    Object.keys(p.closed || {}).forEach(function (gid) {
+      if (!p.closed[gid]) return;
+      setGroupOpen(document.querySelector('.side-group[data-group="' + gid + '"]'), false);
+    });
+  }
+  function openGroupOf(tabName) {
+    var b = document.querySelector('.adm-tab[data-tab="' + tabName + '"]');
+    var g = b && b.closest(".side-group");
+    if (g && !g.classList.contains("open")) setGroupOpen(g, true);
   }
 
   /* ================================================================
@@ -2828,6 +2967,7 @@ td { color: var(--text); }
     var name = b.dataset.tab;
     var crumb = $("#topCrumb");
     if (crumb && CRUMBS[name]) crumb.textContent = CRUMBS[name];
+    openGroupOf(name);
     if (name === "emails" && S.emails == null) loadEmails();
     if ((name === "analytics" || name === "pstats" || name === "dates" || name === "users" || name === "ban") && (!S.stats || !S.padmin)) refreshAll();
   }, true);
@@ -2879,6 +3019,7 @@ td { color: var(--text); }
      BOOT
      ================================================================ */
   initSettings();
+  initSideNav();
   initPromptExplorer();
   initMeta();
   renderSysInfo();
@@ -2911,5 +3052,5 @@ td { color: var(--text); }
   renderTools();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44e39a07d8f2154',t:'MTc5MTA1NDM5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
