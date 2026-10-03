@@ -312,6 +312,16 @@ html{scrollbar-gutter:stable}
           </div>
         </div>
 
+        <!-- TEZO: topic & sub-category picker -->
+        <div class="adm-label-txt">Topic & Sub-category
+          <span class="adm-muted small">(new system — press Auto to detect it automatically; empty values are fine too)</span>
+        </div>
+        <div class="adm-row" style="margin-bottom:10px;flex-wrap:wrap">
+          <select id="fTopic" style="flex:1;min-width:170px;background:var(--card-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 13px;font-size:.88rem;font-family:inherit"></select>
+          <select id="fSub" style="flex:1;min-width:170px;background:var(--card-2);border:1px solid var(--border);color:var(--text);border-radius:12px;padding:11px 13px;font-size:.88rem;font-family:inherit"></select>
+          <button class="adm-ghost" id="topicAuto" type="button">🤖 Auto</button>
+        </div>
+
         <div class="adm-label-txt">Categories * <span class="adm-muted small">(tick where this prompt appears)</span></div>
         <div id="fCats" class="adm-catbox"></div>
 
@@ -411,6 +421,9 @@ html{scrollbar-gutter:stable}
 </div>
 </div>
 <script src="assets/js/data.js"></script>
+<!-- TEZO: topic-system scripts -->
+<script src="assets/js/tezo-topics.js"></script>
+<script src="assets/js/tezo-migration.js"></script>
 <script>
 (function () {
   "use strict";
@@ -520,7 +533,7 @@ html{scrollbar-gutter:stable}
       DATA.prompts = (d && d.prompts) || [];
       DATA.cats = (d && d.cats) || [];
       $("#apiState").textContent = "✅ connected · " + DATA.prompts.length + " remote prompt" + (DATA.prompts.length === 1 ? "" : "s");
-      renderPrompts(); renderCatChecks();
+      renderPrompts(); renderCatChecks(); initTopicPicker(); /* TEZO */
     }).catch(function () {
       $("#apiState").textContent = "⚠️ API unreachable — check Apps Script deployment (ADMIN-GUIDE.md)";
     });
@@ -561,6 +574,77 @@ html{scrollbar-gutter:stable}
     }).join("");
   }
 
+    /* ---------- TEZO: TOPIC & SUB PICKER (new category system) ---------- */
+    function buildTopicSelects() {
+      var tSel = $("#fTopic"), sSel = $("#fSub");
+      if (!tSel || !sSel) return;
+      var topics = (typeof TOPICS !== "undefined") ? TOPICS : [];
+      tSel.innerHTML = '<option value="">— Topic (main category) —</option>' +
+        topics.map(function (t) {
+          return '<option value="' + esc(t.id) + '">' + esc(t.icon + "  " + t.name) + '</option>';
+        }).join("");
+      topicSubRefresh();
+    }
+    function topicSubRefresh() {
+      var tSel = $("#fTopic"), sSel = $("#fSub");
+      if (!tSel || !sSel) return;
+      var t = (typeof TezoTopic !== "undefined") ? TezoTopic.byId(tSel.value) : null;
+      sSel.innerHTML = '<option value="">— Sub-category —</option>' +
+        (t ? t.subs.map(function (s) {
+          return '<option value="' + esc(s.id) + '">' + esc(s.name) + '</option>';
+        }).join("") : "");
+      sSel.value = ""; /* options rebuilt -> always start from the placeholder */
+    }
+    /* Auto-detect order: 1) the prompt's own topic/sub  2) TOPIC_MIGRATE
+       (map for the current prompts)  3) CAT_TO_TOPIC (legacy cats) */
+    function topicAutoGuess(p) {
+      if (typeof TezoTopic === "undefined") return null;
+      var m = TezoTopic.of(p || {});
+      if (m && m.topic && m.sub) return m;
+      return null;
+    }
+    function topicFill(p) {
+      var tSel = $("#fTopic"), sSel = $("#fSub");
+      if (!tSel || !sSel) return;
+      tSel.value = "";
+      sSel.value = "";
+      topicSubRefresh();
+      if (!p) return;                    /* new form -> keep both selects empty */
+      var m = topicAutoGuess(p);
+      if (m) {
+        var t = TezoTopic.byId(m.topic);
+        if (t) {
+          tSel.value = m.topic;
+          topicSubRefresh();
+          var ok = t.subs.some(function (x) { return x.id === m.sub; });
+          sSel.value = ok ? m.sub : ""; /* sub missing in the map -> keep the topic at least */
+        }
+      }
+    }
+    function topicRead() {
+      var tSel = $("#fTopic"), sSel = $("#fSub");
+      return {
+        topic: (tSel && tSel.value) ? tSel.value : "",
+        sub: (sSel && sSel.value) ? sSel.value : ""
+      };
+    }
+    function initTopicPicker() {
+      buildTopicSelects();
+      var tSel = $("#fTopic"), sSel = $("#fSub"), auto = $("#topicAuto");
+      if (tSel) tSel.addEventListener("change", topicSubRefresh);
+      if (auto) auto.addEventListener("click", function () {
+        var p = readForm();              /* guess from whatever the form has (title + cats) */
+        var m = topicAutoGuess(p);
+        if (m) {
+          topicFill({ id: p.id, cats: p.cats, topic: m.topic, sub: m.sub });
+          toast("🤖 Detected: " + m.topic + " > " + m.sub);
+        } else {
+          toast("🤖 Could not detect — please pick a topic manually");
+        }
+      });
+    }
+
+
   /* ---------- form ---------- */
   function lines(v) { return String(v || "").split("\n").map(function (s) { return s.trim(); }).filter(Boolean); }
   function csv(v) { return String(v || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean); }
@@ -574,6 +658,8 @@ html{scrollbar-gutter:stable}
       img: $("#fImg").value.trim(),
       og: $("#fOg").value.trim(),
       cats: cats,
+      topic: topicRead().topic, /* TEZO */
+      sub: topicRead().sub, /* TEZO */
       prompt: $("#fPrompt").value.trim(),
       about: $("#fAbout").value.trim(),
       how: $("#fHow").value.trim(),
@@ -612,6 +698,7 @@ html{scrollbar-gutter:stable}
     $("#fUses").value = p ? p.uses || "" : "";
     $("#fNew").checked = !!(p && p.isNew);
     $("#fPro").checked = !!(p && p.membersOnly);
+    topicFill(p); /* TEZO hook */
     $("#formErr").textContent = ""; $("#formOk").textContent = "";
     setTab("form");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1344,5 +1431,8 @@ html{scrollbar-gutter:stable}
   if (!API) showGate(); else if (KEY) unlock(KEY); else showGate();
 })();
 </script>
+<!-- TEZO: admin prompt-analytics dashboard -->
+<script src="assets/js/tezo-admin-stats.js" defer></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44b93681f6726ba',t:'MTc5MTAyNjYxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"1954b47c125f43f8b4338b3c4f804e4f","spa":2}' crossorigin="anonymous"></script>
 </body>
 </html>
