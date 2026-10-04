@@ -378,7 +378,9 @@ td { color: var(--text); }
 
 /* topic cards */
 .pro-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.pro-topic { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm); }
+.pro-topic { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; box-shadow: var(--shadow-sm); cursor: pointer; transition: .18s; }
+.pro-topic:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+.pro-topic .go { margin-top: 9px; font-size: .72rem; font-weight: 800; color: var(--primary); }
 .pro-topic .h { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
 .pro-topic .h .ic { font-size: 1.3rem; }
 .pro-topic .h b { font-size: .9rem; }
@@ -2011,6 +2013,9 @@ td { color: var(--text); }
   function api(action, params) {
     if (PREVIEW) return window.mockApi(action, params);
     if (!EP) return Promise.resolve({ ok: false, error: "API endpoint not configured" });
+    /* The original backend serves "stats" ONLY via POST (doGet answers unknown
+       actions with a plain ping) — send it exactly like the original console. */
+    if (action === "stats") return apiPost({ action: "stats" });
     var qs = "?action=" + encodeURIComponent(action) + "&key=" + encodeURIComponent(adminKey());
     if (params) Object.keys(params).forEach(function (k) { qs += "&" + encodeURIComponent(k) + "=" + encodeURIComponent(params[k]); });
     qs += "&t=" + Date.now();
@@ -2019,7 +2024,10 @@ td { color: var(--text); }
   function apiPost(body) {
     if (PREVIEW) return window.mockApi(body.action, body);
     if (!EP) return Promise.resolve({ ok: false, error: "API endpoint not configured" });
-    return fetch(EP, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) })
+    var payload = {};
+    Object.keys(body || {}).forEach(function (k) { payload[k] = body[k]; });
+    if (!payload.key) payload.key = adminKey();
+    return fetch(EP, { method: "POST", redirect: "follow", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) })
       .then(function (r) { return r.json(); })
       .catch(function () { return { ok: false, error: "network error" }; });
   }
@@ -2486,6 +2494,19 @@ td { color: var(--text); }
     }
   }, true);
 
+  /* topic cards → open Prompts filtered by that topic */
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest) return;
+    var tc = e.target.closest("[data-topic-go]");
+    if (!tc) return;
+    E.mode = "topic"; E.topic = tc.getAttribute("data-topic-go"); E.sub = "all"; E.q = "";
+    var pf = prefs(); pf.mode = "topic"; savePrefs(pf);
+    var b = document.querySelector('.adm-tab[data-tab="prompts"]');
+    if (b) b.click();
+    renderPromptsUI(true);
+    try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (err) { window.scrollTo(0, 0); }
+  });
+
   /* after a ban / unban (handled by the original delegation) refresh pro views */
   document.addEventListener("click", function (e) {
     if (!e.target.closest) return;
@@ -2528,7 +2549,7 @@ td { color: var(--text); }
     var st = S.stats, pa = S.padmin;
     var c = $("#ovCards");
     if (!c) return;
-    if (!st || !st.ok) { c.innerHTML = '<p class="pro-loading">Backend not reachable yet — open the panel or press Refresh.</p>'; return; }
+    if (!st || !st.ok || !st.stats) { c.innerHTML = '<p class="pro-loading">\u26a0 ' + esc((st && st.error) || "Audience data not loaded yet — press Refresh.") + "</p>"; return; }
     var s = st.stats || {};
     var tv = pa && pa.ok ? pa.totals : null;
     var hot = pa && pa.ok ? pa.rows.filter(function (r) { return r.score7 > 0; }).length : 0;
@@ -2639,7 +2660,7 @@ td { color: var(--text); }
      ================================================================ */
   var DR = 14;
   function dayList() {
-    if (S.dates && S.dates.ok) return S.dates.days || [];
+    if (S.dates && S.dates.ok && Array.isArray(S.dates.days)) return S.dates.days;
     if (S.padmin && S.padmin.ok) return S.padmin.daily || [];
     return [];
   }
@@ -2687,7 +2708,7 @@ td { color: var(--text); }
     var cards = $("#usersCards"), listEl = $("#usersList");
     if (!cards || !listEl) return;
     var st = S.stats;
-    if (!st || !st.ok) { cards.innerHTML = ""; listEl.innerHTML = '<p class="pro-loading">Not loaded yet — press Refresh.</p>'; return; }
+    if (!st || !st.ok || !st.stats) { cards.innerHTML = ""; listEl.innerHTML = '<p class="pro-loading">\u26a0 ' + esc((st && st.error) || "Not loaded yet — press Refresh.") + "</p>"; return; }
     var banned = (st.banned || []).map(function (e) { return String(e).toLowerCase(); });
     var verified = (st.recentUsers || []).filter(function (u) { return u.verified === "yes"; }).length;
     cards.innerHTML =
@@ -2718,7 +2739,7 @@ td { color: var(--text); }
     var el = $("#banList");
     if (!el) return;
     var st = S.stats;
-    if (!st || !st.ok) { el.innerHTML = '<p class="pro-loading">Not loaded yet — press Refresh.</p>'; return; }
+    if (!st || !st.ok || !st.stats) { el.innerHTML = '<p class="pro-loading">\u26a0 ' + esc((st && st.error) || "Not loaded yet — press Refresh.") + "</p>"; return; }
     var banned = st.banned || [];
     $("#banCount").textContent = "(" + banned.length + ")";
     el.innerHTML = banned.map(function (email) {
@@ -2772,8 +2793,8 @@ td { color: var(--text); }
   }
   function loadEmails() {
     return api("tezoemails").then(function (d) {
-      S.emails = d;
-      S.emailsOk = !!(d && d.ok);
+      S.emailsOk = !!(d && d.ok && Array.isArray(d.emails));
+      S.emails = S.emailsOk ? d : null;
       var badge = $("#addonEmails");
       if (badge) { badge.textContent = S.emailsOk ? "installed ✅" : "not detected"; badge.className = S.emailsOk ? "ok" : "bad"; }
       renderEmails();
@@ -2797,9 +2818,10 @@ td { color: var(--text); }
     grid.innerHTML = topics.slice().sort(function (a, b) { return (counts[b.id] || 0) - (counts[a.id] || 0); }).map(function (t) {
       var n = counts[t.id] || 0;
       var subNames = (t.subs || []).slice(0, 3).map(function (x) { return x.name; }).join(" · ");
-      return '<div class="pro-topic"><div class="h"><span class="ic">' + esc(t.icon) + "</span><b>" + esc(t.name) + "</b></div>" +
+      return '<div class="pro-topic" data-topic-go="' + esc(t.id) + '" title="Open the prompts of this topic"><div class="h"><span class="ic">' + esc(t.icon) + "</span><b>" + esc(t.name) + "</b></div>" +
         '<div class="meta"><span>' + (t.subs || []).length + " subs</span><span>·</span><span>" + n + ' prompt' + (n === 1 ? "" : "s") + "</span></div>" +
-        '<div class="subs">' + esc(subNames) + (t.subs && t.subs.length > 3 ? " …" : "") + "</div></div>";
+        '<div class="subs">' + esc(subNames) + (t.subs && t.subs.length > 3 ? " …" : "") + '</div>' +
+        '<div class="go">View prompts →</div></div>';
     }).join("") || '<p class="adm-muted small">Topics file not loaded.</p>';
   }
 
@@ -2923,7 +2945,9 @@ td { color: var(--text); }
       sel.value = prefs().tab || "prompts";
       sel.addEventListener("change", function () {
         var p = prefs(); p.tab = sel.value; savePrefs(p);
-        toast("Saved — console will open on " + CRUMBS[sel.value]);
+        var b = document.querySelector('.adm-tab[data-tab="' + sel.value + '"]');
+        if (b) b.click();
+        toast("Saved — this console now opens on " + CRUMBS[sel.value]);
       });
     }
     var lock = $("#setLock");
@@ -2947,14 +2971,15 @@ td { color: var(--text); }
       S.stats = r[0];
       S.padmin = r[1];
       return api("tezodates").then(function (d) {
-        S.dates = d && d.ok ? d : null;
-        S.datesOk = !!(d && d.ok);
+        S.datesOk = !!(d && d.ok && Array.isArray(d.days));
+        S.dates = S.datesOk ? d : null;
         var badge = $("#addonDates");
         if (badge) { badge.textContent = S.datesOk ? "installed ✅" : "not detected"; badge.className = S.datesOk ? "ok" : "bad"; }
       }).catch(function () { S.dates = null; });
     }).then(function () {
-      renderOverview(); renderPstats(); renderDates(); renderUsers(); renderBan();
-      renderPages(); renderTools(); renderSysInfo(); renderPromptsUI();
+      function safe(fn) { try { fn(); } catch (err) { if (window.console) console.error("pro-render:", err); } }
+      safe(renderOverview); safe(renderPstats); safe(renderDates); safe(renderUsers); safe(renderBan);
+      safe(renderPages); safe(renderTools); safe(renderSysInfo); safe(function () { renderPromptsUI(); });
     });
   }
   function refreshAll() { return fetchAll(); }
@@ -2969,7 +2994,7 @@ td { color: var(--text); }
     if (crumb && CRUMBS[name]) crumb.textContent = CRUMBS[name];
     openGroupOf(name);
     if (name === "emails" && S.emails == null) loadEmails();
-    if ((name === "analytics" || name === "pstats" || name === "dates" || name === "users" || name === "ban") && (!S.stats || !S.padmin)) refreshAll();
+    if ((name === "analytics" || name === "pstats" || name === "dates" || name === "users" || name === "ban") && (!S.stats || !S.stats.stats || !S.padmin)) refreshAll();
   }, true);
 
   /* refresh buttons */
@@ -3052,5 +3077,5 @@ td { color: var(--text); }
   renderTools();
 })();
 </script>
-<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a44e39a07d8f2154',t:'MTc5MTA1NDM5Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
