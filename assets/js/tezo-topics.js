@@ -378,8 +378,11 @@ var TezoTopic = (function () {
   function of(p) {
     if (!p) return null;
     if (p.topic && p.sub) return { topic: p.topic, sub: p.sub };
-    if (typeof TOPIC_MIGRATE !== "undefined" && TOPIC_MIGRATE[p.id])
-      return { topic: TOPIC_MIGRATE[p.id][0], sub: TOPIC_MIGRATE[p.id][1] };
+    /* rpNormalize (app.js) prefixes remote ids with "rp-" — look up both forms */
+    if (typeof TOPIC_MIGRATE !== "undefined") {
+      var mk = TOPIC_MIGRATE[p.id] || TOPIC_MIGRATE[String(p.id).replace(/^rp-/, "")];
+      if (mk) return { topic: mk[0], sub: mk[1] };
+    }
     if (typeof CAT_TO_TOPIC !== "undefined" && p.cats) {
       for (var i = 0; i < p.cats.length; i++)
         if (CAT_TO_TOPIC[p.cats[i]]) return { topic: CAT_TO_TOPIC[p.cats[i]][0], sub: CAT_TO_TOPIC[p.cats[i]][1] };

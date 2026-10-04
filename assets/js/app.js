@@ -810,6 +810,41 @@
         <a class="see-all" href="${link}">See All ${I.right}</a>
       </div>`;
   }
+  /* ✚ TEZO v5: topic-aware category membership — the 20 main categories are the
+     topic ids; every prompt is placed by ① Sheet topic/sub columns ② TOPIC_MIGRATE
+     map ③ CAT_TO_TOPIC ④ legacy cats fallback (new prompts with topic-id cats). */
+  const topicResolveOf = (p) => {
+    if (!p) return null;
+    if (p.topic && p.sub) return { topic: p.topic, sub: p.sub };
+    /* rpNormalize prefixes remote ids with "rp-" — try both runtime and raw id */
+    if (typeof TOPIC_MIGRATE !== "undefined") {
+      const mk = TOPIC_MIGRATE[p.id] || TOPIC_MIGRATE[String(p.id).replace(/^rp-/, "")];
+      if (mk) return { topic: mk[0], sub: mk[1] };
+    }
+    if (typeof CAT_TO_TOPIC !== "undefined" && p.cats) {
+      for (let i = 0; i < p.cats.length; i++) {
+        const c = p.cats[i];
+        const cc = (typeof TEZOFY_LABELS !== "undefined" && TEZOFY_LABELS.canonical(c)) || c;
+        const m = CAT_TO_TOPIC[cc] || CAT_TO_TOPIC[c];
+        if (m) return { topic: m[0], sub: m[1] };
+        /* after alias-remapping a cat may itself BE a topic id — accept it directly */
+        if (cc !== "trending" && cc !== "popular" && typeof TOPICS !== "undefined" &&
+            TOPICS.some((t) => t.id === cc)) return { topic: cc, sub: "" };
+      }
+    }
+    return null;
+  };
+  const inCatId = (p, cid) => {
+    const r = topicResolveOf(p);
+    if (r) return r.topic === cid;
+    return !!(p && p.cats && Array.isArray(p.cats) && p.cats.includes(cid));
+  };
+  const subNameOf = (tid, sid) => {
+    const t = (typeof TOPICS !== "undefined") ? TOPICS.find((x) => x.id === tid) : null;
+    const s = (t && t.subs) ? t.subs.find((x) => x.id === sid) : null;
+    return s ? s.name : sid;
+  };
+
   const getCat = (id) => { /* ✚ TEZO: trending/popular এখন আসল ব্যবহার থেকে অটো */
     if (window.TezoStats && (id === "trending" || id === "popular")) {
       const live = TezoStats.collection(id);
@@ -817,7 +852,7 @@
       if (id === "trending") return PROMPTS.filter((p) => p.isNew);
       return [];
     }
-    return PROMPTS.filter((p) => p.cats.includes(id)).sort((a, b) => getUses(b) - getUses(a));
+    return PROMPTS.filter((p) => inCatId(p, id)).sort((a, b) => getUses(b) - getUses(a));
   };
 
   /* ---------- clipboard ---------- */
@@ -904,13 +939,24 @@
     });
 
     /* categories grid */
+    /* ✚ TEZO v5: live prompt count on every category card */
+    if (!document.getElementById("tzCatCountStyle")) {
+      const st = document.createElement("style");
+      st.id = "tzCatCountStyle";
+      st.textContent = ".cat-count{display:inline-block;margin-top:8px;font:700 .68rem/1 inherit;letter-spacing:.05em;text-transform:uppercase;color:#ff2daa}";
+      document.head.appendChild(st);
+    }
     const catHost = $("#categories");
-    catHost.innerHTML = CATEGORIES.map((c) => `
+    catHost.innerHTML = CATEGORIES.map((c) => {
+      const isCollection = c.id === "trending" || c.id === "popular";
+      const n = isCollection ? -1 : getCat(c.id).length;
+      return `
       <a class="cat-card reveal" href="category.html?c=${c.id}">
         <span class="cat-icon">${c.icon}</span>
         <h3>${esc(c.name)}</h3>
         <p>${esc(c.desc)}</p>
-      </a>`).join("");
+        ${n >= 0 ? `<span class="cat-count">${n} prompt${n === 1 ? "" : "s"}${n === 0 ? " · coming soon" : ""}</span>` : ""}
+      </a>`; }).join("");
     watchReveals(catHost);
 
     /* blog */
@@ -972,6 +1018,38 @@
   }
 
   /* ---------- page: category ---------- */
+  /* ✚ TEZO v5: sub-category chip row (main category → its topics/sub-categories) */
+  function ensureTzSubStyle() {
+    if (document.getElementById("tzSubStyle")) return;
+    const st = document.createElement("style");
+    st.id = "tzSubStyle";
+    st.textContent = [
+      ".tz-subrow{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}",
+      ".tz-sub{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;",
+      "border:1px solid rgba(128,128,128,.35);background:rgba(128,128,128,.10);color:inherit;",
+      "font:600 .8rem/1.2 inherit;text-decoration:none;transition:.18s}",
+      ".tz-sub:hover{border-color:#ff2daa;transform:translateY(-1px)}",
+      ".tz-sub.on{background:linear-gradient(135deg,#ff2daa,#a826ff);border-color:transparent;color:#fff}",
+      ".tz-sub .n{font-size:.68rem;opacity:.75}"
+    ].join("");
+    document.head.appendChild(st);
+  }
+  function renderTopicSubChips(row, id, list, activeSub) {
+    ensureTzSubStyle();
+    const t = (typeof TOPICS !== "undefined") ? TOPICS.find((x) => x.id === id) : null;
+    const subs = (t && t.subs) || [];
+    const counts = {};
+    list.forEach((p) => { const r = topicResolveOf(p); if (r && r.sub) counts[r.sub] = (counts[r.sub] || 0) + 1; });
+    const visible = subs.filter((s) => counts[s.id]);
+    if (!visible.length) { row.style.display = "none"; row.innerHTML = ""; return; }
+    row.style.display = "";
+    row.innerHTML =
+      `<a class="tz-sub ${activeSub === "all" ? "on" : ""}" href="category.html?c=${encodeURIComponent(id)}">All <span class="n">${list.length}</span></a>` +
+      visible.map((s) =>
+        `<a class="tz-sub ${activeSub === s.id ? "on" : ""}" href="category.html?c=${encodeURIComponent(id)}&sub=${encodeURIComponent(s.id)}">` +
+        `${esc(s.name)} <span class="n">${counts[s.id]}</span></a>`).join("");
+  }
+
   function pageCategory() {
     let id = param("c") || "trending";
     /* গ্লোবাল লেবেল: পুরনো/শিট অ্যালায়াস → ক্যানোনিকাল আইডি (যেমন happy-birthday → birthday) */
@@ -982,10 +1060,22 @@
     $$(".grid").forEach((g) => g.classList.add("masonry"));
     const cat = CATEGORIES.find((c) => c.id === id);
     const list = getCat(id);
+    /* ✚ TEZO v5: sub-category explorer (?sub=… — shareable & SEO-friendly URLs) */
+    const sub = param("sub") || "all";
+    const shown = (sub !== "all") ? list.filter((p) => { const r = topicResolveOf(p); return r && r.sub === sub; }) : list;
+    let row = document.getElementById("tzSubRow");
+    if (!row) {
+      row = document.createElement("div");
+      row.id = "tzSubRow";
+      row.className = "tz-subrow";
+      const grid0 = $("#catGrid");
+      grid0.parentNode.insertBefore(row, grid0);
+    }
+    renderTopicSubChips(row, id, list, sub);
     $("#catTitle").innerHTML = `${cat ? cat.icon + " " : ""}${esc(cat ? cat.name : "Prompts")}`;
     $("#catDesc").textContent = cat ? cat.desc : "";
-    document.title = `${cat ? cat.name : "Category"} — ${SITE.name}`;
-    if (list.length) { renderGrid($("#catGrid"), list); $("#catEmpty").style.display = "none"; }
+    document.title = `${cat ? cat.name : "Category"}${sub !== "all" ? " — " + subNameOf(id, sub) : ""} — ${SITE.name}`;
+    if (shown.length) { renderGrid($("#catGrid"), shown); $("#catEmpty").style.display = "none"; }
     else {
       $("#catGrid").innerHTML = ""; $("#catEmpty").style.display = "";
       /* ইঞ্জিনে স্লট আছে এমন ক্যাটাগরি খালি হলে Infinite Engine-এর সিটিআই */
@@ -1156,9 +1246,11 @@
     const likedInit = () => !!likeMap()[p.id];
 
     /* 🔄 ক্যাটাগরি ফিল্টার: কোনো ১০০ লিমিট ছাড়া সমস্ত প্রম্পট */
-    const activeCat = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
+    /* ✚ TEZO v5: canonicalize legacy ?c= links + topic-aware swipe list */
+    const activeCat0 = param("c") || (p && p.cats && p.cats.length ? p.cats[0] : null);
+    const activeCat = (activeCat0 && typeof TEZOFY_LABELS !== "undefined" && TEZOFY_LABELS.canonical(activeCat0)) || activeCat0;
     const catPrompts = (activeCat && typeof PROMPTS !== "undefined")
-      ? PROMPTS.filter((x) => x && x.cats && Array.isArray(x.cats) && x.cats.includes(activeCat))
+      ? PROMPTS.filter((x) => x && inCatId(x, activeCat))
       : [];
     const swipeList = (catPrompts && catPrompts.length > 0) ? catPrompts : (PROMPTS && PROMPTS.length > 0 ? PROMPTS : [p]);
     const curIdx = Math.max(0, swipeList.findIndex((x) => x && x.id === p.id));
