@@ -2088,6 +2088,23 @@ td { color: var(--text); }
     var s = t && (t.subs || []).filter(function (x) { return x.id === sid; })[0];
     return s ? s.name : sid;
   }
+  /* Same resolution order as the site's TezoTopic.of():
+     ① Sheet topic/sub columns ② TOPIC_MIGRATE map ③ CAT_TO_TOPIC fallback */
+  function topicResolve(p) {
+    if (!p) return null;
+    if (p.topic && p.sub) return { topic: p.topic, sub: p.sub };
+    if (typeof TOPIC_MIGRATE !== "undefined" && TOPIC_MIGRATE[p.id]) {
+      var m1 = TOPIC_MIGRATE[p.id];
+      return { topic: m1[0], sub: m1[1] };
+    }
+    if (typeof CAT_TO_TOPIC !== "undefined" && p.cats) {
+      for (var i = 0; i < p.cats.length; i++) {
+        var m2 = CAT_TO_TOPIC[p.cats[i]];
+        if (m2) return { topic: m2[0], sub: m2[1] };
+      }
+    }
+    return null;
+  }
   function loadPrompts() {
     return api("prompts").then(function (d) {
       if (d && d.ok) {
@@ -2109,11 +2126,12 @@ td { color: var(--text); }
       if (E.cat !== "all" && (p.cats || []).indexOf(E.cat) < 0) return false;
     } else if (E.mode === "topic") {
       if (E.topic !== "all") {
-        if (E.topic === "__none") { if (p.topic) return false; }
-        else if (p.topic !== E.topic) return false;
+        var r = topicResolve(p);
+        if (E.topic === "__none") { if (r) return false; }
+        else if (!r || r.topic !== E.topic) return false;
         if (E.topic !== "__none" && E.sub !== "all") {
-          if (E.sub === "__none") { if (p.sub) return false; }
-          else if (p.sub !== E.sub) return false;
+          if (E.sub === "__none") { if (r.sub) return false; }
+          else if (!r || r.sub !== E.sub) return false;
         }
       }
     }
@@ -2127,9 +2145,10 @@ td { color: var(--text); }
     if (p.og) badges += '<i class="ok">OG</i>';
     if (hot[p.id]) badges += '<i class="hot">🔥</i>';
     var im = p.img ? '<img src="' + esc(p.img) + '" alt="" loading="lazy" onerror="this.style.opacity=.15">' : "";
+    var rr = topicResolve(p);
     var sub = E.mode === "topic"
       ? (p.cats || []).map(function (c) { return cm[c] ? cm[c].icon : ""; }).join(" ").replace(/\s+/g, " ").trim() || "no category"
-      : (p.topic ? topicIcon(p.topic) + " " + topicName(p.topic) + (p.sub ? " › " + subName(p.topic, p.sub) : "") : "no topic yet");
+      : (rr ? topicIcon(rr.topic) + " " + topicName(rr.topic) + (rr.sub ? " › " + subName(rr.topic, rr.sub) : "") : "no topic yet");
     return '<div class="pro-card">' +
       '<div class="im" data-meta="' + esc(p.id) + '" title="Click for stats & details">' + im + (badges ? '<div class="pro-badge">' + badges + "</div>" : "") + "</div>" +
       '<div class="bd"><div class="tt" title="' + esc(p.title) + '">' + esc(p.title) + "</div>" +
@@ -2143,7 +2162,8 @@ td { color: var(--text); }
   }
   function rowHtml(p, cm, hot) {
     var cats = (p.cats || []).map(function (c) { return (cm[c] ? cm[c].icon + " " + cm[c].name : c); }).join(" · ");
-    var tline = p.topic ? topicIcon(p.topic) + " " + topicName(p.topic) + (p.sub ? " › " + subName(p.topic, p.sub) : "") : "no topic yet";
+    var tr2 = topicResolve(p);
+    var tline = tr2 ? topicIcon(tr2.topic) + " " + topicName(tr2.topic) + (tr2.sub ? " › " + subName(tr2.topic, tr2.sub) : "") : "no topic yet";
     var flags = (p.isNew ? " 🆕" : "") + (p.membersOnly ? " 🔒" : "") + (p.og ? " 🖼" : "") + (hot[p.id] ? " 🔥" : "");
     return '<div class="adm-item">' +
       '<img data-meta="' + esc(p.id) + '" title="Click for stats & details" src="' + esc(p.img || "") + '" alt="" loading="lazy" onerror="this.style.opacity=.15">' +
@@ -2194,7 +2214,8 @@ td { color: var(--text); }
     /* topic mode */
     var tc = {}, tOrder = [], untagged = 0;
     list.forEach(function (p) {
-      if (p.topic) { tc[p.topic] = (tc[p.topic] || 0) + 1; if (tOrder.indexOf(p.topic) < 0) tOrder.push(p.topic); }
+      var r = topicResolve(p);
+      if (r) { tc[r.topic] = (tc[r.topic] || 0) + 1; if (tOrder.indexOf(r.topic) < 0) tOrder.push(r.topic); }
       else untagged++;
     });
     tOrder.sort(function (a, b) { return tc[b] - tc[a]; });
@@ -2207,9 +2228,10 @@ td { color: var(--text); }
       var subs = (t && t.subs) || [];
       var sc = {}, noSub = 0, total = 0;
       list.forEach(function (p) {
-        if (p.topic !== E.topic) return;
+        var r = topicResolve(p);
+        if (!r || r.topic !== E.topic) return;
         total++;
-        if (p.sub) sc[p.sub] = (sc[p.sub] || 0) + 1; else noSub++;
+        if (r.sub) sc[r.sub] = (sc[r.sub] || 0) + 1; else noSub++;
       });
       var sOrder = subs.map(function (s) { return s.id; }).filter(function (id) { return sc[id]; });
       Object.keys(sc).forEach(function (id) { if (sOrder.indexOf(id) < 0) sOrder.push(id); });
@@ -2261,7 +2283,8 @@ td { color: var(--text); }
     if (E.topic === "all") {
       var tc = {}, tOrder = [], unt = 0;
       list.forEach(function (p) {
-        if (p.topic) { tc[p.topic] = (tc[p.topic] || 0) + 1; if (tOrder.indexOf(p.topic) < 0) tOrder.push(p.topic); }
+        var r = topicResolve(p);
+        if (r) { tc[r.topic] = (tc[r.topic] || 0) + 1; if (tOrder.indexOf(r.topic) < 0) tOrder.push(r.topic); }
         else unt++;
       });
       tOrder.sort(function (a, b) { return tc[b] - tc[a]; });
@@ -2269,7 +2292,7 @@ td { color: var(--text); }
       if (unt) groups.push("__none");
     } else groups = [E.topic];
     groups.forEach(function (g) {
-      var items = shown.filter(function (p) { return g === "__none" ? !p.topic : p.topic === g; });
+      var items = shown.filter(function (p) { var r = topicResolve(p); return g === "__none" ? !r : (r && r.topic === g); });
       if (!items.length) return;
       var icon = g === "__none" ? "⭐" : topicIcon(g);
       var name = g === "__none" ? "To assign — no topic yet" : topicName(g);
@@ -2442,7 +2465,7 @@ td { color: var(--text); }
       (p.tagline ? '<p class="adm-muted small" style="margin:0 0 8px">' + esc(p.tagline) + "</p>" : "") +
       (badges ? '<div style="margin:0 0 6px">' + badges + "</div>" : "") +
       an +
-      '<div class="meta-kv"><span>Topic</span><b>' + (p.topic ? esc(topicLabel(p.topic)) + (p.sub ? " › " + esc(p.sub) : "") : "—") + "</b></div>" +
+      '<div class="meta-kv"><span>Topic</span><b>' + (function () { var mres = topicResolve(p); return mres ? esc(topicLabel(mres.topic)) + (mres.sub ? " › " + esc(subName(mres.topic, mres.sub)) : "") : "—"; })() + "</b></div>" +
       '<div class="meta-kv"><span>Categories</span><b>' + esc(cats) + "</b></div>" +
       '<div class="meta-kv"><span>Tags</span><b>' + esc(p.tags || "—") + "</b></div>" +
       '<div class="meta-kv"><span>Prompt ID</span><b>' + esc(p.id) + "</b></div>";
@@ -2582,7 +2605,8 @@ td { color: var(--text); }
   var PS = { sort: "score7", dir: -1, q: "" };
   function pinfo(id) {
     var p = prompts().filter(function (x) { return String(x.id) === String(id); })[0];
-    return p ? { title: p.title || p.id, topic: p.topic || "", sub: p.sub || "" } : { title: id, topic: "", sub: "" };
+    var r = p ? topicResolve(p) : null;
+    return p ? { title: p.title || p.id, topic: r ? r.topic : "", sub: r ? r.sub : "" } : { title: id, topic: "", sub: "" };
   }
   function topicLabel(tid) {
     var t = (typeof TOPICS !== "undefined" ? TOPICS : []).filter(function (x) { return x.id === tid; })[0];
@@ -2629,7 +2653,7 @@ td { color: var(--text); }
       var empty = r.views + r.copies + r.likes === 0;
       html += "<tr>" +
         "<td><b>" + esc(inf.title) + "</b></td>" +
-        "<td class='adm-muted'>" + esc(inf.topic ? topicLabel(inf.topic) + (inf.sub ? " › " + inf.sub : "") : "—") + "</td>" +
+        "<td class='adm-muted'>" + esc(inf.topic ? topicLabel(inf.topic) + (inf.sub ? " › " + subName(inf.topic, inf.sub) : "") : "—") + "</td>" +
         "<td>" + r.views + "</td><td>" + r.copies + "</td><td>" + r.likes + "</td>" +
         "<td><b>" + r.score7 + "</b></td>" +
         "<td class='adm-muted'>" + esc(r.lastActive || "—") + "</td>" +
@@ -2810,8 +2834,8 @@ td { color: var(--text); }
     var topics = (typeof TOPICS !== "undefined" && TOPICS) || [];
     var list = prompts();
     var counts = {};
-    list.forEach(function (p) { if (p.topic) counts[p.topic] = (counts[p.topic] || 0) + 1; });
-    var tagged = list.filter(function (p) { return p.topic; }).length;
+    list.forEach(function (p) { var r = topicResolve(p); if (r) counts[r.topic] = (counts[r.topic] || 0) + 1; });
+    var tagged = list.filter(function (p) { return !!topicResolve(p); }).length;
     var subs = topics.reduce(function (a, t) { return a + ((t.subs && t.subs.length) || 0); }, 0);
     var meta = $("#topicsMeta");
     if (meta) meta.textContent = topics.length + " topics · " + subs + " subs · " + tagged + "/" + list.length + " prompts tagged";
@@ -3077,5 +3101,5 @@ td { color: var(--text); }
   renderTools();
 })();
 </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a453ff2c4c80c3a2',t:'MTc5MTExNDkxNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
