@@ -316,7 +316,8 @@
       "    </div>" +
       '    <div class="tzp-head-side">' +
       '      <div class="tzp-coin-chip" id="tzpCoinChip">🪙 ' + Coins.get() + "</div>" +
-      '      <button class="tzp-btn" id="tzpShareCard">🔗 Share card</button>' +
+      '      <button class="tzp-btn ghost" id="tzpLogoutTop" title="Log out">🚪 Log out</button>' +
+'      <button class="tzp-btn" id="tzpShareCard">🔗 Share card</button>' +
       "    </div>" +
       "  </div>" +
       '  <div class="tzp-stats">' +
@@ -342,9 +343,15 @@
     $("#tzpCoverBtn").addEventListener("click", openCoverStudio);
     $("#tzpAvaBtn").addEventListener("click", openAvatarStudio);
     $("#tzpShareCard").addEventListener("click", shareCard);
+    $("#tzpLogoutTop").addEventListener("click", function () {
+      store.set("session", null);
+      toast("Logged out. See you soon!"); renderGate();
+    });
     $$(".tzp-tab[data-t]", root).forEach(function (t) {
       t.addEventListener("click", function () { TAB = t.getAttribute("data-t"); renderProfile(); });
     });
+    var pr = privacyOf(email);
+    if (!pr.stats) { var stEl = $(".tzp-stats", root); if (stEl) stEl.style.display = "none"; }
     renderTab();
   }
 
@@ -358,6 +365,16 @@
     else renderSettings(host);
   }
 
+  /* ---------- privacy ---------- */
+  function privacyOf(email) {
+    var p = store.get("privacy:" + email, null);
+    if (!p || typeof p !== "object") p = {};
+    return {
+      v: p.v === "private" ? "private" : "public",
+      stats: typeof p.stats === "boolean" ? p.stats : true,
+      creations: typeof p.creations === "boolean" ? p.creations : true
+    };
+  }
   /* ---------- overview ---------- */
   function renderOverview(host) {
     var lv = levelInfo();
@@ -410,6 +427,10 @@
   }
   function renderCreations(host) {
     var mine = creations();
+    if (!privacyOf(session()).creations) {
+      host.innerHTML = '<div class="tzp-empty"><div>🔒</div><p>Your creations gallery is private.</p><p class="tzp-muted small">You can change this anytime in Settings → Privacy.</p></div>';
+      return;
+    }
     var imp = generatorSaved().filter(function (x) { return x && x.url; }).map(function (x) {
       return { id: "gen-" + x.url.slice(-24), src: x.url, title: x.prompt ? String(x.prompt).slice(0, 46) + "…" : "AI Generator image", prompt: x.prompt, topic: "", ts: 0 };
     });
@@ -536,6 +557,7 @@
   /* ---------- settings ---------- */
   function renderSettings(host) {
     var u = currentUser(), email = session();
+    var pr = privacyOf(email);
     host.innerHTML =
       '<h3 class="tzp-h3">⚙️ Profile settings</h3>' +
       '<div class="tzp-set">' +
@@ -546,6 +568,18 @@
       '  <button class="tzp-btn ghost" id="tzpSCovUpl">🖼️ Upload cover</button></div>' +
       '  <input type="file" id="tzpSFile" accept="image/*" hidden>' +
       "</div>" +
+      '<h3 class="tzp-h3">🔒 Privacy</h3>' +
+      '<div class="tzp-set">' +
+      '  <label class="tzp-lab">Profile visibility</label>' +
+      '  <div class="tzp-tabs" id="tzpPrivVis">' +
+      '    <button class="tzp-tab' + (pr.v === "public" ? " on" : "") + '" data-v="public">🌍 Public</button>' +
+      '    <button class="tzp-tab' + (pr.v === "private" ? " on" : "") + '" data-v="private">🔒 Private</button>' +
+      '  </div>' +
+      '  <p class="tzp-muted small">Private mode stamps 🔒 PRIVATE on your share card. The toggles below control what this profile shows.</p>' +
+      '  <label class="tzp-switch"><input type="checkbox" id="tzpPrivStats"' + (pr.stats ? " checked" : "") + '><span>Show my stats (creations, points, streak)</span></label>' +
+      '  <label class="tzp-switch"><input type="checkbox" id="tzpPrivCre"' + (pr.creations ? " checked" : "") + '><span>Show my creations gallery</span></label>' +
+      '  <div class="tzp-row"><button class="tzp-btn" id="tzpPrivSave">💾 Save privacy</button></div>' +
+      "      </div>" +
       '<h3 class="tzp-h3">📦 Your data</h3>' +
       '<div class="tzp-row"><button class="tzp-btn ghost" id="tzpExport">⬇ Export my data (JSON)</button>' +
       '<button class="tzp-btn danger" id="tzpLogout">🚪 Log out</button></div>' +
@@ -556,6 +590,18 @@
       if (nm && list[email]) { list[email].name = nm; store.set("users", list); }
       store.set("bio:" + email, ($("#tzpSBio").value || "").trim().slice(0, 140));
       toast("Saved ✓"); renderProfile();
+    });
+    var privVis = pr.v;
+    $$("#tzpPrivVis .tzp-tab", host).forEach(function (t) {
+      t.addEventListener("click", function () {
+        privVis = t.getAttribute("data-v");
+        $$("#tzpPrivVis .tzp-tab", host).forEach(function (x2) { x2.classList.remove("on"); });
+        t.classList.add("on");
+      });
+    });
+    $("#tzpPrivSave").addEventListener("click", function () {
+      store.set("privacy:" + email, { v: privVis, stats: !!$("#tzpPrivStats").checked, creations: !!$("#tzpPrivCre").checked });
+      toast("Privacy saved ✓"); renderProfile();
     });
     var filePick = null;
     $("#tzpSAvaUpl").addEventListener("click", function () { filePick = "avatar"; $("#tzpSFile").click(); });
@@ -782,6 +828,10 @@
     function finish() {
       x.fillStyle = "#fff"; x.font = "800 64px Arial,sans-serif";
       x.fillText((u.name || "Creator").slice(0, 22), 320, 210);
+      if (privacyOf(email).v === "private") {
+        x.fillStyle = "rgba(255,77,109,.95)"; x.font = "700 26px Arial,sans-serif";
+        x.fillText("\uD83D\uDD12 PRIVATE", 322, 252);
+      }
       x.fillStyle = lv.tier.c; x.font = "700 34px Arial,sans-serif";
       x.fillText(lv.tier.icon + " " + lv.tier.name + " · " + lv.score + " pts", 320, 262);
       x.fillStyle = "rgba(255,255,255,.85)"; x.font = "400 30px Arial,sans-serif";
@@ -853,7 +903,7 @@
 
   /* ---------- styles (scoped .tzp-*) ---------- */
   function injectStyles() {
-    if (document.getElementById("tzpStyle")) return;
+    if (document.getElementById("tzpStyle") || document.getElementById("tzpProfileStyle")) return; // full theme ships in profile.html
     var st = document.createElement("style");
     st.id = "tzpStyle";
     st.textContent = [
