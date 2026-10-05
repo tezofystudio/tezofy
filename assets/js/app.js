@@ -168,7 +168,7 @@
         : `<button class="header-auth-btn signup" data-open-auth="signup" aria-label="Sign up"><span>✨ Sign Up</span></button>`;
     }
     const ph = avatarPhoto();
-    return `<button class="avatar-btn logged" data-open-auth="profile" aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</button>`;
+    return `<a class="avatar-btn logged" href="profile.html" aria-label="Profile">${ph ? `<img class="avatar-ph" src="${ph}" alt="">` : esc(u.name.trim()[0].toUpperCase())}</a>`;
   }
 
 
