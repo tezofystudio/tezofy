@@ -866,10 +866,10 @@
     if (u) {
       var ph = avatarPhoto(u.email);
       var initial = (u.name || u.email || "U").trim().charAt(0).toUpperCase();
-      host.innerHTML =
-        '<button class="avatar-btn logged" type="button" aria-label="Profile: ' + (u.name || "") + '" id="tzProfileBtn">' +
+       host.innerHTML =
+        '<a class="avatar-btn logged" href="profile.html" aria-label="Profile: ' + (u.name || "") + '">' +
           (ph ? '<img class="avatar-ph" src="' + ph + '" alt="' + initial + '">' : initial) +
-        '</button>';
+        '</a>';
       document.getElementById("tzProfileBtn").addEventListener("click", function (e) {
         e.preventDefault();
         renderProfileModal();
