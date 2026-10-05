@@ -88,8 +88,9 @@
         google.accounts.id.renderButton(container, {
           type: "icon",
           shape: "circle",
-          size: "large"
+            size: "large"
         });
+      })();
     }
     if (window.google && google.accounts) { boot(); return true; }
     if (gsiLoading) { var t = setInterval(function () { if (window.google && google.accounts) { clearInterval(t); boot(); } }, 150); return true; }
