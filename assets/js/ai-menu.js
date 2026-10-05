@@ -870,11 +870,8 @@
         '<a class="avatar-btn logged" href="profile.html" aria-label="Profile: ' + (u.name || "") + '">' +
           (ph ? '<img class="avatar-ph" src="' + ph + '" alt="' + initial + '">' : initial) +
         '</a>';
-      document.getElementById("tzProfileBtn").addEventListener("click", function (e) {
-        e.preventDefault();
-        renderProfileModal();
-      });
     } else if (hasAnyUsers()) {
+       
       host.innerHTML =
         '<button class="header-auth-btn login" type="button" id="tzLoginBtn">' +
           '<span>Log In</span>' +
