@@ -605,6 +605,7 @@
           </div>
           <div class="p-actions">
             <a class="p-action" href="saved.html">${I.bookmark} My saved prompts <span class="right">${I.right}</span></a>
+            <a class="p-action" href="profile.html">👑 Open full creator profile <span class="right">${I.right}</span></a>
             <button class="p-action" id="photoBtn">${camIcon()} ${ph ? "Change profile photo" : "Add profile photo"} <span class="right">${I.right}</span></button>
             ${ph ? `<button class="p-action" id="photoRemove">🗑️ Remove photo <span class="right">${I.right}</span></button>` : ""}
             <button class="p-action" id="coverRow">🖼️ ${cover ? "Change cover photo" : "Add cover photo"} <span class="right">${I.right}</span></button>
