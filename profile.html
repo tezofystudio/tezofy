@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>👑 Creator Profile — Your AI Studio | TEZOFY</title>
+  <meta name="description" content="Your TEZOFY creator profile — design your profile photo & cover with your own image, save and share your AI creations, earn coins and track your level.">
+  <meta property="og:title" content="Creator Profile — TEZOFY">
+  <meta property="og:description" content="Design your profile photo & cover, save & share your AI creations, earn coins.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="assets/icons/favicon.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    /* theme boot (same pattern as every TEZOFY page) */
+    (function () { try { document.documentElement.dataset.theme = JSON.parse(localStorage.getItem("chitro:theme") || '"dark"'); } catch (e) { document.documentElement.dataset.theme = "dark"; } })();
+  </script>
+</head>
+<body data-page="profile">
+
+  <!-- ─── topbar (site shell) ─── -->
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html" aria-label="TEZOFY home">
+        <span class="brand-mark"><img src="assets/icons/logo.png" alt="TEZOFY logo"></span>
+        <span>TEZOFY<small>Creator Profile</small></span>
+      </a>
+      <div class="header-actions">
+        <a class="header-search-pill" href="discover.html" aria-label="Search prompts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <span>Search prompts…</span>
+        </a>
+        <button class="icon-btn theme-btn" id="themeBtn" aria-label="Toggle dark / light mode"></button>
+        <span id="avatarHost"><a class="avatar-btn" href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></a></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── profile root (profile.js builds everything here) ─── -->
+  <main class="wrap" id="profileRoot" style="padding:26px 0 90px">
+    <div class="tzp-boot" style="text-align:center;padding:70px 0;color:var(--muted-2)">
+      <div style="font-size:44px">👑</div>
+      <p>Loading your creator profile…</p>
+    </div>
+  </main>
+
+  <!-- ─── bottom nav (app-feel) ─── -->
+  <nav class="bottombar" aria-label="Primary">
+    <a href="index.html" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg><span>Home</span></a>
+    <a href="discover.html" aria-label="Discover"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg><span>Search</span></a>
+    <a href="ai-generator.html" aria-label="Create Image"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Create</span></a>
+    <a href="profile.html" class="active" aria-label="My profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg><span>Profile</span></a>
+  </nav>
+
+  <!-- site data + engines (standalone page: app.js is NOT loaded, so nothing else on the site is affected) -->
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/tezo-topics.js"></script>
+  <script src="assets/js/auth-cloud.js"></script>
+  <script src="assets/js/i18n.js" defer></script>
+  <script src="assets/js/ai-menu.js" defer></script>
+  <script src="assets/js/profile.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a45972442a980d67',t:'MTc5MTE3MjA2MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
