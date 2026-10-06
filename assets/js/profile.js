@@ -331,6 +331,13 @@
       '  <p class="tzp-muted small">' + (lv.next ? lv.toGo + " pts to " + lv.next.icon + " " + lv.next.name : "🏆 Max level — Legend!") + "</p>" +
       "</section>" +
 
+      '<div class="tzp-hl-row">' +
+      '  <button class="tzp-hl" id="tzpHlAva" title="Photo Studio"><span class="tzp-hl-c">📷</span><small>Photo Studio</small></button>' +
+      '  <button class="tzp-hl" id="tzpHlCov" title="Cover Studio"><span class="tzp-hl-c">🖼️</span><small>Cover Studio</small></button>' +
+      '  <button class="tzp-hl" id="tzpHlCard" title="Share card"><span class="tzp-hl-c">🔗</span><small>Share Card</small></button>' +
+      '  <button class="tzp-hl" id="tzpHlCoins" title="Daily coins"><span class="tzp-hl-c">🪙</span><small>Daily Coins</small></button>' +
+      '</div>' +
+
       '<nav class="tzp-tabs">' +
       '  <button class="tzp-tab' + (TAB === "overview" ? " on" : "") + '" data-t="overview">🏠 Overview</button>' +
       '  <button class="tzp-tab' + (TAB === "creations" ? " on" : "") + '" data-t="creations">🖼️ Creations</button>' +
@@ -347,6 +354,10 @@
       store.set("session", null);
       toast("Logged out. See you soon!"); renderGate();
     });
+    $("#tzpHlAva").addEventListener("click", openAvatarStudio);
+    $("#tzpHlCov").addEventListener("click", openCoverStudio);
+    $("#tzpHlCard").addEventListener("click", shareCard);
+    $("#tzpHlCoins").addEventListener("click", function () { TAB = "coins"; renderProfile(); });
     $$(".tzp-tab[data-t]", root).forEach(function (t) {
       t.addEventListener("click", function () { TAB = t.getAttribute("data-t"); renderProfile(); });
     });
@@ -443,7 +454,7 @@
       html += '<div class="tzp-empty"><div>🎨</div><p>No creations yet.</p><p class="tzp-muted small">Generate an image in the <a href="ai-generator.html">AI Generator</a> or add one below.</p></div>';
     }
     if (imp.length) {
-      html += '<div class="tzp-row"><h3 class="tzp-h3" style="margin:0">📌 Pinned in AI Generator <span class="tzp-muted">(' + imp.length + ")</span></h3></div>" +
+      html += '<div class="tzp-row"><h3 class="tzp-h3" style="margin:0">🤖 From AI Generator · auto-synced <span class="tzp-muted">(' + imp.length + ")</span></h3></div>" +
         '<div class="tzp-gallery">' + imp.map(function (c) { return creationCard(c, true); }).join("") + "</div>";
     }
     host.innerHTML = html;
@@ -791,11 +802,52 @@
   }
   function shareCreation(item) {
     var text = item.title + " — made with TEZOFY AI prompts 🎨";
-    if (navigator.share) {
-      navigator.share({ title: item.title, text: text, url: location.origin + "/index.html" }).catch(function () {});
-    } else {
-      copyText(text + "\n" + location.origin).then(function () { toast("Copied — paste anywhere to share ✓"); });
+    var siteUrl = location.href.replace("profile.html", "index.html");
+    // Best path: native share WITH the image file (mobile → Facebook/Instagram/WhatsApp directly)
+    if (navigator.canShare && navigator.share) {
+      fetch(item.src).then(function (r) { return r.blob(); }).then(function (b) {
+        var file = new File([b], "tezofy-creation.jpg", { type: b.type || "image/jpeg" });
+        if (navigator.canShare({ files: [file] })) {
+          return navigator.share({ files: [file], title: item.title, text: text });
+        }
+        throw new Error("file-share-unsupported");
+      }).catch(function () { socialSheet(item, text, siteUrl); });
+      return;
     }
+    socialSheet(item, text, siteUrl);
+  }
+
+  function socialSheet(item, text, siteUrl) {
+    var enc = encodeURIComponent(text + "\n" + siteUrl);
+    overlay(
+      '<h3>📤 Share this creation</h3>' +
+      '<div class="tzp-share-grid">' +
+      '  <a class="tzp-share-btn" target="_blank" rel="noopener" href="https://wa.me/?text=' + enc + '"><span style="background:#25D366">💬</span>WhatsApp</a>' +
+      '  <a class="tzp-share-btn" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(siteUrl) + '"><span style="background:#1877f2">📘</span>Facebook</a>' +
+      '  <a class="tzp-share-btn" target="_blank" rel="noopener" href="https://t.me/share/url?url=' + encodeURIComponent(siteUrl) + '&text=' + encodeURIComponent(text) + '"><span style="background:#229ED9">✈️</span>Telegram</a>' +
+      '  <a class="tzp-share-btn" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=' + enc + '"><span style="background:#0f1419">𝕏</span>X / Twitter</a>' +
+      '</div>' +
+      '<div class="tzp-row" style="margin-top:14px">' +
+      '  <button class="tzp-btn ghost" id="tzpShCopy">📋 Copy image</button>' +
+      '  <button class="tzp-btn ghost" id="tzpShDl">⬇ Download</button>' +
+      '  <button class="tzp-btn ghost" id="tzpShCopyT">📝 Copy caption</button>' +
+      '</div>' +
+      '<p class="tzp-muted small" style="margin:12px 0 0">On mobile, Share opens your apps (Facebook, Instagram, WhatsApp…) with this image attached — post directly from there. 🚀</p>',
+      function (ov) {
+        $("#tzpShDl", ov).addEventListener("click", function () { downloadSrc(item.src, item.title); });
+        $("#tzpShCopyT", ov).addEventListener("click", function () {
+          copyText(text + "\n" + siteUrl).then(function () { toast("Caption copied ✓"); });
+        });
+        $("#tzpShCopy", ov).addEventListener("click", function () {
+          fetch(item.src).then(function (r) { return r.blob(); }).then(function (b) {
+            if (navigator.clipboard && navigator.clipboard.write && typeof ClipboardItem !== "undefined") {
+              navigator.clipboard.write([new ClipboardItem(Object.defineProperty({}, b.type || "image/jpeg", { value: b }))]);
+              toast("Image copied — paste anywhere ✓");
+            } else { toast("Long-press the image to copy it."); }
+          }).catch(function () { toast("Long-press the image to copy it."); });
+        });
+      }
+    );
   }
   function downloadSrc(src, name) {
     var a = document.createElement("a");
