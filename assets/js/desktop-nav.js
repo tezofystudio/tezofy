@@ -1,14 +1,17 @@
 /* ============================================================
-   TEZOFY — Desktop Navigation (desktop-nav.js) · v2.0
+   TEZOFY — Desktop Navigation (desktop-nav.js) · v3.0
    ------------------------------------------------------------
    CapCut-style desktop header menu:
    Discover · Templates ▾ · AI Tools ▾ · Blog
 
-   v2 fixes:
+   v3 fixes (v2 hotfix):
    · AI Tools now lists ALL 6 site tools (same list as ai-menu.js)
    · De-duplicates the header on desktop: hides the old "AI"
      pill and the small search icon while the menu is active
      (mobile < 900px stays 100% untouched)
+   · v3: removed overflow-x:auto from the nav bar — it was
+     clipping the dropdown menus (items existed but were
+     invisible below the 1-line bar). Dropdowns now visible.
    · Alignment polish: single-line header, brand tagline
      collapses, nothing wraps
 
@@ -80,8 +83,7 @@
       ".site-header.tzd-has-nav .icon-btn[data-open-search]{display:none!important}",
       "}",
       /* the menu itself */
-      ".tzd-nav{display:flex;align-items:center;gap:2px;margin-left:8px;flex:1;min-width:0;overflow-x:auto;scrollbar-width:none}",
-      ".tzd-nav::-webkit-scrollbar{display:none}",
+      ".tzd-nav{display:flex;align-items:center;gap:2px;margin-left:8px;flex:1;min-width:0;overflow:visible}",
       ".tzd-item{position:relative;flex-shrink:0}",
       ".tzd-link{display:inline-flex;align-items:center;gap:5px;color:var(--muted,#a1a1aa);font:600 14px/1 inherit;font-family:inherit;text-decoration:none;padding:9px 13px;border-radius:10px;cursor:pointer;background:none;border:none;transition:color .18s,background .18s;white-space:nowrap}",
       ".tzd-link:hover,.tzd-link.tzd-on{color:var(--text,#fafafa);background:var(--card-2,#18181f)}",
