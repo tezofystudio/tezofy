@@ -1,5 +1,5 @@
 /* ====================================================================
-   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.0)
+   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.1)
    --------------------------------------------------------------------
    এই একটি ফাইল = পুরো সাইটের ব্র্যান্ড-কন্ট্রোল সিস্টেম।
    • প্রতিটি পেজের <head>-এ লিখুন (stylesheet-লিংকের ঠিক নিচে):
@@ -11,6 +11,8 @@
    • প্যানেল: https://tezofystudio.github.io/tezofy/brand-admin.html
    • ডিফল্ট মান = বর্তমান লাইভ সাইট → প্রথম কমিটে কোনো দৃশ্যমান
      পরিবর্তন হবে না (zero-change install)।
+   • v2.1 নতুন: লাইট-মোডে হেডার ও নিচের বার এখন পঠনযোগ্য (সাইটের কালো বারে
+     গাঢ় লেখা অদৃশ্য হয়ে যেত — এখন বার লাইট-প্যালেট ফলো করে)।
    • v2.0 নতুন: shape (প্রম্পট-কার্ডের পটভূমি ও ভেতরের লেখার রং —
      ডার্ক/লাইট আলাদা), shadow (ছায়া), layout.wrapMax (কনটেন্ট-চওড়া),
      pages (প্রতি-পেজ আলাদা primary/secondary + CSS), প্রিভিউ-মোডে
@@ -49,7 +51,7 @@ window.TZ_BRAND = {
 };
 /*__TZBRAND_CONFIG_END__*/
 
-/* ==================== ENGINE v2.0 (সম্পাদনা নিষেধ) ==================== */
+/* ==================== ENGINE v2.1 (সম্পাদনা নিষেধ) ==================== */
 (function () {
   "use strict";
 
@@ -160,6 +162,13 @@ window.TZ_BRAND = {
       ".tz-brand-banner .tz-bn-link:hover{text-decoration:underline}" +
       ".tz-brand-banner .tz-bn-text{opacity:.97}" +
       ".tz-brand-banner .tz-bn-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.18);border:none;color:#fff;width:22px;height:22px;border-radius:7px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center}";
+    /* v2.1: লাইট-মোড রিডেবিলিটি-ফিক্স — সাইটের হেডার/বটমবারের ব্যাকগ্রাউন্ড হার্ডকোড
+       ডার্ক ছিল, ফলে লাইট-মোডে গাঢ় লেখা অদৃশ্য হয়ে যেত। এখন ওই বারগুলো
+       লাইট-প্যালেট ফলো করবে (শুধু [data-theme="light"]-এ সক্রিয় — ডার্ক অপরিবর্তিত)। */
+    bnCss += ':root[data-theme="light"] .site-header{background:var(--bg-soft) !important;}';
+    bnCss += ':root[data-theme="light"] .bottombar{background:var(--bg-soft) !important;}';
+    bnCss += ':root[data-theme="light"] .site-header .brand{color:var(--text) !important;}';
+    bnCss += ':root[data-theme="light"] .site-header .brand small{color:var(--muted) !important;}';
     el = document.getElementById("tz-brand-base");
     if (!el) {
       el = document.createElement("style");
@@ -566,7 +575,7 @@ window.TZ_BRAND = {
 
   /* ---------- পাবলিক API ---------- */
   window.TezoBrand = {
-    version: "2.0",
+    version: "2.1",
     page: PAGE_ID,
     config: cfg,
     committed: committed,
