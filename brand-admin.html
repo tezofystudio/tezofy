@@ -1,32 +1,37 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
 <title>🔐 Brand Admin — TEZOFY</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bc-bg:#0b0b10; --bc-panel:#14141b; --bc-panel-2:#191922; --bc-line:#26262f;
     --bc-text:#f2f2f7; --bc-mut:#9a9aa6; --bc-pink:#ff2daa; --bc-orange:#ff7a00;
     --bc-grad:linear-gradient(135deg,#ff2daa,#ff7a00); --bc-rad:14px;
-    --bc-font:'Hind Siliguri',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans Bengali',sans-serif;
+    --bc-font:'Hind Siliguri','Noto Sans Devanagari',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{background:var(--bc-bg);color:var(--bc-text);font-family:var(--bc-font);font-size:15px;line-height:1.55}
   button,input,select{font-family:inherit;font-size:14px}
 
   /* ---------- টপবার ---------- */
-  .bc-top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:12px;
-    padding:12px 20px;background:rgba(11,11,16,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--bc-line)}
+  .bc-top{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:10px 20px;background:rgba(11,11,16,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--bc-line);flex-wrap:wrap}
   .bc-brand{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600}
   .bc-brand .logo-dot{width:30px;height:30px;border-radius:9px;background:var(--bc-grad);display:flex;align-items:center;justify-content:center;font-size:15px}
   .bc-ver{font-size:11px;font-weight:600;color:var(--bc-orange);background:rgba(255,122,0,.12);border:1px solid rgba(255,122,0,.35);padding:2px 8px;border-radius:99px}
   .bc-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
   .chip{font-size:12px;padding:4px 10px;border-radius:99px;border:1px solid var(--bc-line);color:var(--bc-mut)}
   .chip.on{color:#4ade80;border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.08)}
+  .lang-seg{display:flex;border:1px solid var(--bc-line);border-radius:10px;overflow:hidden}
+  .lang-seg button{background:var(--bc-panel-2);color:var(--bc-mut);border:none;padding:7px 11px;cursor:pointer;font-weight:700;font-size:12.5px}
+  .lang-seg button + button{border-left:1px solid var(--bc-line)}
+  .lang-seg button.act{background:var(--bc-grad);color:#fff}
+  .lang-seg.mini button{padding:5px 9px;font-size:11.5px}
 
   .btn{border:1px solid var(--bc-line);background:var(--bc-panel-2);color:var(--bc-text);padding:8px 14px;border-radius:10px;cursor:pointer;font-weight:600;transition:.15s}
   .btn:hover{border-color:#3a3a46;transform:translateY(-1px)}
@@ -34,7 +39,7 @@
   .btn.primary:hover{filter:brightness(1.08)}
 
   /* ---------- লেআউট ---------- */
-  .bc-layout{display:grid;grid-template-columns:190px minmax(0,1fr) 340px;gap:16px;padding:16px 20px;max-width:1400px;margin:0 auto}
+  .bc-layout{display:grid;grid-template-columns:190px minmax(0,1fr) 350px;gap:16px;padding:16px 20px;max-width:1400px;margin:0 auto}
   .bc-side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:4px}
   .bc-side a{color:var(--bc-mut);text-decoration:none;padding:9px 12px;border-radius:10px;font-weight:600;font-size:14px}
   .bc-side a:hover,.bc-side a.act{color:var(--bc-text);background:var(--bc-panel)}
@@ -46,13 +51,12 @@
 
   .frow{display:grid;grid-template-columns:170px 1fr;gap:10px;align-items:center;margin-bottom:10px}
   .frow label{font-size:13.5px;font-weight:600;color:#cfcfd8}
-  .frow .hint{font-size:12px;color:var(--bc-mut)}
+  .frow .hint{font-size:12px;color:var(--bc-mut);font-weight:400}
   .inp{width:100%;background:#0e0e14;border:1px solid var(--bc-line);color:var(--bc-text);padding:8px 11px;border-radius:9px;outline:none}
   .inp:focus{border-color:var(--bc-pink)}
   .inp.sm{width:110px}
   .pair{display:flex;align-items:center;gap:8px}
   .pair input[type=color]{width:38px;height:36px;border:1px solid var(--bc-line);border-radius:9px;background:none;padding:2px;cursor:pointer}
-  .swatch{width:14px;height:14px;border-radius:4px;display:inline-block;border:1px solid rgba(255,255,255,.2)}
   select.inp{appearance:auto}
   input[type=range]{width:100%;accent-color:var(--bc-pink)}
   .rangeval{font-size:12px;color:var(--bc-orange);font-weight:700;min-width:52px}
@@ -72,21 +76,40 @@
 
   .grouplbl{font-size:12px;font-weight:700;letter-spacing:.4px;color:var(--bc-orange);margin:16px 0 8px;text-transform:uppercase}
 
-  /* ---------- এক্সপোর্ট ---------- */
+  /* ---------- এক্সপোর্ট / স্ট্যাটাস ---------- */
   #diffList{display:flex;flex-direction:column;gap:6px;margin:10px 0}
   .diff{display:flex;justify-content:space-between;align-items:center;font-size:13.5px;background:#0e0e14;border:1px solid var(--bc-line);border-radius:9px;padding:7px 11px}
   .diff .ok{color:#4ade80;font-weight:700}.diff .no{color:#5b5b66}
+  .setup-status{display:flex;flex-direction:column;gap:6px;background:#0e0e14;border:1px dashed var(--bc-line);border-radius:12px;padding:11px 13px;margin-bottom:12px}
+  .st-chip{display:flex;gap:8px;align-items:flex-start;font-size:13px;font-weight:600}
+  .st-chip .sti{flex:none}
+  .st-ok{color:#4ade80}.st-bad{color:#f87171}.st-warn{color:#fbbf24}
+  .st-sub{font-size:12px;color:var(--bc-mut);font-weight:400}
   .steps{counter-reset:st;list-style:none;margin-top:8px}
   .steps li{counter-increment:st;position:relative;padding:6px 0 6px 34px;font-size:13.5px;color:#cfcfd8}
   .steps li:before{content:counter(st);position:absolute;left:0;top:6px;width:22px;height:22px;border-radius:7px;background:var(--bc-grad);color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center}
   code{background:#0e0e14;border:1px solid var(--bc-line);padding:1px 6px;border-radius:6px;font-size:12px;font-family:ui-monospace,monospace;color:#ffb3ea}
   .siterow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
   .siterow a{color:var(--bc-orange);font-size:13px;font-weight:600;text-decoration:none;border:1px dashed rgba(255,122,0,.4);padding:5px 11px;border-radius:9px}
+  .note{font-size:12.5px;color:var(--bc-mut);background:rgba(255,45,170,.06);border:1px solid rgba(255,45,170,.22);border-radius:10px;padding:9px 12px;margin-top:10px}
 
-  /* ---------- প্রিভিউ-মক ---------- */
+  /* ---------- প্রিভিউ-কার্ড ---------- */
   .bc-preview{position:sticky;top:76px;align-self:start}
-  .pv-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;color:var(--bc-mut);margin-bottom:8px}
+  .pv-head{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--bc-mut);margin-bottom:8px;flex-wrap:wrap}
+  .pv-head-l{display:flex;align-items:center;gap:6px}
+  .pv-tabs{display:flex;border:1px solid var(--bc-line);border-radius:9px;overflow:hidden}
+  .pv-tabs button{background:var(--bc-panel-2);color:var(--bc-mut);border:none;padding:4px 10px;cursor:pointer;font-size:11.5px;font-weight:700}
+  .pv-tabs button + button{border-left:1px solid var(--bc-line)}
+  .pv-tabs button.act{background:var(--bc-grad);color:#fff}
   .pv-mood{background:var(--bc-panel-2);border:1px solid var(--bc-line);color:var(--bc-text);border-radius:8px;padding:4px 10px;cursor:pointer;font-size:12px;font-weight:600}
+  .pv-toggle{background:var(--bc-panel-2);border:1px solid var(--bc-line);color:var(--bc-text);border-radius:8px;width:26px;height:26px;cursor:pointer;font-size:12px}
+  .pv-mini{display:none;align-items:center;gap:9px;background:#0e0e14;border:1px solid var(--bc-line);border-radius:12px;padding:8px 11px}
+  .pv-mini .pvm-mark{width:22px;height:22px;border-radius:7px;background:var(--grad);display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;overflow:hidden;flex:none}
+  .pv-mini .pvm-mark img{width:100%;height:100%;object-fit:cover}
+  .pv-mini b{font-size:13.5px}
+  .pv-mini .pvm-grad{flex:1;height:10px;border-radius:99px;background:var(--grad)}
+  .bc-preview.pv-collapsed .pv-scope,.bc-preview.pv-collapsed .pv-realwrap,.bc-preview.pv-collapsed .pv-hintline{display:none}
+  .bc-preview.pv-collapsed .pv-mini{display:flex}
   .pv-scope{--bg:#09090b;--card:#131318;--card2:#18181f;--border:#232329;--text:#fafafa;--muted:#a1a1aa;
     --pink:#ff2daa;--orange:#ff7a00;--grad:linear-gradient(135deg,#ff2daa,#ff7a00);--radius:18px;--radius-sm:12px;--font:inherit;
     background:var(--bg);color:var(--text);border-radius:16px;border:1px solid var(--bc-line);padding:12px;overflow:hidden}
@@ -111,20 +134,26 @@
   .pv-line{height:8px;border-radius:99px;background:var(--card2);margin-bottom:6px}
   .pv-line.sh{width:60%}
   .pv-footer{font-size:10.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:9px;text-align:center}
+  .pv-realwrap{display:flex;flex-direction:column;gap:8px}
+  .pv-realtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .pv-hintline{font-size:11.5px;color:var(--bc-mut)}
+  .pv-real{width:100%;height:340px;border:1px solid var(--bc-line);border-radius:14px;background:#fff}
 
+  /* ---------- গেট / মোডাল ---------- */
   #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,80px);background:#1d1d27;border:1px solid #3a3a46;color:#fff;
     padding:11px 20px;border-radius:12px;font-size:13.5px;font-weight:600;box-shadow:0 14px 40px rgba(0,0,0,.5);transition:.3s;z-index:99;opacity:0;max-width:90vw;text-align:center}
   #toast.show{transform:translate(-50%,0);opacity:1}
   .gate{position:fixed;inset:0;z-index:100;background:rgba(7,7,12,.97);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}
   .gate[hidden]{display:none}
-  .gate-card{background:var(--bc-panel);border:1px solid var(--bc-line);border-radius:18px;padding:26px;width:min(420px,94vw);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+  .gate-card{background:var(--bc-panel);border:1px solid var(--bc-line);border-radius:18px;padding:26px;width:min(440px,94vw);text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.6);max-height:92vh;overflow:auto}
   .gate-logo{width:54px;height:54px;border-radius:16px;background:var(--bc-grad);display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px}
   .gate-card h2{font-size:18px;margin-bottom:4px}
-  .gate-card p{color:var(--bc-mut);font-size:13px;margin-bottom:14px;line-height:1.5}
+  .gate-card p{color:var(--bc-mut);font-size:13px;margin-bottom:14px;line-height:1.55}
   .gate-card .inp{margin-bottom:10px;text-align:center}
   .gate-err{color:#f87171;font-size:12.5px;min-height:18px;margin:2px 0 8px;font-weight:600}
-  .gate-note{font-size:11.5px;color:var(--bc-mut);border-top:1px solid var(--bc-line);padding-top:10px;margin-top:8px;line-height:1.6}
+  .gate-note{font-size:11.5px;color:var(--bc-mut);border-top:1px solid var(--bc-line);padding-top:10px;margin-top:8px;line-height:1.7;text-align:left}
   .gate-card .btn.primary{width:100%}
+  .gate-lang{display:flex;justify-content:center;margin-bottom:12px}
   @keyframes gateShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
   .gate-card.shake{animation:gateShake .3s}
   .pw-out{background:#0e0e14;border:1px dashed var(--bc-line);border-radius:9px;padding:9px 11px;font-family:ui-monospace,monospace;font-size:11.5px;color:#ffb3ea;word-break:break-all;text-align:left;margin:10px 0;min-height:20px}
@@ -132,169 +161,203 @@
   .pv-banner{display:none;align-items:center;justify-content:center;gap:8px;border-radius:10px;padding:7px 30px 7px 12px;font-size:11.5px;font-weight:700;color:#fff;margin-bottom:10px;position:relative;background:var(--bc-grad);text-align:center}
   .pv-banner.on{display:flex}
   .pv-banner .pv-bn-x{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.2);border:none;color:#fff;width:18px;height:18px;border-radius:6px;font-size:10px;display:flex;align-items:center;justify-content:center}
-  .note{font-size:12.5px;color:var(--bc-mut);background:rgba(255,45,170,.06);border:1px solid rgba(255,45,170,.22);border-radius:10px;padding:9px 12px;margin-top:10px}
 
-  @media(max-width:1100px){.bc-layout{grid-template-columns:1fr}.bc-side{flex-direction:row;flex-wrap:wrap;position:static}.bc-preview{position:static}}
-  @media(max-width:640px){.frow{grid-template-columns:1fr}}
+  /* ---------- মোবাইল: প্রিভিউ উপরে + স্টিকি ---------- */
+  @media(max-width:1100px){
+    .bc-layout{display:flex;flex-direction:column;padding:12px 14px}
+    .bc-preview{order:1;position:sticky;top:56px;z-index:35;background:var(--bc-bg);padding:8px 0 10px;margin:0 -14px;padding-left:14px;padding-right:14px;border-bottom:1px solid var(--bc-line)}
+    .bc-side{order:2;position:static;flex-direction:row;flex-wrap:wrap}
+    .bc-main{order:3}
+    .pv-real{height:300px}
+  }
+  @media(max-width:640px){.frow{grid-template-columns:1fr}.pv-real{height:250px}}
 </style>
 </head>
 <body>
 
 <header class="bc-top">
-  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v1.1</span></div>
+  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v1.2</span></div>
   <div class="bc-top-actions">
-    <span id="pvState" class="chip">⚪ প্রিভিউ বন্ধ</span>
-    <button id="btnPw" class="btn">🔑 পাসওয়ার্ড</button>
-    <button id="btnLogout" class="btn">🚪 লগআউট</button>
-    <button id="btnReset" class="btn">↺ ডিফল্ট রিসেট</button>
-    <button id="btnCopy" class="btn">📋 কপি</button>
-    <button id="btnDownload" class="btn primary">⬇ site-brand.js ডাউনলোড</button>
+    <div class="lang-seg" id="langSeg" role="group" aria-label="Language">
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="bn">বাংলা</button>
+      <button type="button" data-lang="hi">हिन्दी</button>
+    </div>
+    <span id="pvState" class="chip" data-i18n="chip_preview_off">Preview off</span>
+    <button id="btnPw" class="btn" data-i18n="btn_pw">🔑 Password</button>
+    <button id="btnLogout" class="btn" data-i18n="btn_logout">🚪 Logout</button>
+    <button id="btnReset" class="btn" data-i18n="btn_reset">↺ Reset</button>
+    <button id="btnCopy" class="btn" data-i18n="btn_copy">📋 Copy</button>
+    <button id="btnDownload" class="btn primary" data-i18n="btn_download">⬇ Download site-brand.js</button>
   </div>
 </header>
 
 <div class="bc-layout">
   <nav class="bc-side">
-    <a href="#sec-identity" class="act">🪪 পরিচয়</a>
-    <a href="#sec-colors">🎨 রং থিম</a>
-    <a href="#sec-fonts">🔤 ফন্ট</a>
-    <a href="#sec-style">📐 স্টাইল</a>
-    <a href="#sec-content">📢 কনটেন্ট</a>
-    <a href="#sec-advanced">⚡ অ্যাডভান্সড</a>
-    <a href="#sec-export">📦 এক্সপোর্ট</a>
-    <div class="bc-side-note">🔒 এই প্যানেল শুধু ফাইল <b>তৈরি</b> করে — সাইটে কার্যকর হতে GitHub-এ কমিট করতেই হবে। তাই অন্য কেউ সাইটের থিম বদলাতে পারে না।</div>
+    <a href="#sec-identity" class="act" data-i18n="nav_identity">🪪 Identity</a>
+    <a href="#sec-colors" data-i18n="nav_colors">🎨 Colors</a>
+    <a href="#sec-fonts" data-i18n="nav_fonts">🔤 Fonts</a>
+    <a href="#sec-style" data-i18n="nav_style">📐 Style</a>
+    <a href="#sec-content" data-i18n="nav_content">📢 Content</a>
+    <a href="#sec-advanced" data-i18n="nav_advanced">⚡ Advanced</a>
+    <a href="#sec-export" data-i18n="nav_export">📦 Export</a>
+    <div class="bc-side-note" data-i18n-html="side_note">🔒 This panel only <b>generates</b> the file — changes go live only after you commit on GitHub. So nobody else can change your site theme.</div>
   </nav>
 
   <main class="bc-main">
     <section id="sec-identity">
-      <h2>🪪 ব্র্যান্ড পরিচয়</h2>
-      <p class="sub">সাইটের নাম, ট্যাগলাইন, লোগো ও ফেভিকন — হেডার, ফুটার, টাইটেল-বার সব জায়গায় একসাথে বদলাবে।</p>
-      <div class="frow"><label>সাইটের নাম</label><input id="f-name" class="inp" type="text" placeholder="TEZOFY"></div>
-      <div class="frow"><label>ট্যাগলাইন <span class="hint">(ফুটার-ব্র্যান্ডের ছোট লেখা)</span></label><input id="f-tagline" class="inp" type="text" placeholder="Premium AI Prompt Library"></div>
-      <div class="frow"><label>নাম বদলানোর স্কোপ</label>
+      <h2 data-i18n="id_title">🪪 Brand Identity</h2>
+      <p class="sub" data-i18n="id_sub">Site name, tagline, logo and favicon — applied everywhere at once: header, footer, browser title.</p>
+      <div class="frow"><label data-i18n="lb_name">Site name</label><input id="f-name" class="inp" type="text" placeholder="TEZOFY"></div>
+      <div class="frow"><label><span data-i18n="lb_tagline">Tagline</span> <span class="hint" data-i18n="hint_tagline">(small text under the footer brand)</span></label><input id="f-tagline" class="inp" type="text" placeholder="Premium AI Prompt Library"></div>
+      <div class="frow"><label data-i18n="lb_scope">Name scope</label>
         <select id="f-scope" class="inp">
-          <option value="all">সব জায়গায় (হেডার, ফুটার, টাইটেল, লেখা)</option>
-          <option value="brand">শুধু হেডার / ফুটার / টাইটেল</option>
+          <option value="all" data-i18n="opt_scope_all">Everywhere (header, footer, title, text)</option>
+          <option value="brand" data-i18n="opt_scope_brand">Only header / footer / title</option>
         </select>
       </div>
-      <div class="frow"><label>ফেভিকন URL <span class="hint">(খালি = বর্তমান)</span></label><input id="f-favicon" class="inp" type="text" placeholder="https://…/favicon.png"></div>
-      <div class="frow"><label>লোগো</label>
+      <div class="frow"><label><span data-i18n="lb_favicon">Favicon URL</span> <span class="hint" data-i18n="hint_empty_cur">(empty = current)</span></label><input id="f-favicon" class="inp" type="text" placeholder="https://…/favicon.png"></div>
+      <div class="frow"><label data-i18n="lb_logo">Logo</label>
         <div class="radio-line">
-          <label><input type="radio" name="logoType" value="keep" checked> বর্তমান লোগো</label>
-          <label><input type="radio" name="logoType" value="image"> ছবি (URL)</label>
-          <label><input type="radio" name="logoType" value="emoji"> ইমোজি</label>
+          <label><input type="radio" name="logoType" value="keep" checked><span data-i18n="opt_logo_keep">Keep current</span></label>
+          <label><input type="radio" name="logoType" value="image"><span data-i18n="opt_logo_image">Image (URL)</span></label>
+          <label><input type="radio" name="logoType" value="emoji"><span data-i18n="opt_logo_emoji">Emoji</span></label>
         </div>
       </div>
-      <div class="frow"><label>লোগোর ছবি URL</label><input id="f-logo-url" class="inp" type="text" placeholder="https://…/logo.png অথবা assets/icons/new-logo.png"></div>
-      <div class="frow"><label>লোগোর ইমোজি</label><div class="pair"><input id="f-logo-emoji" class="inp sm" type="text" maxlength="4" placeholder="✦"><span class="hint">লোগো-টাইপ “ইমোজি” হলে কাজ করবে</span></div></div>
-      <div class="frow"><label>লোগোর উচ্চতা (px)</label><div class="pair"><input id="f-logo-height" class="inp sm" type="number" min="0" max="60" placeholder="0"><span class="hint">0 = ডিফল্ট সাইজ</span></div></div>
+      <div class="frow"><label data-i18n="lb_logourl">Logo image URL</label><input id="f-logo-url" class="inp" type="text" placeholder="https://…/logo.png"></div>
+      <div class="frow"><label data-i18n="lb_logoemoji">Logo emoji</label><div class="pair"><input id="f-logo-emoji" class="inp sm" type="text" maxlength="4" placeholder="✦"><span class="hint" data-i18n="hint_emoji">used when logo type is Emoji</span></div></div>
+      <div class="frow"><label data-i18n="lb_logoh">Logo height (px)</label><div class="pair"><input id="f-logo-height" class="inp sm" type="number" min="0" max="60" placeholder="0"><span class="hint" data-i18n="hint_zero">0 = default size</span></div></div>
     </section>
 
     <section id="sec-colors">
-      <h2>🎨 রং থিম</h2>
-      <p class="sub">প্রাইমারি/সেকেন্ডারি রং বদলালে গ্রেডিয়েন্ট-সহ পুরো সাইট (হেডার-বাটন-চিপ-কার্ড) স্বয়ংক্রিয়ভাবে রঙিন হবে — CSS-টোকেন + হার্ডকোড করা রং দুটোই বদলায়।</p>
+      <h2 data-i18n="cl_title">🎨 Color Theme</h2>
+      <p class="sub" data-i18n="cl_sub">Changing primary/secondary re-colors the whole site automatically (buttons, chips, cards, gradients) — both CSS tokens and hard-coded colors.</p>
       <div class="preset-row" id="presetRow"></div>
-      <div class="frow"><label>প্রাইমারি রং</label>
+      <div class="frow"><label data-i18n="lb_primary">Primary color</label>
         <div class="pair"><input id="f-primary" type="color" value="#ff2daa"><input id="f-primary-hex" class="inp sm" type="text" value="#ff2daa"></div>
       </div>
-      <div class="frow"><label>সেকেন্ডারি রং</label>
+      <div class="frow"><label data-i18n="lb_secondary">Secondary color</label>
         <div class="pair"><input id="f-secondary" type="color" value="#ff7a00"><input id="f-secondary-hex" class="inp sm" type="text" value="#ff7a00"></div>
       </div>
-      <div class="frow"><label>অটো-গ্রেডিয়েন্ট</label>
-        <div class="radio-line"><label><input id="f-autograd" type="checkbox" checked> প্রাইমারি+সেকেন্ডারি থেকে গ্রেডিয়েন্ট নিজে থেকেই তৈরি হবে</label></div>
+      <div class="frow"><label data-i18n="lb_autograd">Auto gradient</label>
+        <div class="radio-line"><label><input id="f-autograd" type="checkbox" checked><span data-i18n="lb_autograd_on">Build the gradient automatically from primary + secondary</span></label></div>
       </div>
-      <div class="grouplbl">🌙 ডার্ক মুড প্যালেট</div>
+      <div class="grouplbl" data-i18n="grp_dark">🌙 Dark mood palette</div>
       <div class="grid3" id="pal-dark"></div>
-      <div class="grouplbl">☀️ লাইট মুড প্যালেট</div>
+      <div class="grouplbl" data-i18n="grp_light">☀️ Light mood palette</div>
       <div class="grid3" id="pal-light"></div>
     </section>
 
     <section id="sec-fonts">
-      <h2>🔤 ফন্ট</h2>
-      <p class="sub">Google Fonts-এর বাংলা+ইংরেজি সাপোর্টেড ফন্ট — সাইট লোড হওয়ার সাথে সাথেই স্বয়ংক্রিয়ভাবে লোড হয়।</p>
-      <div class="frow"><label>বডি ফন্ট</label><select id="f-font-body" class="inp"></select></div>
-      <div class="frow"><label>হেডিং ফন্ট (H1–H6 + ব্র্যান্ড)</label><select id="f-font-head" class="inp"></select></div>
-      <div class="frow"><label>বেস ফন্ট-সাইজ</label>
-        <div class="pair"><input id="f-font-size" type="range" min="14" max="18" step="0.5" value="15"><span class="rangeval" id="f-font-size-val">ডিফল্ট</span></div>
+      <h2 data-i18n="ft_title">🔤 Fonts</h2>
+      <p class="sub" data-i18n="ft_sub">Google Fonts with Bengali + English support — loaded automatically with the site.</p>
+      <div class="frow"><label data-i18n="lb_body">Body font</label><select id="f-font-body" class="inp"></select></div>
+      <div class="frow"><label data-i18n="lb_head">Heading font (H1–H6 + brand)</label><select id="f-font-head" class="inp"></select></div>
+      <div class="frow"><label data-i18n="lb_size">Base font size</label>
+        <div class="pair"><input id="f-font-size" type="range" min="14" max="18" step="0.5" value="15"><span class="rangeval" id="f-font-size-val">Default</span></div>
       </div>
     </section>
 
     <section id="sec-style">
-      <h2>📐 স্টাইল</h2>
-      <p class="sub">কার্নারের বাঁক — বাটন, কার্ড, চিপ সব কন্টেনারে প্রযোজ্য।</p>
-      <div class="frow"><label>রেডিয়াস (বড়)</label>
+      <h2 data-i18n="st_title">📐 Style</h2>
+      <p class="sub" data-i18n="st_sub">Corner rounding — applies to buttons, cards, chips and all containers.</p>
+      <div class="frow"><label data-i18n="lb_radius">Radius (large)</label>
         <div class="pair"><input id="f-radius" type="range" min="0" max="28" step="1" value="18"><span class="rangeval" id="f-radius-val">18px</span></div>
       </div>
-      <div class="frow"><label>রেডিয়াস (ছোট)</label>
+      <div class="frow"><label data-i18n="lb_radius_sm">Radius (small)</label>
         <div class="pair"><input id="f-radius-sm" type="range" min="0" max="18" step="1" value="12"><span class="rangeval" id="f-radius-sm-val">12px</span></div>
       </div>
     </section>
 
     <section id="sec-content">
-      <h2>📢 সাইট-কনটেন্ট কন্ট্রোল</h2>
-      <p class="sub">ঘোষণা-ব্যানার, ফুটার-লাইন ও ডিফল্ট থিম — কমিটের পর সব পেজে, সব ভিজিটরের কাছে।</p>
-      <div class="frow"><label>ঘোষণা-ব্যানার</label>
-        <div class="radio-line"><label><input id="f-banner-on" type="checkbox"> চালু করুন — সব পেজের হেডারের নিচে দেখাবে</label></div>
+      <h2 data-i18n="ct_title">📢 Site Content</h2>
+      <p class="sub" data-i18n="ct_sub">Announcement banner, footer line and default theme — on every page, for every visitor, after commit.</p>
+      <div class="frow"><label data-i18n="lb_banner">Announcement banner</label>
+        <div class="radio-line"><label><input id="f-banner-on" type="checkbox"><span data-i18n="lb_banner_on">Enable — shows under the header on every page</span></label></div>
       </div>
-      <div class="frow"><label>ব্যানারের লেখা</label><input id="f-banner-text" class="inp" type="text" placeholder="🎉 নতুন Wedding টেমপ্লেট এসেছে — এখনই দেখুন!"></div>
-      <div class="frow"><label>ব্যানার-লিংক <span class="hint">(ঐচ্ছিক)</span></label><input id="f-banner-href" class="inp" type="text" placeholder="category.html?c=wedding"></div>
-      <div class="frow"><label>ব্যানার বন্ধ-করার বাটন</label>
-        <div class="radio-line"><label><input id="f-banner-dismiss" type="checkbox" checked> ভিজিটর ✕ চেপে বন্ধ করতে পারবে (ওই সেশনের জন্য)</label></div>
+      <div class="frow"><label data-i18n="lb_btext">Banner text</label><input id="f-banner-text" class="inp" type="text" placeholder="🎉 New Wedding templates are here!"></div>
+      <div class="frow"><label><span data-i18n="lb_bhref">Banner link</span> <span class="hint" data-i18n="hint_optional">(optional)</span></label><input id="f-banner-href" class="inp" type="text" placeholder="category.html?c=wedding"></div>
+      <div class="frow"><label data-i18n="lb_bdismiss">Dismiss button</label>
+        <div class="radio-line"><label><input id="f-banner-dismiss" type="checkbox" checked><span data-i18n="lb_bdismiss_on">Visitors can close it with ✕ (for that session)</span></label></div>
       </div>
-      <div class="frow"><label>ফুটার © লাইন <span class="hint">(খালি = বর্তমান)</span></label><input id="f-footer-text" class="inp" type="text" placeholder="© 2026 TEZOFY. Made with SK SANJOY for creators."></div>
-      <div class="frow"><label>ডিফল্ট থিম <span class="hint">(নতুন ভিজিটর যা দেখবে)</span></label>
+      <div class="frow"><label><span data-i18n="lb_footer">Footer © line</span> <span class="hint" data-i18n="hint_empty_cur">(empty = current)</span></label><input id="f-footer-text" class="inp" type="text" placeholder="© 2026 TEZOFY. Made with SK SANJOY for creators."></div>
+      <div class="frow"><label><span data-i18n="lb_theme">Default theme</span> <span class="hint" data-i18n="hint_theme">(what new visitors see)</span></label>
         <select id="f-theme" class="inp">
-          <option value="">সিস্টেম ডিফল্ট (বর্তমান আচরণ)</option>
-          <option value="dark">🌙 ডার্ক</option>
-          <option value="light">☀️ লাইট</option>
+          <option value="" data-i18n="opt_theme_sys">System default (current behavior)</option>
+          <option value="dark" data-i18n="opt_theme_dark">🌙 Dark</option>
+          <option value="light" data-i18n="opt_theme_light">☀️ Light</option>
         </select>
       </div>
     </section>
 
     <section id="sec-advanced">
-      <h2>⚡ অ্যাডভান্সড: কাস্টম CSS</h2>
-      <p class="sub">যেকোনো অতিরিক্ত CSS এখানে লিখুন — সব পেজে যুক্ত হবে। CSS না জানলে খালি রাখুন।</p>
-      <textarea id="f-customcss" class="inp" rows="5" placeholder="/* উদাহরণ */ .hero h1{letter-spacing:-.5px}"></textarea>
+      <h2 data-i18n="ad_title">⚡ Advanced: Custom CSS</h2>
+      <p class="sub" data-i18n="ad_sub">Any extra CSS you write here is added to every page. Leave empty if you don't know CSS.</p>
+      <textarea id="f-customcss" class="inp" rows="5" placeholder="/* example */ .hero h1{letter-spacing:-.5px}"></textarea>
     </section>
 
     <section id="sec-export">
-      <h2>📦 এক্সপোর্ট ও লাইভ প্রিভিউ</h2>
-      <p class="sub">ডান পাশের প্রিভিউ দেখে ঠিক করুন → ফাইল ডাউনলোড → GitHub-এ কমিট।</p>
+      <h2 data-i18n="ex_title">📦 Export & Live Preview</h2>
+      <p class="sub" data-i18n="ex_sub">Check the preview on the right → download the file → commit on GitHub.</p>
+      <div class="setup-status" id="setupStatus"></div>
       <div id="diffList"></div>
       <div class="siterow">
-        <button id="btnPreview" class="btn">👁 সাইটে লাইভ প্রিভিউ চালু করুন</button>
-        <a id="lnkIndex" href="index.html" target="_blank" rel="noopener">↗ হোম খুলুন</a>
-        <a href="discover.html" target="_blank" rel="noopener">↗ Discover</a>
-        <a href="profile.html" target="_blank" rel="noopener">↗ Profile</a>
+        <button id="btnPreview" class="btn" data-i18n="btn_preview_on">👁 Preview on site</button>
+        <a id="lnkIndex" href="index.html" target="_blank" rel="noopener" data-i18n="lnk_home">↗ Open Home</a>
+        <a href="discover.html" target="_blank" rel="noopener" data-i18n="lnk_disc">↗ Discover</a>
+        <a href="profile.html" target="_blank" rel="noopener" data-i18n="lnk_prof">↗ Profile</a>
       </div>
-      <div class="note">👁 প্রিভিউ চালু থাকলে <b>শুধু আপনার ব্রাউজারে</b> পুরো সাইট নতুন থিমে দেখা যাবে। সব ভিজিটরের জন্য কার্যকর করতে নিচের ধাপগুলো অনুসরণ করুন।</div>
+      <div class="note" data-i18n-html="note_preview">👁 With preview on, the whole site shows the new theme <b>only in your browser</b>. To make it live for all visitors, follow the steps below.</div>
       <ol class="steps">
-        <li><code>site-brand.js ডাউনলোড</code> বাটনে ক্লিক করুন (বা 📋 কপি করুন)।</li>
-        <li>GitHub রিপো <b>tezofy</b>-তে গিয়ে রুট-ফোল্ডারের <code>site-brand.js</code> ফাইলটি নতুন কনটেন্ট দিয়ে <b>Replace/Upload</b> করে কমিট করুন।</li>
-        <li>১০ মিনিটের মধ্যে (Pages ক্যাশ) পুরো সাইটে নতুন ব্র্যান্ড দেখা যাবে — সব পেজে, সব ভিজিটরের কাছে।</li>
+        <li data-i18n-html="step1">Click <code>Download site-brand.js</code> (or 📋 Copy).</li>
+        <li data-i18n-html="step2">On GitHub, in the <b>tezofy</b> repo, replace the root <code>site-brand.js</code> with the new file and <b>commit</b>.</li>
+        <li data-i18n-html="step3">Within ~10 minutes (Pages cache) the new brand appears on every page, for every visitor.</li>
       </ol>
-      <div class="note" id="loadInfo">⏳ লাইভ কনফিগ লোড হচ্ছে…</div>
+      <div class="note" id="loadInfo"></div>
     </section>
   </main>
 
-  <aside class="bc-preview">
-    <div class="pv-head"><span>লাইভ প্রিভিউ</span><button id="pvMood" class="pv-mood">🌙 ডার্ক</button></div>
+  <aside class="bc-preview" id="pvCard">
+    <div class="pv-head">
+      <div class="pv-head-l"><span data-i18n="pv_title">Live Preview</span></div>
+      <div class="pv-head-l">
+        <div class="pv-tabs">
+          <button type="button" id="pvTabMock" class="act" data-i18n="pv_mock">Mock</button>
+          <button type="button" id="pvTabReal" data-i18n="pv_real">Real site</button>
+        </div>
+        <button id="pvMood" class="pv-mood">🌙 Dark</button>
+        <button id="pvToggle" class="pv-toggle" aria-label="collapse">▾</button>
+      </div>
+    </div>
+    <div class="pv-mini" id="pvMini">
+      <span class="pvm-mark" id="pvMiniMark">✦</span>
+      <b id="pvMiniName">TEZOFY</b>
+      <span class="pvm-grad" id="pvMiniGrad"></span>
+    </div>
     <div id="pvScope" class="pv-scope">
       <div class="pv-banner" id="pvBanner"><span id="pvBannerText"></span><span class="pv-bn-x">✕</span></div>
       <div class="pv-header">
         <span class="pv-mark" id="pvMark">✦</span>
         <span class="pv-bname"><b id="pvName">TEZOFY</b><small id="pvTag">Premium AI Prompt Library</small></span>
-        <span class="pv-search">🔍 Search prompts…</span>
+        <span class="pv-search" data-i18n="mock_search">🔍 Search prompts…</span>
         <span class="pv-btnic">🌙</span>
       </div>
-      <h4 class="pv-h" id="pvH">Premium AI Prompt Library</h4>
-      <p class="pv-p">নতুন থিমে আপনার সাইট দেখতে এমন হবে — রং, ফন্ট, রেডিয়াস সবকিছু এখানে লাইভ আপডেট হয়।</p>
-      <div class="pv-row"><span class="pv-bgrad">✨ Generate</span><span class="pv-bghost">Saved</span></div>
-      <div class="pv-chips"><span class="pv-chip">Trending</span><span class="pv-chip">Wedding</span><span class="pv-chip">Professional</span></div>
+      <h4 class="pv-h" id="pvH">TEZOFY — Premium AI Prompt Library</h4>
+      <p class="pv-p" data-i18n="mock_desc">This is how your site will look with the new theme — colors, fonts and radius update here live.</p>
+      <div class="pv-row"><span class="pv-bgrad" data-i18n="mock_btn1">✨ Generate</span><span class="pv-bghost" data-i18n="mock_btn2">Saved</span></div>
+      <div class="pv-chips"><span class="pv-chip" data-i18n="mock_chip1">Trending</span><span class="pv-chip" data-i18n="mock_chip2">Wedding</span><span class="pv-chip" data-i18n="mock_chip3">Professional</span></div>
       <div class="pv-cards">
         <div class="pv-card"><div class="pv-img"></div><div class="pv-line"></div><div class="pv-line sh"></div></div>
         <div class="pv-card"><div class="pv-img"></div><div class="pv-line"></div><div class="pv-line sh"></div></div>
       </div>
       <div class="pv-footer" id="pvFoot">© 2026 TEZOFY · Made for creators</div>
+    </div>
+    <div class="pv-realwrap" id="pvRealWrap" hidden>
+      <div class="pv-realtop">
+        <span class="pv-hintline" data-i18n="pv_real_hint">Real homepage inside the panel — turn on 👁 preview first.</span>
+        <button id="pvRealRefresh" class="pv-mood" data-i18n="pv_refresh">🔄 Refresh</button>
+      </div>
+      <iframe id="pvReal" class="pv-real" src="index.html" title="real site preview"></iframe>
     </div>
   </aside>
 </div>
@@ -304,36 +367,264 @@
 <div id="loginGate" class="gate">
   <div class="gate-card" id="gateCard">
     <div class="gate-logo">🔐</div>
-    <h2>TEZOFY Admin Panel</h2>
-    <p>এই প্যানেলে ঢুকতে অ্যাডমিন পাসওয়ার্ড দিন।</p>
-    <input id="gatePass" type="password" class="inp" placeholder="অ্যাডমিন পাসওয়ার্ড" autocomplete="current-password">
+    <h2 data-i18n="gate_title">TEZOFY Brand Admin</h2>
+    <p data-i18n="gate_sub">Enter the admin password to continue.</p>
+    <div class="gate-lang">
+      <div class="lang-seg mini" id="gateLangSeg" role="group" aria-label="Language">
+        <button type="button" data-lang="en">EN</button>
+        <button type="button" data-lang="bn">বাংলা</button>
+        <button type="button" data-lang="hi">हिन्दी</button>
+      </div>
+    </div>
+    <input id="gatePass" type="password" class="inp" autocomplete="current-password" data-i18n-ph="gate_ph">
     <p id="gateErr" class="gate-err"></p>
-    <button id="gateBtn" class="btn primary">→ প্রবেশ করুন</button>
-    <p class="gate-note">ডিফল্ট পাসওয়ার্ড: <b>tezofy2026</b> — প্রবেশের পর 🔑 বাটন দিয়ে বদলে ফেলুন।<br>এই প্যানেল শুধু ফাইল <b>তৈরি</b> করে — সাইটে কার্যকর হতে GitHub-এ কমিট লাগে, তাই অন্য কেউ সাইট বদলাতে পারে না।</p>
+    <button id="gateBtn" class="btn primary" data-i18n="gate_btn">→ Enter</button>
+    <p class="gate-note" data-i18n-html="gate_note">Default password: <b>tezofy2026</b> — change it right after login with the 🔑 button.<br>This panel only <b>generates</b> a file — changes go live only after a GitHub commit, so nobody else can change your site.</p>
   </div>
 </div>
 
 <div id="pwModal" class="gate" hidden>
   <div class="gate-card">
     <div class="gate-logo">🔑</div>
-    <h2>পাসওয়ার্ড বদলান</h2>
-    <p>নতুন পাসওয়ার্ড লিখুন (ইংরেজি অক্ষর/সংখ্যা/চিহ্ন) — নিচে একটি কোড-লাইন তৈরি হবে। ওই লাইনটি GitHub-এ <code>brand-admin.html</code>-এর পুরনো <code>ADMIN_PASS_HASH</code>-লাইনের জায়গায় বসিয়ে কমিট করলেই নতুন পাসওয়ার্ড চালু হবে।</p>
-    <input id="pwNew" type="text" class="inp" placeholder="নতুন পাসওয়ার্ড">
+    <h2 data-i18n="pw_title">Change password</h2>
+    <p data-i18n-html="pw_sub">Type a new password (English letters / numbers / symbols) — a code line will appear below. Put that line in place of the old <code>ADMIN_PASS_HASH</code> line in <code>brand-admin.html</code> on GitHub and commit — the new password becomes active.</p>
+    <input id="pwNew" type="text" class="inp" data-i18n-ph="pw_ph">
     <div id="pwOut" class="pw-out">…</div>
     <div style="display:flex;gap:8px">
-      <button id="pwCopy" class="btn primary" style="flex:1">📋 কোড-লাইন কপি</button>
-      <button id="pwClose" class="btn">বন্ধ</button>
+      <button id="pwCopy" class="btn primary" style="flex:1" data-i18n="pw_copy">📋 Copy code line</button>
+      <button id="pwClose" class="btn" data-i18n="pw_close">Close</button>
     </div>
   </div>
 </div>
 
 <script>
 /* ==================================================================
-   TEZOFY Brand Control Panel v1.0 — brand-control.html
-   স্ট্যান্ডঅ্যালোন প্যানেল: কনফিগ সাজায় → site-brand.js ফাইল তৈরি করে।
+   TEZOFY Brand Admin Panel v1.2 — brand-admin.html
+   ৩-ভাষা (EN/বাংলা/हिन्दी — সাইটের tz_lang-কীর সাথে সিঙ্কে) +
+   মক-প্রিভিউ + আসল-সাইট iframe-প্রিভিউ + সেটআপ-স্ট্যাটাস।
    ================================================================== */
 (function () {
   "use strict";
+
+  /* ---------- 🌐 i18n ---------- */
+  var I18N = {
+    en: {
+      chip_preview_off:"Preview off", chip_preview_on:"👁 Preview on (your browser only)",
+      btn_pw:"🔑 Password", btn_logout:"🚪 Logout", btn_reset:"↺ Reset", btn_copy:"📋 Copy", btn_download:"⬇ Download site-brand.js",
+      nav_identity:"🪪 Identity", nav_colors:"🎨 Colors", nav_fonts:"🔤 Fonts", nav_style:"📐 Style", nav_content:"📢 Content", nav_advanced:"⚡ Advanced", nav_export:"📦 Export",
+      side_note:"🔒 This panel only <b>generates</b> the file — changes go live only after you commit on GitHub. So nobody else can change your site theme.",
+      id_title:"🪪 Brand Identity", id_sub:"Site name, tagline, logo and favicon — applied everywhere at once: header, footer, browser title.",
+      lb_name:"Site name", lb_tagline:"Tagline", hint_tagline:"(small text under the footer brand)", lb_scope:"Name scope",
+      opt_scope_all:"Everywhere (header, footer, title, text)", opt_scope_brand:"Only header / footer / title",
+      lb_favicon:"Favicon URL", hint_empty_cur:"(empty = current)", lb_logo:"Logo",
+      opt_logo_keep:"Keep current", opt_logo_image:"Image (URL)", opt_logo_emoji:"Emoji",
+      lb_logourl:"Logo image URL", lb_logoemoji:"Logo emoji", hint_emoji:"used when logo type is Emoji", lb_logoh:"Logo height (px)", hint_zero:"0 = default size",
+      cl_title:"🎨 Color Theme", cl_sub:"Changing primary/secondary re-colors the whole site automatically (buttons, chips, cards, gradients) — both CSS tokens and hard-coded colors.",
+      lb_primary:"Primary color", lb_secondary:"Secondary color", lb_autograd:"Auto gradient", lb_autograd_on:"Build the gradient automatically from primary + secondary",
+      grp_dark:"🌙 Dark mood palette", grp_light:"☀️ Light mood palette",
+      tok_bg:"Background", tok_bgSoft:"Background soft", tok_card:"Card", tok_card2:"Card 2", tok_border:"Border", tok_borderSoft:"Border soft", tok_text:"Text", tok_muted:"Muted", tok_muted2:"Muted 2",
+      preset_default:"🎨 Current (default)", preset_blue:"🌊 Blue Night", preset_green:"🌿 Green Field", preset_violet:"👑 Royal Violet", preset_gold:"✨ Golden Black", preset_teal:"🧊 Ocean Teal",
+      ft_title:"🔤 Fonts", ft_sub:"Google Fonts with Bengali + English support — loaded automatically with the site.",
+      lb_body:"Body font", lb_head:"Heading font (H1–H6 + brand)", lb_size:"Base font size",
+      opt_font_default_body:"System default (current)", opt_font_default_head:"Same as body font", val_default:"Default",
+      st_title:"📐 Style", st_sub:"Corner rounding — applies to buttons, cards, chips and all containers.",
+      lb_radius:"Radius (large)", lb_radius_sm:"Radius (small)",
+      ct_title:"📢 Site Content", ct_sub:"Announcement banner, footer line and default theme — on every page, for every visitor, after commit.",
+      lb_banner:"Announcement banner", lb_banner_on:"Enable — shows under the header on every page", lb_btext:"Banner text",
+      lb_bhref:"Banner link", hint_optional:"(optional)", lb_bdismiss:"Dismiss button", lb_bdismiss_on:"Visitors can close it with ✕ (for that session)",
+      lb_footer:"Footer © line", lb_theme:"Default theme", hint_theme:"(what new visitors see)",
+      opt_theme_sys:"System default (current behavior)", opt_theme_dark:"🌙 Dark", opt_theme_light:"☀️ Light",
+      ad_title:"⚡ Advanced: Custom CSS", ad_sub:"Any extra CSS you write here is added to every page. Leave empty if you don't know CSS.",
+      ex_title:"📦 Export & Live Preview", ex_sub:"Check the preview on the right → download the file → commit on GitHub.",
+      st_title_status:"Setup status (live site)", st_checking:"⏳ Checking your live site setup…",
+      st_engine_ok:"site-brand.js is committed ✓", st_engine_ok_sub:"Engine file is live.",
+      st_engine_nok:"site-brand.js not found on the live site", st_engine_nok_sub:"Do Part 1: commit FILE-11 as site-brand.js in the repo root.",
+      st_line_ok:"Engine line present in index.html ✓", st_line_ok_sub:"The homepage loads the brand engine.",
+      st_line_nok:"index.html is missing the engine <script> line", st_line_nok_sub:"Do Part 2: add <script src=\"site-brand.js\"><\/script> right below the stylesheet link in every page's <head> — until then the site (and site preview) will not change.",
+      st_unknown:"⚠️ Could not check from here", st_unknown_sub:"Open the panel at tezofystudio.github.io/tezofy/brand-admin.html to see the setup status.",
+      btn_preview_on:"👁 Preview on site", btn_preview_off:"⏹ Stop preview",
+      lnk_home:"↗ Open Home", lnk_disc:"↗ Discover", lnk_prof:"↗ Profile",
+      note_preview:"👁 With preview on, the whole site shows the new theme <b>only in your browser</b>. To make it live for all visitors, follow the steps below.",
+      step1:"Click <code>Download site-brand.js</code> (or 📋 Copy).",
+      step2:"On GitHub, in the <b>tezofy</b> repo, replace the root <code>site-brand.js</code> with the new file and <b>commit</b>.",
+      step3:"Within ~10 minutes (Pages cache) the new brand appears on every page, for every visitor.",
+      d_name:"Site name", d_tagline:"Tagline", d_logo:"Logo", d_favicon:"Favicon", d_colors:"Primary/secondary colors + gradient",
+      d_dark:"Dark mood palette ({n} colors)", d_light:"Light mood palette ({n} colors)", d_fonts:"Fonts", d_radius:"Radius",
+      d_banner:"Announcement banner", d_footer:"Footer © line", d_theme:"Default theme", d_css:"Custom CSS",
+      d_changed:"✓ Changed", d_default:"— Default", d_total:"Total", d_sections:"sections changed",
+      pv_title:"Live Preview", pv_mock:"Mock", pv_real:"Real site", mood_dark:"🌙 Dark", mood_light:"☀️ Light",
+      pv_real_hint:"Real homepage inside the panel — turn on 👁 preview first.", pv_refresh:"🔄 Refresh",
+      mock_search:"🔍 Search prompts…", mock_desc:"This is how your site will look with the new theme — colors, fonts and radius update here live.",
+      mock_btn1:"✨ Generate", mock_btn2:"Saved", mock_chip1:"Trending", mock_chip2:"Wedding", mock_chip3:"Professional", mock_foot_made:"Made for creators",
+      gate_title:"TEZOFY Brand Admin", gate_sub:"Enter the admin password to continue.", gate_ph:"Admin password",
+      gate_err:"❌ Wrong password — try again", gate_btn:"→ Enter",
+      gate_note:"Default password: <b>tezofy2026</b> — change it right after login with the 🔑 button.<br>This panel only <b>generates</b> a file — changes go live only after a GitHub commit, so nobody else can change your site.",
+      pw_title:"Change password",
+      pw_sub:"Type a new password (English letters / numbers / symbols) — a code line will appear below. Put that line in place of the old <code>ADMIN_PASS_HASH</code> line in <code>brand-admin.html</code> on GitHub and commit — the new password becomes active.",
+      pw_ph:"New password", pw_copy:"📋 Copy code line", pw_close:"Close", pw_wait:"…", pw_nonascii:"⚠️ Use only English letters / numbers / symbols",
+      t_copied:"📋 Full site-brand.js copied", t_copyfail:"⚠️ Copy failed — use the download button",
+      t_dl:"⬇ site-brand.js downloaded — replace it on GitHub and commit",
+      t_dlfail:"⚠️ Download not possible — the full file has been copied instead",
+      t_preview_on:"👁 Preview on — open or refresh any page of the site",
+      t_preview_off:"Preview off — the site is back to the committed theme (refresh)",
+      t_preset:"Preset: {n}", t_reset:"↺ Everything reset to defaults", t_pwhelp:"Type a new password first",
+      t_welcome:"🔐 Welcome, admin!", t_logout:"🚪 Logged out", t_lang:"🌐 Language: {n}",
+      li_loading:"⏳ Loading live config…", li_ok:"✅ Live config loaded — you are now editing these values.",
+      li_fail:"ℹ️ Live <code>site-brand.js</code> not found — starting from <b>defaults</b>. (After you commit the file, its current values will load here automatically.)"
+    },
+    bn: {
+      chip_preview_off:"প্রিভিউ বন্ধ", chip_preview_on:"👁 প্রিভিউ চালু (শুধু আপনার ব্রাউজারে)",
+      btn_pw:"🔑 পাসওয়ার্ড", btn_logout:"🚪 লগআউট", btn_reset:"↺ রিসেট", btn_copy:"📋 কপি", btn_download:"⬇ site-brand.js ডাউনলোড",
+      nav_identity:"🪪 পরিচয়", nav_colors:"🎨 রং থিম", nav_fonts:"🔤 ফন্ট", nav_style:"📐 স্টাইল", nav_content:"📢 কনটেন্ট", nav_advanced:"⚡ অ্যাডভান্সড", nav_export:"📦 এক্সপোর্ট",
+      side_note:"🔒 এই প্যানেল শুধু ফাইল <b>তৈরি</b> করে — সাইটে কার্যকর হতে GitHub-এ কমিট করতেই হবে। তাই অন্য কেউ সাইটের থিম বদলাতে পারে না।",
+      id_title:"🪪 ব্র্যান্ড পরিচয়", id_sub:"সাইটের নাম, ট্যাগলাইন, লোগো ও ফেভিকন — হেডার, ফুটার, ব্রাউজার-টাইটেল সব জায়গায় একসাথে বদলাবে।",
+      lb_name:"সাইটের নাম", lb_tagline:"ট্যাগলাইন", hint_tagline:"(ফুটার-ব্র্যান্ডের ছোট লেখা)", lb_scope:"নাম বদলানোর স্কোপ",
+      opt_scope_all:"সব জায়গায় (হেডার, ফুটার, টাইটেল, লেখা)", opt_scope_brand:"শুধু হেডার / ফুটার / টাইটেল",
+      lb_favicon:"ফেভিকন URL", hint_empty_cur:"(খালি = বর্তমান)", lb_logo:"লোগো",
+      opt_logo_keep:"বর্তমান লোগো রাখুন", opt_logo_image:"ছবি (URL)", opt_logo_emoji:"ইমোজি",
+      lb_logourl:"লোগোর ছবি URL", lb_logoemoji:"লোগোর ইমোজি", hint_emoji:"লোগো-টাইপ ইমোজি হলে কাজ করবে", lb_logoh:"লোগোর উচ্চতা (px)", hint_zero:"0 = ডিফল্ট সাইজ",
+      cl_title:"🎨 রং থিম", cl_sub:"প্রাইমারি/সেকেন্ডারি রং বদলালে গ্রেডিয়েন্ট-সহ পুরো সাইট স্বয়ংক্রিয়ভাবে রঙিন হবে — CSS-টোকেন ও হার্ডকোড করা রং দুটোই বদলায়।",
+      lb_primary:"প্রাইমারি রং", lb_secondary:"সেকেন্ডারি রং", lb_autograd:"অটো-গ্রেডিয়েন্ট", lb_autograd_on:"প্রাইমারি+সেকেন্ডারি থেকে গ্রেডিয়েন্ট নিজে থেকেই তৈরি হবে",
+      grp_dark:"🌙 ডার্ক মুড প্যালেট", grp_light:"☀️ লাইট মুড প্যালেট",
+      tok_bg:"ব্যাকগ্রাউন্ড", tok_bgSoft:"ব্যাকগ্রাউন্ড-সফট", tok_card:"কার্ড", tok_card2:"কার্ড-২", tok_border:"বর্ডার", tok_borderSoft:"বর্ডার-সফট", tok_text:"টেক্সট", tok_muted:"মিউটেড", tok_muted2:"মিউটেড-২",
+      preset_default:"🎨 বর্তমান (ডিফল্ট)", preset_blue:"🌊 নীল রাত", preset_green:"🌿 সবুজ মাঠ", preset_violet:"👑 রয়্যাল বেগুনি", preset_gold:"✨ সোনালি কালো", preset_teal:"🧊 সমুদ্র টিল",
+      ft_title:"🔤 ফন্ট", ft_sub:"বাংলা+ইংরেজি সাপোর্টেড Google Fonts — সাইটের সাথে সাথেই স্বয়ংক্রিয়ভাবে লোড হয়।",
+      lb_body:"বডি ফন্ট", lb_head:"হেডিং ফন্ট (H1–H6 + ব্র্যান্ড)", lb_size:"বেস ফন্ট-সাইজ",
+      opt_font_default_body:"সিস্টেম ডিফল্ট (বর্তমান)", opt_font_default_head:"বডি ফন্টের মতোই", val_default:"ডিফল্ট",
+      st_title:"📐 স্টাইল", st_sub:"কার্নারের বাঁক — বাটন, কার্ড, চিপ সব কন্টেনারে প্রযোজ্য।",
+      lb_radius:"রেডিয়াস (বড়)", lb_radius_sm:"রেডিয়াস (ছোট)",
+      ct_title:"📢 সাইট-কনটেন্ট কন্ট্রোল", ct_sub:"ঘোষণা-ব্যানার, ফুটার-লাইন ও ডিফল্ট থিম — কমিটের পর সব পেজে, সব ভিজিটরের কাছে।",
+      lb_banner:"ঘোষণা-ব্যানার", lb_banner_on:"চালু করুন — সব পেজের হেডারের নিচে দেখাবে", lb_btext:"ব্যানারের লেখা",
+      lb_bhref:"ব্যানার-লিংক", hint_optional:"(ঐচ্ছিক)", lb_bdismiss:"ব্যানার বন্ধ-করার বাটন", lb_bdismiss_on:"ভিজিটর ✕ চেপে বন্ধ করতে পারবে (ওই সেশনের জন্য)",
+      lb_footer:"ফুটার © লাইন", lb_theme:"ডিফল্ট থিম", hint_theme:"(নতুন ভিজিটর যা দেখবে)",
+      opt_theme_sys:"সিস্টেম ডিফল্ট (বর্তমান আচরণ)", opt_theme_dark:"🌙 ডার্ক", opt_theme_light:"☀️ লাইট",
+      ad_title:"⚡ অ্যাডভান্সড: কাস্টম CSS", ad_sub:"যেকোনো অতিরিক্ত CSS এখানে লিখুন — সব পেজে যুক্ত হবে। CSS না জানলে খালি রাখুন।",
+      ex_title:"📦 এক্সপোর্ট ও লাইভ প্রিভিউ", ex_sub:"ডান পাশের প্রিভিউ দেখে ঠিক করুন → ফাইল ডাউনলোড → GitHub-এ কমিট।",
+      st_title_status:"সেটআপ-স্ট্যাটাস (লাইভ সাইট)", st_checking:"⏳ লাইভ সাইটের সেটআপ যাচাই হচ্ছে…",
+      st_engine_ok:"site-brand.js কমিট হয়েছে ✓", st_engine_ok_sub:"ইঞ্জিন-ফাইল লাইভ আছে।",
+      st_engine_nok:"লাইভ সাইটে site-brand.js পাওয়া যায়নি", st_engine_nok_sub:"কাজ-১ করুন: FILE-11 ফাইলটি রিপো-রুটে site-brand.js নামে কমিট করুন।",
+      st_line_ok:"index.html-এ ইঞ্জিন-লাইন আছে ✓", st_line_ok_sub:"হোমপেজ ব্র্যান্ড-ইঞ্জিন লোড করছে।",
+      st_line_nok:"index.html-এ ইঞ্জিন <script>-লাইন নেই", st_line_nok_sub:"কাজ-২ করুন: প্রতিটি পেজের <head>-এ stylesheet-লিংকের ঠিক নিচে <script src=\"site-brand.js\"><\/script> বসান — না বসালে সাইট (ও সাইট-প্রিভিউ) বদলাবে না।",
+      btn_preview_on:"👁 সাইটে লাইভ প্রিভিউ চালু করুন", btn_preview_off:"⏹ প্রিভিউ বন্ধ করুন",
+      lnk_home:"↗ হোম খুলুন", lnk_disc:"↗ Discover", lnk_prof:"↗ Profile",
+      note_preview:"👁 প্রিভিউ চালু থাকলে পুরো সাইট নতুন থিমে দেখা যাবে <b>শুধু আপনার ব্রাউজারে</b>। সব ভিজিটরের জন্য কার্যকর করতে নিচের ধাপগুলো অনুসরণ করুন।",
+      step1:"<code>site-brand.js ডাউনলোড</code> বাটনে ক্লিক করুন (বা 📋 কপি করুন)।",
+      step2:"GitHub-এর <b>tezofy</b> রিপোতে রুটের <code>site-brand.js</code> নতুন ফাইল দিয়ে Replace করে <b>কমিট</b> করুন।",
+      step3:"১০ মিনিটের মধ্যে (Pages ক্যাশ) পুরো সাইটে নতুন ব্র্যান্ড দেখা যাবে — সব পেজে, সব ভিজিটরের কাছে।",
+      d_name:"সাইটের নাম", d_tagline:"ট্যাগলাইন", d_logo:"লোগো", d_favicon:"ফেভিকন", d_colors:"প্রাইমারি/সেকেন্ডারি রং + গ্রেডিয়েন্ট",
+      d_dark:"ডার্ক মুড প্যালেট ({n}টি রং)", d_light:"লাইট মুড প্যালেট ({n}টি রং)", d_fonts:"ফন্ট", d_radius:"রেডিয়াস",
+      d_banner:"ঘোষণা-ব্যানার", d_footer:"ফুটার © লাইন", d_theme:"ডিফল্ট থিম", d_css:"কাস্টম CSS",
+      d_changed:"✓ বদলেছে", d_default:"— ডিফল্ট", d_total:"মোট", d_sections:"সেকশন বদলেছে",
+      pv_title:"লাইভ প্রিভিউ", pv_mock:"মক", pv_real:"আসল সাইট", mood_dark:"🌙 ডার্ক", mood_light:"☀️ লাইট",
+      pv_real_hint:"প্যানেলের ভেতরেই আসল হোমপেজ — আগে 👁 প্রিভিউ চালু করুন।", pv_refresh:"🔄 রিফ্রেশ",
+      mock_search:"🔍 প্রম্পট খুঁজুন…", mock_desc:"নতুন থিমে আপনার সাইট দেখতে এমন হবে — রং, ফন্ট, রেডিয়াস সবকিছু এখানে লাইভ আপডেট হয়।",
+      mock_btn1:"✨ জেনারেট", mock_btn2:"সেভড", mock_chip1:"ট্রেন্ডিং", mock_chip2:"ওয়েডিং", mock_chip3:"প্রফেশনাল", mock_foot_made:"Made for creators",
+      gate_title:"TEZOFY Brand Admin", gate_sub:"এগিয়ে যেতে অ্যাডমিন পাসওয়ার্ড দিন।", gate_ph:"অ্যাডমিন পাসওয়ার্ড",
+      gate_err:"❌ ভুল পাসওয়ার্ড — আবার চেষ্টা করুন", gate_btn:"→ প্রবেশ করুন",
+      gate_note:"ডিফল্ট পাসওয়ার্ড: <b>tezofy2026</b> — ঢুকেই 🔑 বাটন দিয়ে বদলে ফেলুন।<br>এই প্যানেল শুধু ফাইল <b>তৈরি</b> করে — কার্যকর হতে GitHub-কমিট লাগে, তাই অন্য কেউ সাইট বদলাতে পারে না।",
+      pw_title:"পাসওয়ার্ড বদলান",
+      pw_sub:"নতুন পাসওয়ার্ড লিখুন (ইংরেজি অক্ষর/সংখ্যা/চিহ্ন) — নিচে একটি কোড-লাইন তৈরি হবে। ওই লাইনটি GitHub-এ <code>brand-admin.html</code>-এর পুরনো <code>ADMIN_PASS_HASH</code>-লাইনের জায়গায় বসিয়ে কমিট করলেই নতুন পাসওয়ার্ড চালু হবে।",
+      pw_ph:"নতুন পাসওয়ার্ড", pw_copy:"📋 কোড-লাইন কপি", pw_close:"বন্ধ", pw_wait:"…", pw_nonascii:"⚠️ শুধু ইংরেজি অক্ষর / সংখ্যা / চিহ্ন ব্যবহার করুন",
+      t_copied:"📋 পুরো site-brand.js কপি হয়েছে", t_copyfail:"⚠️ কপি করা গেল না — ডাউনলোড বাটন ব্যবহার করুন",
+      t_dl:"⬇ site-brand.js ডাউনলোড হয়েছে — GitHub-এ Replace করে কমিট করুন",
+      t_dlfail:"⚠️ ডাউনলোড সম্ভব নয় — পুরো ফাইলটি কপি হয়ে গেছে",
+      t_preview_on:"👁 প্রিভিউ চালু — সাইটের যেকোনো পেজ খুলুন/রিফ্রেশ করুন",
+      t_preview_off:"প্রিভিউ বন্ধ — সাইট আবার কমিট করা থিমে ফিরবে (রিফ্রেশ করুন)",
+      t_preset:"প্রিসেট: {n}", t_reset:"↺ সবকিছু ডিফল্টে ফিরে এসেছে", t_pwhelp:"আগে নতুন পাসওয়ার্ড লিখুন",
+      t_welcome:"🔐 স্বাগতম, অ্যাডমিন!", t_logout:"🚪 লগআউট হয়েছে", t_lang:"🌐 ভাষা: {n}",
+      li_loading:"⏳ লাইভ কনফিগ লোড হচ্ছে…", li_ok:"✅ লাইভ কনফিগ লোড হয়েছে — এখন থেকে এই মানগুলোর ওপরে পরিবর্তন করছেন।",
+      li_fail:"ℹ️ লাইভ <code>site-brand.js</code> পাওয়া যায়নি — <b>ডিফল্ট</b> দিয়ে শুরু হচ্ছে। (ফাইলটি কমিট করার পর এখানে বর্তমান মান নিজে থেকেই লোড হবে।)"
+    },
+    hi: {
+      chip_preview_off:"प्रीव्यू बंद", chip_preview_on:"👁 प्रीव्यू चालू (सिर्फ़ आपके ब्राउज़र में)",
+      btn_pw:"🔑 पासवर्ड", btn_logout:"🚪 लॉगआउट", btn_reset:"↺ रीसेट", btn_copy:"📋 कॉपी", btn_download:"⬇ site-brand.js डाउनलोड",
+      nav_identity:"🪪 पहचान", nav_colors:"🎨 रंग थीम", nav_fonts:"🔤 फ़ॉन्ट", nav_style:"📐 स्टाइल", nav_content:"📢 कंटेंट", nav_advanced:"⚡ एडवांस्ड", nav_export:"📦 एक्सपोर्ट",
+      side_note:"🔒 यह पैनल सिर्फ़ फ़ाइल <b>बनाता</b> है — बदलाव तभी लाइव होंगे जब आप GitHub पर कमिट करें। इसलिए कोई और आपकी साइट की थीम नहीं बदल सकता।",
+      id_title:"🪪 ब्रांड पहचान", id_sub:"साइट का नाम, टैगलाइन, लोगो और फ़ेविकॉन — हेडर, फ़ुटर और ब्राउज़र-टाइटल सब जगह एक साथ बदलेगा।",
+      lb_name:"साइट का नाम", lb_tagline:"टैगलाइन", hint_tagline:"(फ़ुटर-ब्रांड के नीचे का छोटा टेक्स्ट)", lb_scope:"नाम बदलने का दायरा",
+      opt_scope_all:"हर जगह (हेडर, फ़ुटर, टाइटल, टेक्स्ट)", opt_scope_brand:"सिर्फ़ हेडर / फ़ुटर / टाइटल",
+      lb_favicon:"फ़ेविकॉन URL", hint_empty_cur:"(खाली = मौजूदा)", lb_logo:"लोगो",
+      opt_logo_keep:"मौजूदा लोगो रखें", opt_logo_image:"इमेज (URL)", opt_logo_emoji:"इमोजी",
+      lb_logourl:"लोगो इमेज URL", lb_logoemoji:"लोगो इमोजी", hint_emoji:"लोगो-टाइप इमोजी होने पर काम करेगा", lb_logoh:"लोगो की ऊँचाई (px)", hint_zero:"0 = डिफ़ॉल्ट साइज़",
+      cl_title:"🎨 रंग थीम", cl_sub:"प्राइमरी/सेकेंडरी बदलने पर पूरी साइट अपने-आप रंगीन हो जाती है (बटन, चिप, कार्ड, ग्रेडिएंट) — CSS टोकन और हार्ड-कोडेड दोनों रंग बदलते हैं।",
+      lb_primary:"प्राइमरी रंग", lb_secondary:"सेकेंडरी रंग", lb_autograd:"ऑटो ग्रेडिएंट", lb_autograd_on:"प्राइमरी+सेकेंडरी से ग्रेडिएंट अपने-आप बनेगा",
+      grp_dark:"🌙 डार्क मूड पैलेट", grp_light:"☀️ लाइट मूड पैलेट",
+      tok_bg:"बैकग्राउंड", tok_bgSoft:"बैकग्राउंड-सॉफ़्ट", tok_card:"कार्ड", tok_card2:"कार्ड-२", tok_border:"बॉर्डर", tok_borderSoft:"बॉर्डर-सॉफ़्ट", tok_text:"टेक्स्ट", tok_muted:"म्यूटेड", tok_muted2:"म्यूटेड-२",
+      preset_default:"🎨 मौजूदा (डिफ़ॉल्ट)", preset_blue:"🌊 नीली रात", preset_green:"🌿 हरा मैदान", preset_violet:"👑 रॉयल वायलेट", preset_gold:"✨ गोल्डन ब्लैक", preset_teal:"🧊 समुद्री टील",
+      ft_title:"🔤 फ़ॉन्ट", ft_sub:"बांग्ला + अंग्रेज़ी सपोर्ट वाले Google Fonts — साइट के साथ अपने-आप लोड होते हैं।",
+      lb_body:"बॉडी फ़ॉन्ट", lb_head:"हेडिंग फ़ॉन्ट (H1–H6 + ब्रांड)", lb_size:"बेस फ़ॉन्ट-साइज़",
+      opt_font_default_body:"सिस्टम डिफ़ॉल्ट (मौजूदा)", opt_font_default_head:"बॉडी फ़ॉन्ट जैसा ही", val_default:"डिफ़ॉल्ट",
+      st_title:"📐 स्टाइल", st_sub:"कोनों की गोलाई — बटन, कार्ड, चिप और सभी कंटेनर पर लागू।",
+      lb_radius:"रेडियस (बड़ा)", lb_radius_sm:"रेडियस (छोटा)",
+      ct_title:"📢 साइट कंटेंट कंट्रोल", ct_sub:"अनाउंसमेंट बैनर, फ़ुटर लाइन और डिफ़ॉल्ट थीम — कमिट के बाद हर पेज पर, हर विज़िटर के लिए।",
+      lb_banner:"अनाउंसमेंट बैनर", lb_banner_on:"चालू करें — हर पेज के हेडर के नीचे दिखेगा", lb_btext:"बैनर का टेक्स्ट",
+      lb_bhref:"बैनर लिंक", hint_optional:"(वैकल्पिक)", lb_bdismiss:"बंद करने का बटन", lb_bdismiss_on:"विज़िटर ✕ दबाकर बंद कर सकते हैं (उसी सेशन के लिए)",
+      lb_footer:"फ़ुटर © लाइन", lb_theme:"डिफ़ॉल्ट थीम", hint_theme:"(नए विज़िटर को जो दिखेगा)",
+      opt_theme_sys:"सिस्टम डिफ़ॉल्ट (मौजूदा व्यवहार)", opt_theme_dark:"🌙 डार्क", opt_theme_light:"☀️ लाइट",
+      ad_title:"⚡ एडवांस्ड: कस्टम CSS", ad_sub:"यहाँ लिखा कोई भी अतिरिक्त CSS हर पेज पर जुड़ जाता है। CSS नहीं आता तो खाली छोड़ दें।",
+      ex_title:"📦 एक्सपोर्ट और लाइव प्रीव्यू", ex_sub:"दाईं ओर प्रीव्यू देखें → फ़ाइल डाउनलोड करें → GitHub पर कमिट करें।",
+      st_title_status:"सेटअप स्टेटस (लाइव साइट)", st_checking:"⏳ लाइव साइट का सेटअप जाँचा जा रहा है…",
+      st_engine_ok:"site-brand.js कमिट हो गया ✓", st_engine_ok_sub:"इंजन-फ़ाइल लाइव है।",
+      st_engine_nok:"लाइव साइट पर site-brand.js नहीं मिला", st_engine_nok_sub:"भाग-1 करें: FILE-11 को रिपो-रूट में site-brand.js नाम से कमिट करें।",
+      st_line_ok:"index.html में इंजन-लाइन मौजूद ✓", st_line_ok_sub:"होमपेज ब्रांड-इंजन लोड कर रहा है।",
+      st_line_nok:"index.html में इंजन <script>-लाइन नहीं है", st_line_nok_sub:"भाग-2 करें: हर पेज के <head> में stylesheet-लिंक के ठीक नीचे <script src=\"site-brand.js\"><\/script> जोड़ें — नहीं तो साइट (और साइट-प्रीव्यू) नहीं बदलेगी।",
+      btn_preview_on:"👁 साइट पर लाइव प्रीव्यू चालू करें", btn_preview_off:"⏹ प्रीव्यू बंद करें",
+      lnk_home:"↗ होम खोलें", lnk_disc:"↗ Discover", lnk_prof:"↗ Profile",
+      note_preview:"👁 प्रीव्यू चालू होने पर पूरी साइट नई थीम में दिखेगी <b>सिर्फ़ आपके ब्राउज़र में</b>। सब विज़िटर के लिए लाइव करने के लिए नीचे के चरणों को फ़ॉलो करें।",
+      step1:"<code>site-brand.js डाउनलोड</code> बटन पर क्लिक करें (या 📋 कॉपी)।",
+      step2:"GitHub के <b>tezofy</b> रिपो में रूट की <code>site-brand.js</code> को नई फ़ाइल से बदलकर <b>कमिट</b> करें।",
+      step3:"~10 मिनट में (Pages कैश) नया ब्रांड हर पेज पर, हर विज़िटर को दिखेगा।",
+      d_name:"साइट का नाम", d_tagline:"टैगलाइन", d_logo:"लोगो", d_favicon:"फ़ेविकॉन", d_colors:"प्राइमरी/सेकेंडरी रंग + ग्रेडिएंट",
+      d_dark:"डार्क मूड पैलेट ({n} रंग)", d_light:"लाइट मूड पैलेट ({n} रंग)", d_fonts:"फ़ॉन्ट", d_radius:"रेडियस",
+      d_banner:"अनाउंसमेंट बैनर", d_footer:"फ़ुटर © लाइन", d_theme:"डिफ़ॉल्ट थीम", d_css:"कस्टम CSS",
+      d_changed:"✓ बदला", d_default:"— डिफ़ॉल्ट", d_total:"कुल", d_sections:"सेक्शन बदले",
+      pv_title:"लाइव प्रीव्यू", pv_mock:"मॉक", pv_real:"असली साइट", mood_dark:"🌙 डार्क", mood_light:"☀️ लाइट",
+      pv_real_hint:"पैनल के अंदर ही असली होमपेज — पहले 👁 प्रीव्यू चालू करें।", pv_refresh:"🔄 रिफ्रेश",
+      mock_search:"🔍 प्रॉम्प्ट खोजें…", mock_desc:"नई थीम में आपकी साइट ऐसी दिखेगी — रंग, फ़ॉन्ट और रेडियस यहाँ लाइव अपडेट होते हैं।",
+      mock_btn1:"✨ जेनरेट", mock_btn2:"सेव्ड", mock_chip1:"ट्रेंडिंग", mock_chip2:"वेडिंग", mock_chip3:"प्रोफेशनल", mock_foot_made:"Made for creators",
+      gate_title:"TEZOFY Brand Admin", gate_sub:"आगे बढ़ने के लिए एडमिन पासवर्ड डालें।", gate_ph:"एडमिन पासवर्ड",
+      gate_err:"❌ ग़लत पासवर्ड — फिर कोशिश करें", gate_btn:"→ प्रवेश करें",
+      gate_note:"डिफ़ॉल्ट पासवर्ड: <b>tezofy2026</b> — लॉगिन के तुरंत बाद 🔑 बटन से बदल लें।<br>यह पैनल सिर्फ़ फ़ाइल <b>बनाता</b> है — बदलाव लाइव करने के लिए GitHub-कमिट चाहिए, इसलिए कोई और आपकी साइट नहीं बदल सकता।",
+      pw_title:"पासवर्ड बदलें",
+      pw_sub:"नया पासवर्ड लिखें (अंग्रेज़ी अक्षर/अंक/चिह्न) — नीचे एक कोड-लाइन बनेगी। उस लाइन को GitHub पर <code>brand-admin.html</code> में पुरानी <code>ADMIN_PASS_HASH</code> लाइन की जगह लगाकर कमिट करें — नया पासवर्ड चालू हो जाएगा।",
+      pw_ph:"नया पासवर्ड", pw_copy:"📋 कोड-लाइन कॉपी", pw_close:"बंद", pw_wait:"…", pw_nonascii:"⚠️ सिर्फ़ अंग्रेज़ी अक्षर / अंक / चिह्न इस्तेमाल करें",
+      t_copied:"📋 पूरा site-brand.js कॉपी हुआ", t_copyfail:"⚠️ कॉपी नहीं हुआ — डाउनलोड बटन इस्तेमाल करें",
+      t_dl:"⬇ site-brand.js डाउनलोड हुआ — GitHub पर बदलकर कमिट करें",
+      t_dlfail:"⚠️ डाउनलोड संभव नहीं — पूरी फ़ाइल कॉपी हो गई है",
+      t_preview_on:"👁 प्रीव्यू चालू — साइट का कोई भी पेज खोलें/रिफ्रेश करें",
+      t_preview_off:"प्रीव्यू बंद — साइट वापस कमिट की हुई थीम में आ जाएगी (रिफ्रेश करें)",
+      t_preset:"प्रीसेट: {n}", t_reset:"↺ सब कुछ डिफ़ॉल्ट पर वापस", t_pwhelp:"पहले नया पासवर्ड लिखें",
+      t_welcome:"🔐 स्वागत है, एडमिन!", t_logout:"🚪 लॉगआउट हुआ", t_lang:"🌐 भाषा: {n}",
+      li_loading:"⏳ लाइव कॉन्फ़िग लोड हो रहा है…", li_ok:"✅ लाइव कॉन्फ़िग लोड हुआ — अब आप इन्हीं मानों में बदलाव कर रहे हैं।",
+      li_fail:"ℹ️ लाइव <code>site-brand.js</code> नहीं मिला — <b>डिफ़ॉल्ट</b> से शुरू हो रहे हैं। (फ़ाइल कमिट होने के बाद उसके मौजूदा मान यहाँ अपने-आप लोड होंगे।)"
+    }
+  };
+  var LANG_NAMES = { en: "English", bn: "বাংলা", hi: "हिन्दी" };
+  var LANG = "en";
+  try { var sl = localStorage.getItem("tz_lang"); if (sl === "bn" || sl === "hi" || sl === "en") LANG = sl; } catch (e) {}
+  function t(k) { var d = I18N[LANG] || I18N.en; if (d[k] !== undefined) return d[k]; if (I18N.en[k] !== undefined) return I18N.en[k]; return k; }
+  function applyLang() {
+    var i, els;
+    els = document.querySelectorAll("[data-i18n]");
+    for (i = 0; i < els.length; i++) els[i].textContent = t(els[i].getAttribute("data-i18n"));
+    els = document.querySelectorAll("[data-i18n-html]");
+    for (i = 0; i < els.length; i++) els[i].innerHTML = t(els[i].getAttribute("data-i18n-html"));
+    els = document.querySelectorAll("[data-i18n-ph]");
+    for (i = 0; i < els.length; i++) els[i].setAttribute("placeholder", t(els[i].getAttribute("data-i18n-ph")));
+    document.documentElement.lang = LANG;
+    els = document.querySelectorAll(".lang-seg button[data-lang]");
+    for (i = 0; i < els.length; i++) els[i].classList.toggle("act", els[i].getAttribute("data-lang") === LANG);
+    $("pvMood").textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
+    $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : t("val_default");
+    renderDiff(); renderLoadInfo(); renderStatus();
+  }
+  function setLang(l) {
+    if (l !== "en" && l !== "bn" && l !== "hi") return;
+    LANG = l;
+    try { localStorage.setItem("tz_lang", l); } catch (e) {}
+    applyLang(); renderAll();
+    toast(t("t_lang").replace("{n}", LANG_NAMES[l]));
+  }
 
   /* ---------- ডিফল্ট (= বর্তমান লাইভ সাইট) ---------- */
   var DEFAULTS = {
@@ -355,16 +646,16 @@
     customCss: ""
   };
   var TOK = {
-    dark:  [["bg","ব্যাকগ্রাউন্ড"],["bgSoft","ব্যাকগ্রাউন্ড-সফট"],["card","কার্ড"],["card2","কার্ড-২"],["border","বর্ডার"],["borderSoft","বর্ডার-সফট"],["text","টেক্সট"],["muted","মিউটেড"],["muted2","মিউটেড-২"]],
-    light: [["bg","ব্যাকগ্রাউন্ড"],["bgSoft","ব্যাকগ্রাউন্ড-সফট"],["card","কার্ড"],["card2","কার্ড-২"],["border","বর্ডার"],["borderSoft","বর্ডার-সফট"],["text","টেক্সট"],["muted","মিউটেড"],["muted2","মিউটেড-২"]]
+    dark:  [["bg","tok_bg"],["bgSoft","tok_bgSoft"],["card","tok_card"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"]],
+    light: [["bg","tok_bg"],["bgSoft","tok_bgSoft"],["card","tok_card"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"]]
   };
   var PRESETS = [
-    { id: "default", name: "🎨 বর্তমান (ডিফল্ট)", p: "#ff2daa", s: "#ff7a00" },
-    { id: "blue",    name: "🌊 নীল রাত",        p: "#3b82f6", s: "#8b5cf6" },
-    { id: "green",   name: "🌿 সবুজ মাঠ",        p: "#10b981", s: "#84cc16" },
-    { id: "violet",  name: "👑 রয়্যাল বেগুনি",   p: "#8b5cf6", s: "#ec4899" },
-    { id: "gold",    name: "✨ সোনালি কালো",     p: "#f5b301", s: "#ff5e3a" },
-    { id: "teal",    name: "🧊 সমুদ্র টিল",       p: "#06b6d4", s: "#3b82f6" }
+    { id: "default", nameKey: "preset_default", p: "#ff2daa", s: "#ff7a00" },
+    { id: "blue",    nameKey: "preset_blue",    p: "#3b82f6", s: "#8b5cf6" },
+    { id: "green",   nameKey: "preset_green",   p: "#10b981", s: "#84cc16" },
+    { id: "violet",  nameKey: "preset_violet",  p: "#8b5cf6", s: "#ec4899" },
+    { id: "gold",    nameKey: "preset_gold",    p: "#f5b301", s: "#ff5e3a" },
+    { id: "teal",    nameKey: "preset_teal",    p: "#06b6d4", s: "#3b82f6" }
   ];
   var FONTS_BODY = ["", "Hind Siliguri", "Noto Sans Bengali", "Anek Bangla", "Baloo Da 2", "Tiro Bangla", "Galada", "Atma", "Mina"];
   var FONTS_HEAD = FONTS_BODY.concat(["Poppins", "Montserrat", "Space Grotesk", "Playfair Display"]);
@@ -376,6 +667,7 @@
 
   var S = JSON.parse(JSON.stringify(DEFAULTS));
   var COMMITTED = null, ENGINE_FETCHED = null, previewOn = false, pvMood = "dark";
+  var lastLoadState = "loading", lastStatus = null;
 
   /* ---------- ছোট হেল্পার ---------- */
   function $(id) { return document.getElementById(id); }
@@ -394,22 +686,22 @@
   function isHex(v) { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(v || "").trim()); }
   var toastT = null;
   function toast(msg) {
-    var t = $("toast");
-    t.textContent = msg;
-    t.classList.add("show");
+    var el = $("toast");
+    el.textContent = msg;
+    el.classList.add("show");
     clearTimeout(toastT);
-    toastT = setTimeout(function () { t.classList.remove("show"); }, 3200);
+    toastT = setTimeout(function () { el.classList.remove("show"); }, 3200);
   }
 
   /* ---------- UI তৈরি (প্যালেট + প্রিসেট + ফন্ট) ---------- */
   function buildPalette(mode) {
     var host = $("pal-" + mode);
-    TOK[mode].forEach(function (t) {
+    TOK[mode].forEach(function (tk) {
       var d = document.createElement("div");
       d.className = "tok";
-      d.innerHTML = '<input type="color" id="c-' + mode + '-' + t[0] + '" value="' + S.colors[mode][t[0]] + '">' +
-        '<input type="text" class="tk-hex" id="h-' + mode + '-' + t[0] + '" value="' + S.colors[mode][t[0]] + '">' +
-        '<span class="tk-name">' + t[1] + "</span>";
+      d.innerHTML = '<input type="color" id="c-' + mode + '-' + tk[0] + '" value="' + S.colors[mode][tk[0]] + '">' +
+        '<input type="text" class="tk-hex" id="h-' + mode + '-' + tk[0] + '" value="' + S.colors[mode][tk[0]] + '">' +
+        '<span class="tk-name" data-i18n="' + tk[1] + '"></span>';
       host.appendChild(d);
     });
   }
@@ -419,19 +711,20 @@
       var b = document.createElement("button");
       b.className = "preset";
       b.setAttribute("data-preset", p.id);
-      b.innerHTML = '<span class="dot2" style="background:linear-gradient(90deg,' + p.p + ',' + p.s + ')"></span>' + p.name;
+      b.innerHTML = '<span class="dot2" style="background:linear-gradient(90deg,' + p.p + ',' + p.s + ')"></span><span data-i18n="' + p.nameKey + '"></span>';
       host.appendChild(b);
     });
   }
   function buildFonts() {
-    [["f-font-body", FONTS_BODY, "সিস্টেম ডিফল্ট (বর্তমান)"], ["f-font-head", FONTS_HEAD, "বডি ফন্টের মতোই"]].forEach(function (x) {
+    [["f-font-body", FONTS_BODY, "opt_font_default_body"], ["f-font-head", FONTS_HEAD, "opt_font_default_head"]].forEach(function (x) {
       var sel = $(x[0]);
-      x[1].forEach(function (f) {
+      FONTS: for (var i = 0; i < x[1].length; i++) {
         var o = document.createElement("option");
-        o.value = f;
-        o.textContent = f ? f : x[2];
+        o.value = x[1][i];
+        if (!x[1][i]) { o.setAttribute("data-i18n", x[2]); }
+        else o.textContent = x[1][i];
         sel.appendChild(o);
-      });
+      }
     });
   }
 
@@ -450,16 +743,16 @@
     setColorPair("f-secondary", "f-secondary-hex", S.colors.secondary);
     $("f-autograd").checked = !!S.colors.autoGrad;
     ["dark", "light"].forEach(function (mode) {
-      TOK[mode].forEach(function (t) {
-        var c = $("c-" + mode + "-" + t[0]), h = $("h-" + mode + "-" + t[0]);
-        if (c) c.value = S.colors[mode][t[0]];
-        if (h) h.value = S.colors[mode][t[0]];
+      TOK[mode].forEach(function (tk) {
+        var c = $("c-" + mode + "-" + tk[0]), h = $("h-" + mode + "-" + tk[0]);
+        if (c) c.value = S.colors[mode][tk[0]];
+        if (h) h.value = S.colors[mode][tk[0]];
       });
     });
     $("f-font-body").value = S.fonts.body;
     $("f-font-head").value = S.fonts.head;
     $("f-font-size").value = S.fonts.bodySize || 15;
-    $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : "ডিফল্ট";
+    $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : t("val_default");
     $("f-radius").value = S.radius.base;
     $("f-radius-val").textContent = S.radius.base + "px";
     $("f-radius-sm").value = S.radius.sm;
@@ -489,6 +782,11 @@
     else if (id === "f-autograd") S.colors.autoGrad = e.target.checked;
     else if ((m = id.match(/^([ch])-(dark|light)-([a-zA-Z2]+)$/))) {
       mode = m[2]; key = m[3];
+      /* 🔧 ফিক্স: যে-মুডের রং এডিট হচ্ছে, প্রিভিউ-মক নিজেই সেই মুডে চলে যাবে */
+      if (mode !== pvMood) {
+        pvMood = mode;
+        $("pvMood").textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
+      }
       if (key in S.colors[mode] && isHex(v)) {
         S.colors[mode][key] = v.trim();
         setColorPair("c-" + mode + "-" + key, "h-" + mode + "-" + key, v.trim());
@@ -496,7 +794,7 @@
     }
     else if (id === "f-font-body") S.fonts.body = v;
     else if (id === "f-font-head") S.fonts.head = v;
-    else if (id === "f-font-size") { S.fonts.bodySize = parseFloat(v) || 0; $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : "ডিফল্ট"; }
+    else if (id === "f-font-size") { S.fonts.bodySize = parseFloat(v) || 0; $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : t("val_default"); }
     else if (id === "f-radius") { S.radius.base = parseInt(v, 10) || 0; $("f-radius-val").textContent = S.radius.base + "px"; }
     else if (id === "f-radius-sm") { S.radius.sm = parseInt(v, 10) || 0; $("f-radius-sm-val").textContent = S.radius.sm + "px"; }
     else if (id === "f-theme") S.theme.default = v;
@@ -514,13 +812,6 @@
   function renderMock() {
     var sc = $("pvScope"), C = S.colors, pal = C[pvMood] || C.dark;
     var st = sc.style;
-    var pvBn = $("pvBanner");
-    if (S.banner.on && S.banner.text) {
-      pvBn.classList.add("on");
-      pvBn.style.background = "linear-gradient(135deg," + C.primary + "," + C.secondary + ")";
-      $("pvBannerText").textContent = S.banner.text;
-      pvBn.querySelector(".pv-bn-x").style.display = S.banner.dismissible !== false ? "" : "none";
-    } else pvBn.classList.remove("on");
     st.setProperty("--bg", pal.bg); st.setProperty("--card", pal.card); st.setProperty("--card2", pal.card2);
     st.setProperty("--border", pal.border); st.setProperty("--text", pal.text); st.setProperty("--muted", pal.muted);
     st.setProperty("--pink", C.primary); st.setProperty("--orange", C.secondary);
@@ -534,44 +825,62 @@
     $("pvName").textContent = S.siteName || "TEZOFY";
     $("pvTag").textContent = S.tagline || "";
     $("pvH").textContent = (S.siteName || "TEZOFY") + " — " + (S.tagline || "Premium AI Prompt Library");
-    $("pvFoot").textContent = "© 2026 " + (S.siteName || "TEZOFY") + " · Made for creators";
+    $("pvFoot").textContent = "© 2026 " + (S.siteName || "TEZOFY") + " · " + t("mock_foot_made");
     var mk = $("pvMark");
-    if (S.logo.type === "emoji") mk.innerHTML = '<span>' + (S.logo.emoji || "✦") + "</span>";
+    if (S.logo.type === "emoji") mk.innerHTML = "<span>" + (S.logo.emoji || "✦") + "</span>";
     else if (S.logo.type === "image" && S.logo.url) mk.innerHTML = '<img src="' + S.logo.url.replace(/"/g, "&quot;") + '" alt="logo">';
     else mk.innerHTML = '<img src="assets/icons/logo.png" alt="logo" onerror="this.replaceWith(document.createTextNode(\'✦\'))">';
     if (S.logo.height) mk.style.height = S.logo.height + "px"; else mk.style.height = "";
     var fs = S.fonts.bodySize ? S.fonts.bodySize + "px" : "";
     sc.style.fontSize = fs || "13px";
+    /* ব্যানার-প্রিভিউ */
+    var pvBn = $("pvBanner");
+    if (S.banner.on && S.banner.text) {
+      pvBn.classList.add("on");
+      pvBn.style.background = "linear-gradient(135deg," + C.primary + "," + C.secondary + ")";
+      $("pvBannerText").textContent = S.banner.text;
+      pvBn.querySelector(".pv-bn-x").style.display = S.banner.dismissible !== false ? "" : "none";
+    } else pvBn.classList.remove("on");
+    /* মিনি-স্ট্রিপ (মোবাইলে কোলাপ্সড অবস্থায়) */
+    $("pvMiniName").textContent = S.siteName || "TEZOFY";
+    var mm = $("pvMiniMark");
+    if (S.logo.type === "emoji") mm.innerHTML = "<span>" + (S.logo.emoji || "✦") + "</span>";
+    else if (S.logo.type === "image" && S.logo.url) mm.innerHTML = '<img src="' + S.logo.url.replace(/"/g, "&quot;") + '" alt="logo">';
+    else mm.innerHTML = "✦";
+    $("pvMiniGrad").style.background = "linear-gradient(90deg," + C.primary + "," + C.secondary + ")";
   }
 
   /* ---------- ডিফ-স্ট্যাটাস ---------- */
   function countChanged(mode) {
     var n = 0;
-    TOK[mode].forEach(function (t) { if (normHex(S.colors[mode][t[0]]) !== normHex(DEFAULTS.colors[mode][t[0]])) n++; });
+    TOK[mode].forEach(function (tk) { if (normHex(S.colors[mode][tk[0]]) !== normHex(DEFAULTS.colors[mode][tk[0]])) n++; });
     return n;
   }
   function renderDiff() {
     var items = [
-      ["সাইটের নাম", S.siteName !== DEFAULTS.siteName],
-      ["ট্যাগলাইন", S.tagline !== DEFAULTS.tagline],
-      ["লোগো", S.logo.type !== "keep" || S.logo.height > 0],
-      ["ফেভিকন", !!S.favicon],
-      ["প্রাইমারি/সেকেন্ডারি রং + গ্রেডিয়েন্ট", normHex(S.colors.primary) !== normHex(DEFAULTS.colors.primary) || normHex(S.colors.secondary) !== normHex(DEFAULTS.colors.secondary)],
-      ["ডার্ক মুড প্যালেট (" + countChanged("dark") + " টি রং)", countChanged("dark") > 0],
-      ["লাইট মুড প্যালেট (" + countChanged("light") + " টি রং)", countChanged("light") > 0],
-      ["ফন্ট", !!S.fonts.body || !!S.fonts.head || S.fonts.bodySize > 0],
-      ["রেডিয়াস", S.radius.base !== DEFAULTS.radius.base || S.radius.sm !== DEFAULTS.radius.sm],
-      ["ঘোষণা-ব্যানার", !!(S.banner.on && S.banner.text)],
-      ["ফুটার © লাইন", !!S.footerText],
-      ["ডিফল্ট থিম", !!S.theme.default],
-      ["কাস্টম CSS", !!S.customCss]
+      ["d_name", S.siteName !== DEFAULTS.siteName],
+      ["d_tagline", S.tagline !== DEFAULTS.tagline],
+      ["d_logo", S.logo.type !== "keep" || S.logo.height > 0],
+      ["d_favicon", !!S.favicon],
+      ["d_colors", normHex(S.colors.primary) !== normHex(DEFAULTS.colors.primary) || normHex(S.colors.secondary) !== normHex(DEFAULTS.colors.secondary)],
+      ["d_dark", countChanged("dark") > 0, countChanged("dark")],
+      ["d_light", countChanged("light") > 0, countChanged("light")],
+      ["d_fonts", !!S.fonts.body || !!S.fonts.head || S.fonts.bodySize > 0],
+      ["d_radius", S.radius.base !== DEFAULTS.radius.base || S.radius.sm !== DEFAULTS.radius.sm],
+      ["d_banner", !!(S.banner.on && S.banner.text)],
+      ["d_footer", !!S.footerText],
+      ["d_theme", !!S.theme.default],
+      ["d_css", !!S.customCss]
     ];
     var html = "", changed = 0;
     items.forEach(function (it) {
       if (it[1]) changed++;
-      html += '<div class="diff"><span>' + it[0] + '</span><span class="' + (it[1] ? "ok" : "no") + '">' + (it[1] ? "✓ বদলেছে" : "— ডিফল্ট") + "</span></div>";
+      var label = t(it[0]);
+      if (it.length > 2) label = label.replace("{n}", it[2]);
+      html += '<div class="diff"><span>' + label + '</span><span class="' + (it[1] ? "ok" : "no") + '">' + (it[1] ? t("d_changed") : t("d_default")) + "</span></div>";
     });
-    $("diffList").innerHTML = html + '<div class="diff" style="border-color:rgba(255,122,0,.4)"><span><b>মোট</b></span><span style="color:var(--bc-orange);font-weight:700">' + changed + " / " + items.length + " সেকশন বদলেছে</span></div>";
+    html += '<div class="diff" style="border-color:rgba(255,122,0,.4)"><span><b>' + t("d_total") + '</b></span><span style="color:var(--bc-orange);font-weight:700">' + changed + " / " + items.length + " " + t("d_sections") + "</span></div>";
+    $("diffList").innerHTML = html;
   }
 
   /* ---------- কনফিগ → ফাইল ---------- */
@@ -596,7 +905,7 @@
   }
   function generateFile() {
     var tpl = (ENGINE_FETCHED && ENGINE_FETCHED.indexOf(MARK_START) > -1) ? ENGINE_FETCHED : ENGINE_SRC;
-    if (tpl.indexOf(MARK_START) === -1) { toast("⚠️ ইঞ্জিন-টেমপ্লেট পাওয়া যায়নি!"); return ""; }
+    if (tpl.indexOf(MARK_START) === -1) { toast("⚠️ engine template missing!"); return ""; }
     var block = MARK_START + "\nwindow.TZ_BRAND = " + JSON.stringify(toConfig(), null, 2).replace(/<\/script/gi, "<\\/script") + ";\n" + MARK_END;
     var re = new RegExp(MARK_START.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&") + "[\\s\\S]*?" + MARK_END.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
     return tpl.replace(re, function () { return block; });
@@ -613,17 +922,116 @@
     var chip = $("pvState"), btn = $("btnPreview");
     if (on) {
       persistPreview();
-      chip.textContent = "👁 প্রিভিউ চালু (শুধু আপনার ব্রাউজারে)";
+      chip.textContent = t("chip_preview_on");
       chip.classList.add("on");
-      btn.textContent = "⏹ প্রিভিউ বন্ধ করুন";
-      toast("👁 প্রিভিউ চালু — সাইটের যেকোনো পেজ খুলুন/রিফ্রেশ করুন");
+      btn.textContent = t("btn_preview_off");
+      toast(t("t_preview_on"));
     } else {
       try { localStorage.removeItem(PKEY); } catch (e) {}
-      chip.textContent = "⚪ প্রিভিউ বন্ধ";
+      chip.textContent = t("chip_preview_off");
       chip.classList.remove("on");
-      btn.textContent = "👁 সাইটে লাইভ প্রিভিউ চালু করুন";
-      toast("প্রিভিউ বন্ধ — সাইট আবার কমিট করা থিমে ফিরবে (রিফ্রেশ করুন)");
+      btn.textContent = t("btn_preview_on");
+      toast(t("t_preview_off"));
     }
+  }
+
+  /* ---------- কপি / ডাউনলোড ---------- */
+  function copyText(txt, silent) {
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = txt;
+      ta.style.cssText = "position:fixed;opacity:0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = false;
+      try { ok = document.execCommand("copy"); } catch (e) {}
+      ta.remove();
+      if (ok) { if (!silent) toast(t("t_copied")); }
+      else toast(t("t_copyfail"));
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).then(function () { if (!silent) toast(t("t_copied")); }, fallback);
+    } else fallback();
+  }
+  function download() {
+    var txt = generateFile();
+    if (!txt) return;
+    try {
+      var b = new Blob([txt], { type: "text/javascript" });
+      var u = URL.createObjectURL(b);
+      var a = document.createElement("a");
+      a.href = u; a.download = "site-brand.js";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { try { URL.revokeObjectURL(u); } catch (e) {} }, 4000);
+      toast(t("t_dl"));
+    } catch (e) {
+      copyText(txt, true);
+      toast(t("t_dlfail"));
+    }
+  }
+
+  /* ---------- লাইভ কনফিগ লোড + সেটআপ-স্ট্যাটাস ---------- */
+  function renderLoadInfo() {
+    var info = $("loadInfo");
+    if (lastLoadState === "ok") info.innerHTML = t("li_ok");
+    else if (lastLoadState === "fail") info.innerHTML = t("li_fail");
+    else info.textContent = t("li_loading");
+  }
+  function loadCommitted() {
+    lastLoadState = "loading"; renderLoadInfo();
+    try {
+      fetch("site-brand.js?ts=" + Date.now()).then(function (r) {
+        if (!r.ok) throw new Error("http " + r.status);
+        return r.text();
+      }).then(function (txt) {
+        ENGINE_FETCHED = txt;
+        var i1 = txt.indexOf(MARK_START), i2 = txt.indexOf(MARK_END);
+        if (i1 === -1 || i2 === -1) throw new Error("markers");
+        var body = txt.substring(i1 + MARK_START.length, i2);
+        body = body.replace(/^\s*window\.TZ_BRAND\s*=\s*/, "").replace(/;\s*$/, "");
+        COMMITTED = JSON.parse(body);
+        S = merge(DEFAULTS, COMMITTED);
+        fillForm();
+        renderAll();
+        lastLoadState = "ok"; renderLoadInfo();
+      }).catch(function () { lastLoadState = "fail"; renderLoadInfo(); });
+    } catch (e) { lastLoadState = "fail"; renderLoadInfo(); }
+  }
+  function renderStatus() {
+    var host = $("setupStatus");
+    if (!host) return;
+    if (!lastStatus) { host.innerHTML = '<div class="st-chip st-warn"><span class="sti">⏳</span><span>' + t("st_checking") + "</span></div>"; return; }
+    if (lastStatus.known === false) {
+      host.innerHTML = '<div class="st-chip st-warn"><span class="sti">⚠️</span><span>' + t("st_unknown") + '<div class="st-sub">' + t("st_unknown_sub") + "</div></span></div>";
+      return;
+    }
+    var html = '<div class="st-chip ' + (lastStatus.engineOk ? "st-ok" : "st-bad") + '"><span class="sti">' + (lastStatus.engineOk ? "🟢" : "🔴") + "</span><span>" + t(lastStatus.engineOk ? "st_engine_ok" : "st_engine_nok") + '<div class="st-sub">' + t(lastStatus.engineOk ? "st_engine_ok_sub" : "st_engine_nok_sub") + "</div></span></div>";
+    html += '<div class="st-chip ' + (lastStatus.lineOk ? "st-ok" : "st-bad") + '"><span class="sti">' + (lastStatus.lineOk ? "🟢" : "🔴") + "</span><span>" + t(lastStatus.lineOk ? "st_line_ok" : "st_line_nok") + '<div class="st-sub">' + t(lastStatus.lineOk ? "st_line_ok_sub" : "st_line_nok_sub") + "</div></span></div>";
+    host.innerHTML = html;
+  }
+  function checkSetup() {
+    lastStatus = null; renderStatus();
+    function afterEngine(engineOk) {
+      fetch("index.html?ts=" + Date.now()).then(function (r2) { return r2.ok ? r2.text() : Promise.reject(new Error("http " + r2.status)); }).then(function (html) {
+        lastStatus = { known: true, engineOk: engineOk, lineOk: html.indexOf("site-brand.js") > -1 };
+        renderStatus();
+      }).catch(function () {
+        lastStatus = { known: true, engineOk: engineOk, lineOk: false };
+        renderStatus();
+      });
+    }
+    try {
+      fetch("site-brand.js?ts=" + Date.now()).then(function (r) {
+        if (r.status === 404) { afterEngine(false); return null; } /* ফাইলই নেই → 🔴 */
+        if (!r.ok) throw new Error("http " + r.status);
+        return r.text();
+      }).then(function (txt) {
+        if (txt === null) return;
+        afterEngine(txt.indexOf(MARK_START) > -1);
+      }).catch(function () { lastStatus = { known: false }; renderStatus(); });
+    } catch (e) { lastStatus = { known: false }; renderStatus(); }
   }
 
   /* ---------- 🔐 অ্যাডমিন-গেট ---------- */
@@ -675,9 +1083,9 @@
       try { sessionStorage.setItem(GKEY, "1"); } catch (e) {}
       $("loginGate").hidden = true;
       $("gateErr").textContent = "";
-      toast("🔐 স্বাগতম, অ্যাডমিন!");
+      toast(t("t_welcome"));
     } else {
-      $("gateErr").textContent = "❌ ভুল পাসওয়ার্ড — আবার চেষ্টা করুন";
+      $("gateErr").textContent = t("gate_err");
       var c = $("gateCard");
       c.classList.remove("shake"); void c.offsetWidth; c.classList.add("shake");
     }
@@ -689,8 +1097,8 @@
   }
   function renderPw() {
     var v = $("pwNew").value, out = $("pwOut");
-    if (!v) { out.textContent = "…"; return; }
-    if (/[^\x00-\x7F]/.test(v)) { out.textContent = "⚠️ শুধু ইংরেজি অক্ষর / সংখ্যা / চিহ্ন ব্যবহার করুন"; return; }
+    if (!v) { out.textContent = t("pw_wait"); return; }
+    if (/[^\x00-\x7F]/.test(v)) { out.textContent = t("pw_nonascii"); return; }
     out.textContent = pwLine();
   }
   function gateInit() {
@@ -704,78 +1112,16 @@
       $("loginGate").hidden = false;
       $("gatePass").value = "";
       $("gateErr").textContent = "";
-      toast("🚪 লগআউট হয়েছে");
+      toast(t("t_logout"));
     });
     $("btnPw").addEventListener("click", function () { $("pwModal").hidden = false; $("pwNew").value = ""; renderPw(); });
     $("pwClose").addEventListener("click", function () { $("pwModal").hidden = true; });
     $("pwNew").addEventListener("input", renderPw);
     $("pwCopy").addEventListener("click", function () {
       var line = pwLine();
-      if (!line) { toast("আগে নতুন পাসওয়ার্ড লিখুন"); return; }
+      if (!line) { toast(t("t_pwhelp")); return; }
       copyText(line);
     });
-  }
-
-  /* ---------- কপি / ডাউনলোড ---------- */
-  function copyText(txt, silent) {
-    function fallback() {
-      var ta = document.createElement("textarea");
-      ta.value = txt;
-      ta.style.cssText = "position:fixed;opacity:0";
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = false;
-      try { ok = document.execCommand("copy"); } catch (e) {}
-      ta.remove();
-      if (ok) { if (!silent) toast("📋 পুরো site-brand.js কপি হয়েছে"); }
-      else toast("⚠️ কপি করা গেল না — ডাউনলোড বাটন ব্যবহার করুন");
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(txt).then(function () { if (!silent) toast("📋 পুরো site-brand.js কপি হয়েছে"); }, fallback);
-    } else fallback();
-  }
-  function download() {
-    var txt = generateFile();
-    if (!txt) return;
-    try {
-      var b = new Blob([txt], { type: "text/javascript" });
-      var u = URL.createObjectURL(b);
-      var a = document.createElement("a");
-      a.href = u; a.download = "site-brand.js";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(function () { try { URL.revokeObjectURL(u); } catch (e) {} }, 4000);
-      toast("⬇ site-brand.js ডাউনলোড হয়েছে — GitHub-এ Replace করে কমিট করুন");
-    } catch (e) {
-      copyText(txt, true);
-      toast("⚠️ ডাউনলোড সম্ভব নয় — পুরো ফাইলটি কপি হয়ে গেছে");
-    }
-  }
-
-  /* ---------- লাইভ কনফিগ লোড ---------- */
-  function loadCommitted() {
-    var info = $("loadInfo");
-    function fail() {
-      info.innerHTML = "ℹ️ লাইভ <code>site-brand.js</code> পাওয়া যায়নি — <b>ডিফল্ট</b> দিয়ে শুরু হচ্ছে। (ফাইলটি কমিট করার পর এখানে বর্তমান মান নিজে থেকেই লোড হবে)";
-    }
-    try {
-      fetch("site-brand.js?ts=" + Date.now()).then(function (r) {
-        if (!r.ok) throw new Error("http " + r.status);
-        return r.text();
-      }).then(function (txt) {
-        ENGINE_FETCHED = txt;
-        var i1 = txt.indexOf(MARK_START), i2 = txt.indexOf(MARK_END);
-        if (i1 === -1 || i2 === -1) throw new Error("markers");
-        var body = txt.substring(i1 + MARK_START.length, i2);
-        body = body.replace(/^\s*window\.TZ_BRAND\s*=\s*/, "").replace(/;\s*$/, "");
-        COMMITTED = JSON.parse(body);
-        S = merge(DEFAULTS, COMMITTED);
-        fillForm();
-        renderAll();
-        info.innerHTML = "✅ লাইভ কনফিগ লোড হয়েছে — এখন থেকে এই মানগুলোর ওপরে পরিবর্তন করছেন।";
-      }).catch(fail);
-    } catch (e) { fail(); }
   }
 
   /* ---------- রেন্ডার + ইভেন্ট ---------- */
@@ -793,22 +1139,45 @@
     setColorPair("f-primary", "f-primary-hex", p.p);
     setColorPair("f-secondary", "f-secondary-hex", p.s);
     renderAll();
-    toast("প্রিসেট: " + p.name);
+    toast(t("t_preset").replace("{n}", t(p.nameKey)));
   });
 
   $("btnReset").addEventListener("click", function () {
     S = deepCopy(DEFAULTS);
     fillForm();
     renderAll();
-    toast("↺ সবকিছু ডিফল্টে ফিরে এসেছে");
+    toast(t("t_reset"));
   });
   $("btnCopy").addEventListener("click", function () { copyText(generateFile()); });
   $("btnDownload").addEventListener("click", download);
   $("btnPreview").addEventListener("click", function () { setPreview(!previewOn); });
   $("pvMood").addEventListener("click", function () {
     pvMood = pvMood === "dark" ? "light" : "dark";
-    this.textContent = pvMood === "dark" ? "🌙 ডার্ক" : "☀️ লাইট";
+    this.textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
     renderMock();
+  });
+  $("pvToggle").addEventListener("click", function () {
+    var card = $("pvCard");
+    card.classList.toggle("pv-collapsed");
+    this.textContent = card.classList.contains("pv-collapsed") ? "▴" : "▾";
+  });
+  $("pvTabMock").addEventListener("click", function () {
+    $("pvTabMock").classList.add("act"); $("pvTabReal").classList.remove("act");
+    $("pvScope").hidden = false; $("pvRealWrap").hidden = true;
+  });
+  $("pvTabReal").addEventListener("click", function () {
+    $("pvTabReal").classList.add("act"); $("pvTabMock").classList.remove("act");
+    $("pvRealWrap").hidden = false; $("pvScope").hidden = true;
+  });
+  $("pvRealRefresh").addEventListener("click", function () {
+    $("pvReal").src = "index.html?tz=" + Date.now();
+  });
+  [["langSeg"], ["gateLangSeg"]].forEach(function (seg) {
+    var el = $(seg[0]);
+    if (el) el.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-lang]");
+      if (b) setLang(b.getAttribute("data-lang"));
+    });
   });
   document.querySelector(".bc-side").addEventListener("click", function (e) {
     var a = e.target.closest("a");
@@ -825,11 +1194,13 @@
   buildPalette("light");
   buildPresets();
   buildFonts();
+  applyLang();
   fillForm();
   renderAll();
   loadCommitted();
+  checkSetup();
   gateInit();
-  window.TezoBrandPanel = { version: "1.1", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, state: function () { return S; }, hashPassword: sha256 };
+  window.TezoBrandPanel = { version: "1.2", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, setLang: setLang, state: function () { return S; }, hashPassword: sha256 };
 })();
 </script>
 </body>
