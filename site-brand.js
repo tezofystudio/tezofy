@@ -1,15 +1,21 @@
 /* ====================================================================
-   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v1.1)
+   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.0)
    --------------------------------------------------------------------
    এই একটি ফাইল = পুরো সাইটের ব্র্যান্ড-কন্ট্রোল সিস্টেম।
    • প্রতিটি পেজের <head>-এ লিখুন (stylesheet-লিংকের ঠিক নিচে):
        <script src="site-brand.js"></script>
    • রং / ফন্ট / নাম / লোগো / ঘোষণা-ব্যানার / ফুটার / ডিফল্ট-থিম /
-     কাস্টম CSS বদলাতে brand-admin.html প্যানেল ব্যবহার করুন —
+     শেপ-লেখা / ছায়া / কনটেন্ট-চওড়া / পেজ-ভিত্তিক স্টাইল / কাস্টম CSS
+     বদলাতে brand-admin.html প্যানেল ব্যবহার করুন —
      অথবা নিচের __TZBRAND_CONFIG__ অংশে হাতে মান বসান।
    • প্যানেল: https://tezofystudio.github.io/tezofy/brand-admin.html
    • ডিফল্ট মান = বর্তমান লাইভ সাইট → প্রথম কমিটে কোনো দৃশ্যমান
      পরিবর্তন হবে না (zero-change install)।
+   • v2.0 নতুন: shape (প্রম্পট-কার্ডের পটভূমি ও ভেতরের লেখার রং —
+     ডার্ক/লাইট আলাদা), shadow (ছায়া), layout.wrapMax (কনটেন্ট-চওড়া),
+     pages (প্রতি-পেজ আলাদা primary/secondary + CSS), প্রিভিউ-মোডে
+     ডিফল্ট-থিম জোর করে দেখানো, আর প্রাইমারি বদলালে পিংক-টিন্ট
+     অ্যাকসেন্টগুলোও (হার্ট, চিপ, মার্ক) স্বয়ংক্রিয়ভাবে বদলায়।
    • ⚠️ ENGINE অংশে (নিচের লাইন) হাত দেবেন না।
    ==================================================================== */
 
@@ -25,10 +31,17 @@ window.TZ_BRAND = {
     "secondary": "#ff7a00",
     "autoGrad": true,
     "dark":  { "bg": "#09090b", "bgSoft": "#0f0f14", "card": "#131318", "card2": "#18181f", "border": "#232329", "borderSoft": "#1c1c22", "text": "#fafafa", "muted": "#a1a1aa", "muted2": "#71717a" },
-    "light": { "bg": "#f4f4f8", "bgSoft": "#ffffff", "card": "#ffffff", "card2": "#eeeef4", "border": "#e2e2eb", "borderSoft": "#ebebf2", "text": "#17171c", "muted": "#565660", "muted2": "#8a8a95" }
+    "light": { "bg": "#f4f4f8", "bgSoft": "#ffffff", "card": "#ffffff", "card2": "#eeeef4", "border": "#e2e2eb", "borderSoft": "#ebebf2", "text": "#17171c", "muted": "#565660", "muted2": "#8a8a95" },
+    "shape": {
+      "dark":  { "bg": "", "textBg": "", "head": "", "text": "", "muted": "" },
+      "light": { "bg": "", "textBg": "", "head": "", "text": "", "muted": "" }
+    }
   },
   "fonts": { "body": "", "head": "", "bodySize": 0 },
   "radius": { "base": 18, "sm": 12 },
+  "shadow": "",
+  "layout": { "wrapMax": 0 },
+  "pages": {},
   "theme": { "default": "" },
   "banner": { "on": false, "text": "", "href": "", "dismissible": true },
   "footerText": "",
@@ -36,7 +49,7 @@ window.TZ_BRAND = {
 };
 /*__TZBRAND_CONFIG_END__*/
 
-/* ==================== ENGINE v1.0 (সম্পাদনা নিষেধ) ==================== */
+/* ==================== ENGINE v2.0 (সম্পাদনা নিষেধ) ==================== */
 (function () {
   "use strict";
 
@@ -50,10 +63,17 @@ window.TZ_BRAND = {
     colors: {
       primary: "#ff2daa", secondary: "#ff7a00", autoGrad: true,
       dark:  { bg: "#09090b", bgSoft: "#0f0f14", card: "#131318", card2: "#18181f", border: "#232329", borderSoft: "#1c1c22", text: "#fafafa", muted: "#a1a1aa", muted2: "#71717a" },
-      light: { bg: "#f4f4f8", bgSoft: "#ffffff", card: "#ffffff", card2: "#eeeef4", border: "#e2e2eb", borderSoft: "#ebebf2", text: "#17171c", muted: "#565660", muted2: "#8a8a95" }
+      light: { bg: "#f4f4f8", bgSoft: "#ffffff", card: "#ffffff", card2: "#eeeef4", border: "#e2e2eb", borderSoft: "#ebebf2", text: "#17171c", muted: "#565660", muted2: "#8a8a95" },
+      shape: {
+        dark:  { bg: "", textBg: "", head: "", text: "", muted: "" },
+        light: { bg: "", textBg: "", head: "", text: "", muted: "" }
+      }
     },
     fonts: { body: "", head: "", bodySize: 0 },
     radius: { base: 18, sm: 12 },
+    shadow: "",
+    layout: { wrapMax: 0 },
+    pages: {},
     theme: { default: "" },
     banner: { on: false, text: "", href: "", dismissible: true },
     footerText: "",
@@ -96,6 +116,26 @@ window.TZ_BRAND = {
     }
     return null;
   }
+  function isHex(v) { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(v || "").trim()); }
+  function mixHex(a, b, r) {
+    var ca = hexToRgb(a), cb = hexToRgb(b);
+    if (!ca || !cb) return null;
+    var out = "#", i, v;
+    for (i = 0; i < 3; i++) {
+      v = Math.round(ca[i] + (cb[i] - ca[i]) * r);
+      out += ("0" + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);
+    }
+    return out;
+  }
+  /* বর্তমান পেজের আইডি — pages-ওভাররাইডের জন্য (index/discover/…/profile) */
+  var PAGE_ID = (function () {
+    try {
+      var p = String(location.pathname).split("?")[0].split("#")[0];
+      var m = p.match(/\/([^\/]+)\.html?$/i);
+      var id = m ? m[1] : (/\/$/i.test(p) ? "index" : "");
+      return id.toLowerCase();
+    } catch (e) { return ""; }
+  })();
 
   /* ---------- কনফিগ একত্রীকরণ (committed + লাইভ-প্রিভিউ) ---------- */
   var committed = window.TZ_BRAND || {};
@@ -160,6 +200,26 @@ window.TZ_BRAND = {
     if (cfg.fonts.bodySize) css += "body{font-size:" + cfg.fonts.bodySize + "px !important;}";
     if (cfg.logo.height) css += ".brand-mark img,.brand-mark svg{height:" + cfg.logo.height + "px !important;width:auto !important;}";
     if (cfg.logo.type === "emoji") css += ".brand-mark .tz-emoji{font-size:24px;line-height:1;display:block;}";
+    /* ---------- v2.0: শেপ (প্রম্পট-কার্ড) — পটভূমি + ভেতরের লেখার রং ---------- */
+    (function () {
+      var SH = (cfg.colors && cfg.colors.shape) || {}, pre, o, decl;
+      ["dark", "light"].forEach(function (mode) {
+        o = SH[mode] || {};
+        pre = mode === "dark" ? ":root" : ':root[data-theme="light"]';
+        if (isHex(o.bg)) css += pre + " .prompt-inner{background:" + o.bg.trim() + " !important;}";
+        decl = "";
+        if (isHex(o.textBg)) decl += "background:" + o.textBg.trim() + " !important;";
+        if (isHex(o.text)) decl += "color:" + o.text.trim() + " !important;";
+        if (decl) css += pre + " .prompt-text{" + decl + "}";
+        if (isHex(o.head)) css += pre + " .prompt-head h2{color:" + o.head.trim() + " !important;}";
+        if (isHex(o.muted)) css += pre + " .prompt-count," + pre + " .paste-into," + pre + " .cust-sub{color:" + o.muted.trim() + " !important;}";
+      });
+    })();
+    /* ---------- v2.0: ছায়া (shadow) ---------- */
+    var SHV = { "off": "none", "soft": "0 6px 18px rgba(0,0,0,.16)", "strong": "0 18px 50px rgba(0,0,0,.55)" };
+    if (SHV[cfg.shadow]) css += ":root{--shadow:" + SHV[cfg.shadow] + " !important;}";
+    /* ---------- v2.0: কনটেন্ট-চওড়া (layout.wrapMax) ---------- */
+    if (cfg.layout && +cfg.layout.wrapMax >= 900) css += ".wrap{max-width:" + Math.round(+cfg.layout.wrapMax) + "px !important;}";
     if (css) {
       el = document.getElementById("tz-brand-style");
       if (!el) {
@@ -183,6 +243,41 @@ window.TZ_BRAND = {
     if (C.dark.bg !== D.dark.bg) {
       var mt = document.querySelector('meta[name="theme-color"]');
       if (mt) mt.setAttribute("content", C.dark.bg);
+    }
+    /* ---------- v2.0: পেজ-ভিত্তিক ওভাররাইড (এই পেজেই সীমাবদ্ধ) ---------- */
+    var pg = (cfg.pages && PAGE_ID && cfg.pages[PAGE_ID]) || null, pcss = "";
+    if (pg) {
+      if (isHex(pg.primary)) pcss += ":root{--pink:" + pg.primary.trim() + " !important;}";
+      if (isHex(pg.secondary)) pcss += ":root{--orange:" + pg.secondary.trim() + " !important;}";
+      if (isHex(pg.primary) && isHex(pg.secondary) && pg.autoGrad !== false) {
+        pcss += ":root{--grad:linear-gradient(135deg," + pg.primary.trim() + "," + pg.secondary.trim() + ") !important;}";
+        var pg1 = rgba(pg.primary, .16), pg2 = rgba(pg.secondary, .16);
+        if (pg1 && pg2) pcss += ":root{--grad-soft:linear-gradient(135deg," + pg1 + "," + pg2 + ") !important;}";
+      }
+    }
+    if (pcss) {
+      var pEl = document.getElementById("tz-brand-page");
+      if (!pEl) {
+        pEl = document.createElement("style");
+        pEl.id = "tz-brand-page";
+        (document.head || document.documentElement).appendChild(pEl);
+      }
+      if (pEl.textContent !== pcss) pEl.textContent = pcss;
+    } else {
+      var pOld = document.getElementById("tz-brand-page");
+      if (pOld) pOld.remove();
+    }
+    if (pg && pg.customCss) {
+      var pcEl = document.getElementById("tz-brand-pagecss");
+      if (!pcEl) {
+        pcEl = document.createElement("style");
+        pcEl.id = "tz-brand-pagecss";
+        (document.head || document.documentElement).appendChild(pcEl);
+      }
+      if (pcEl.textContent !== pg.customCss) pcEl.textContent = pg.customCss;
+    } else {
+      var pcOld = document.getElementById("tz-brand-pagecss");
+      if (pcOld) pcOld.remove();
     }
   }
 
@@ -209,6 +304,17 @@ window.TZ_BRAND = {
     }
     pushColor(D.primary, C.primary);
     pushColor(D.secondary, C.secondary);
+    /* v2.0: প্রাইমারি/সেকেন্ডারি বদলালে সাইটের হার্ডকোড টিন্ট-অ্যাকসেন্টগুলোও
+       (হার্ট ❤, ক্যাট-চিপ, mark-হাইলাইট ইত্যাদি) নতুন রঙের সাথে মিলিয়ে যাবে */
+    var TINTS = [
+      ["#ffb0da", "primary", .60], ["#ffc4e3", "primary", .70], ["#ff7ec3", "primary", .40],
+      ["#ffd4ee", "primary", .82], ["#ff9de0", "primary", .55], ["#ffb35e", "secondary", .55],
+      ["#ff7ec2", "primary", .42]
+    ];
+    TINTS.forEach(function (tt) {
+      var nv = mixHex(C[tt[1]] || D[tt[1]], "#ffffff", tt[2]);
+      if (nv && String(C[tt[1]]).toLowerCase() !== String(D[tt[1]]).toLowerCase()) pushColor(tt[0], nv);
+    });
     ["dark", "light"].forEach(function (mode) {
       var nm = C[mode] || {}, od = D[mode];
       ["bg", "bgSoft", "card", "card2", "border", "borderSoft", "text", "muted", "muted2"].forEach(function (k) { pushColor(od[k], nm[k]); });
@@ -372,6 +478,12 @@ window.TZ_BRAND = {
   function themePass() {
     var t = cfg.theme && cfg.theme.default;
     if (t !== "dark" && t !== "light") return;
+    /* v2.0: প্রিভিউ-মোডে (নিজের ব্রাউজারে 👁) ডিফল্ট-থিম জোর করে দেখাই —
+       মালিক নিজের সেভ-করা থিমের পেছনে লুকিয়ে থাকলেও নতুন ভিজিটর যা দেখবে তা বোঝা যাবে */
+    if (previewOn) {
+      if (document.documentElement.getAttribute("data-theme") !== t) document.documentElement.setAttribute("data-theme", t);
+      return;
+    }
     try { if (localStorage.getItem(THEME_KEY) !== null) return; } catch (e) { return; }
     if (document.documentElement.getAttribute("data-theme") !== t) document.documentElement.setAttribute("data-theme", t);
   }
@@ -454,7 +566,8 @@ window.TZ_BRAND = {
 
   /* ---------- পাবলিক API ---------- */
   window.TezoBrand = {
-    version: "1.1",
+    version: "2.0",
+    page: PAGE_ID,
     config: cfg,
     committed: committed,
     defaults: DEF,

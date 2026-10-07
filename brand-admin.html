@@ -134,6 +134,16 @@
   .pv-line{height:8px;border-radius:99px;background:var(--card2);margin-bottom:6px}
   .pv-line.sh{width:60%}
   .pv-footer{font-size:10.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:9px;text-align:center}
+  .pv-moodseg{display:inline-flex;border:1px solid var(--bc-line);border-radius:9px;overflow:hidden}
+  .pv-moodseg button{background:transparent;border:none;color:var(--bc-mut);font-size:13px;padding:5px 9px;cursor:pointer;line-height:1}
+  .pv-moodseg button.act{background:var(--bc-grad);color:#fff}
+  .pv-prompt{border-radius:var(--radius-sm);padding:9px 10px;margin-bottom:12px;border:1px solid var(--border)}
+  .pv-phead{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+  .pv-ptext{border-radius:8px;padding:8px 9px;font-size:11px;line-height:1.5;margin-bottom:6px}
+  .pv-pcount{font-size:9.5px;text-align:right}
+  .shapebox{border:1px dashed var(--bc-line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:12px;margin-top:6px}
+  .shape-mode{display:flex;flex-direction:column;gap:8px}
+  .shape-mode .radio-line{font-size:13px}
   .pv-realwrap{display:flex;flex-direction:column;gap:8px}
   .pv-realtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
   .pv-hintline{font-size:11.5px;color:var(--bc-mut)}
@@ -176,7 +186,7 @@
 <body>
 
 <header class="bc-top">
-  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v1.2</span></div>
+  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v2.0</span></div>
   <div class="bc-top-actions">
     <div class="lang-seg" id="langSeg" role="group" aria-label="Language">
       <button type="button" data-lang="en">EN</button>
@@ -198,6 +208,7 @@
     <a href="#sec-colors" data-i18n="nav_colors">🎨 Colors</a>
     <a href="#sec-fonts" data-i18n="nav_fonts">🔤 Fonts</a>
     <a href="#sec-style" data-i18n="nav_style">📐 Style</a>
+    <a href="#sec-pages" data-i18n="nav_pages">📄 Pages</a>
     <a href="#sec-content" data-i18n="nav_content">📢 Content</a>
     <a href="#sec-advanced" data-i18n="nav_advanced">⚡ Advanced</a>
     <a href="#sec-export" data-i18n="nav_export">📦 Export</a>
@@ -246,6 +257,30 @@
       <div class="grid3" id="pal-dark"></div>
       <div class="grouplbl" data-i18n="grp_light">☀️ Light mood palette</div>
       <div class="grid3" id="pal-light"></div>
+      <div class="grouplbl" data-i18n="grp_shape">🧩 Prompt-card / shape colors <span class="hint" data-i18n="grp_shape_hint">(the dark boxes that show AI prompts — their background and the text inside them)</span></div>
+      <div class="shapebox" id="shapeBox">
+        <div class="shape-mode">
+          <label class="radio-line"><input type="checkbox" id="f-shape-on-dark"><span data-i18n="lb_shape_on">Customize</span> — <b>🌙 <span data-i18n="mood_dark">Dark</span></b></label>
+          <div class="grid3" id="shape-dark">
+            <div class="tok"><input type="color" id="sc-dark-bg" value="#101016"><input type="text" class="tk-hex" id="sh-dark-bg" value="#101016"><span class="tk-name" data-i18n="tok_sbg">Card background</span></div>
+            <div class="tok"><input type="color" id="sc-dark-textBg" value="#0f0f14"><input type="text" class="tk-hex" id="sh-dark-textBg" value="#0f0f14"><span class="tk-name" data-i18n="tok_stextbg">Text-box background</span></div>
+            <div class="tok"><input type="color" id="sc-dark-head" value="#a1a1aa"><input type="text" class="tk-hex" id="sh-dark-head" value="#a1a1aa"><span class="tk-name" data-i18n="tok_shead">Heading text</span></div>
+            <div class="tok"><input type="color" id="sc-dark-text" value="#d4d4d8"><input type="text" class="tk-hex" id="sh-dark-text" value="#d4d4d8"><span class="tk-name" data-i18n="tok_stext">Main text 🅰️</span></div>
+            <div class="tok"><input type="color" id="sc-dark-muted" value="#71717a"><input type="text" class="tk-hex" id="sh-dark-muted" value="#71717a"><span class="tk-name" data-i18n="tok_smuted">Small text</span></div>
+          </div>
+        </div>
+        <div class="shape-mode">
+          <label class="radio-line"><input type="checkbox" id="f-shape-on-light"><span data-i18n="lb_shape_on">Customize</span> — <b>☀️ <span data-i18n="mood_light">Light</span></b></label>
+          <div class="grid3" id="shape-light">
+            <div class="tok"><input type="color" id="sc-light-bg" value="#121218"><input type="text" class="tk-hex" id="sh-light-bg" value="#121218"><span class="tk-name" data-i18n="tok_sbg">Card background</span></div>
+            <div class="tok"><input type="color" id="sc-light-textBg" value="#1a1a24"><input type="text" class="tk-hex" id="sh-light-textBg" value="#1a1a24"><span class="tk-name" data-i18n="tok_stextbg">Text-box background</span></div>
+            <div class="tok"><input type="color" id="sc-light-head" value="#b8b8cc"><input type="text" class="tk-hex" id="sh-light-head" value="#b8b8cc"><span class="tk-name" data-i18n="tok_shead">Heading text</span></div>
+            <div class="tok"><input type="color" id="sc-light-text" value="#ececf5"><input type="text" class="tk-hex" id="sh-light-text" value="#ececf5"><span class="tk-name" data-i18n="tok_stext">Main text 🅰️</span></div>
+            <div class="tok"><input type="color" id="sc-light-muted" value="#a2a2b5"><input type="text" class="tk-hex" id="sh-light-muted" value="#a2a2b5"><span class="tk-name" data-i18n="tok_smuted">Small text</span></div>
+          </div>
+        </div>
+        <p class="hint" data-i18n="shape_note">ℹ️ Unchecked = the site keeps its current look. Check it to take control of the prompt-card colors for that mood.</p>
+      </div>
     </section>
 
     <section id="sec-fonts">
@@ -259,13 +294,45 @@
     </section>
 
     <section id="sec-style">
-      <h2 data-i18n="st_title">📐 Style</h2>
-      <p class="sub" data-i18n="st_sub">Corner rounding — applies to buttons, cards, chips and all containers.</p>
+      <h2 data-i18n="st_title">📐 Style & Layout</h2>
+      <p class="sub" data-i18n="st_sub">Corner rounding, shadow and content width — applies to buttons, cards, chips and all containers.</p>
       <div class="frow"><label data-i18n="lb_radius">Radius (large)</label>
         <div class="pair"><input id="f-radius" type="range" min="0" max="28" step="1" value="18"><span class="rangeval" id="f-radius-val">18px</span></div>
       </div>
       <div class="frow"><label data-i18n="lb_radius_sm">Radius (small)</label>
         <div class="pair"><input id="f-radius-sm" type="range" min="0" max="18" step="1" value="12"><span class="rangeval" id="f-radius-sm-val">12px</span></div>
+      </div>
+      <div class="frow"><label data-i18n="lb_shadow">Shadow</label>
+        <select id="f-shadow" class="inp">
+          <option value="" data-i18n="opt_shadow_keep">Current (keep)</option>
+          <option value="off" data-i18n="opt_shadow_off">No shadow (flat)</option>
+          <option value="soft" data-i18n="opt_shadow_soft">Soft</option>
+          <option value="strong" data-i18n="opt_shadow_strong">Strong</option>
+        </select>
+      </div>
+      <div class="frow"><label><span data-i18n="lb_wrapmax">Content width</span> <span class="hint" data-i18n="hint_wrapmax">(0 = current 1080px)</span></label>
+        <div class="pair"><input id="f-wrapmax" type="range" min="0" max="1440" step="20" value="0"><span class="rangeval" id="f-wrapmax-val">1080px</span></div>
+      </div>
+    </section>
+
+    <section id="sec-pages">
+      <h2 data-i18n="pg_title">📄 Per-page Style</h2>
+      <p class="sub" data-i18n="pg_sub">Give one page its own accent colors or CSS — without touching the rest of the site. Example: a blue theme only on the AI Generator page.</p>
+      <div class="frow"><label data-i18n="lb_pickpage">Pick a page</label>
+        <select id="f-page" class="inp"></select>
+      </div>
+      <div id="pageEditor">
+        <div class="frow"><label class="radio-line"><input type="checkbox" id="f-page-on"><span data-i18n="lb_page_on">This page has its own colors</span></label></div>
+        <div class="frow"><label data-i18n="lb_pprimary">Page primary</label>
+          <div class="pair"><input id="f-page-primary" type="color" value="#ff2daa"><input id="f-page-primary-hex" class="inp sm" type="text" value="#ff2daa"></div>
+        </div>
+        <div class="frow"><label data-i18n="lb_psecondary">Page secondary</label>
+          <div class="pair"><input id="f-page-secondary" type="color" value="#ff7a00"><input id="f-page-secondary-hex" class="inp sm" type="text" value="#ff7a00"></div>
+        </div>
+        <div class="frow"><label data-i18n="lb_pagecss">This page only — extra CSS</label>
+          <textarea id="f-page-css" class="inp" rows="3" placeholder="/* example */ .hero h1{color:red}"></textarea>
+        </div>
+        <div class="frow"><button id="btnPageReset" class="btn" data-i18n="btn_page_reset">🗑 Reset this page (follow the global theme)</button></div>
       </div>
     </section>
 
@@ -325,7 +392,10 @@
           <button type="button" id="pvTabMock" class="act" data-i18n="pv_mock">Mock</button>
           <button type="button" id="pvTabReal" data-i18n="pv_real">Real site</button>
         </div>
-        <button id="pvMood" class="pv-mood">🌙 Dark</button>
+        <div class="pv-moodseg" id="pvMoodSeg" role="group" aria-label="Preview mood">
+          <button type="button" id="pvMoodDark" class="act" title="Dark">🌙</button>
+          <button type="button" id="pvMoodLight" title="Light">☀️</button>
+        </div>
         <button id="pvToggle" class="pv-toggle" aria-label="collapse">▾</button>
       </div>
     </div>
@@ -349,6 +419,11 @@
       <div class="pv-cards">
         <div class="pv-card"><div class="pv-img"></div><div class="pv-line"></div><div class="pv-line sh"></div></div>
         <div class="pv-card"><div class="pv-img"></div><div class="pv-line"></div><div class="pv-line sh"></div></div>
+      </div>
+      <div class="pv-prompt" id="pvPrompt">
+        <div class="pv-phead" id="pvPHead">PROMPT</div>
+        <div class="pv-ptext" id="pvPText">a cinematic wedding photo of a couple, golden hour, soft bokeh…</div>
+        <div class="pv-pcount" id="pvPCount">125 words · paste into ChatGPT</div>
       </div>
       <div class="pv-footer" id="pvFoot">© 2026 TEZOFY · Made for creators</div>
     </div>
@@ -427,7 +502,7 @@
       ft_title:"🔤 Fonts", ft_sub:"Google Fonts with Bengali + English support — loaded automatically with the site.",
       lb_body:"Body font", lb_head:"Heading font (H1–H6 + brand)", lb_size:"Base font size",
       opt_font_default_body:"System default (current)", opt_font_default_head:"Same as body font", val_default:"Default",
-      st_title:"📐 Style", st_sub:"Corner rounding — applies to buttons, cards, chips and all containers.",
+      st_title:"📐 Style & Layout", st_sub:"Corner rounding, shadow and content width — applies to buttons, cards, chips and all containers.",
       lb_radius:"Radius (large)", lb_radius_sm:"Radius (small)",
       ct_title:"📢 Site Content", ct_sub:"Announcement banner, footer line and default theme — on every page, for every visitor, after commit.",
       lb_banner:"Announcement banner", lb_banner_on:"Enable — shows under the header on every page", lb_btext:"Banner text",
@@ -450,8 +525,18 @@
       step3:"Within ~10 minutes (Pages cache) the new brand appears on every page, for every visitor.",
       d_name:"Site name", d_tagline:"Tagline", d_logo:"Logo", d_favicon:"Favicon", d_colors:"Primary/secondary colors + gradient",
       d_dark:"Dark mood palette ({n} colors)", d_light:"Light mood palette ({n} colors)", d_fonts:"Fonts", d_radius:"Radius",
+      d_shape:"Prompt-card colors", d_shadow:"Shadow", d_layout:"Content width", d_pages:"Per-page style",
       d_banner:"Announcement banner", d_footer:"Footer © line", d_theme:"Default theme", d_css:"Custom CSS",
       d_changed:"✓ Changed", d_default:"— Default", d_total:"Total", d_sections:"sections changed",
+      nav_pages:"📄 Pages", pg_title:"📄 Per-page Style", pg_sub:"Give one page its own accent colors or CSS — without touching the rest of the site. Example: a blue theme only on the AI Generator page.",
+      lb_pickpage:"Pick a page", lb_page_on:"This page has its own colors", lb_pprimary:"Page primary", lb_psecondary:"Page secondary",
+      lb_pagecss:"This page only — extra CSS", btn_page_reset:"🗑 Reset this page (follow the global theme)", t_page_reset:"✓ Page reset — now follows the global theme",
+      pg_grp_home:"Home", pg_grp_browse:"Browse", pg_grp_blog:"Blog", pg_grp_ai:"AI Tools", pg_grp_other:"Other",
+      grp_shape:"🧩 Prompt-card / shape colors", grp_shape_hint:"(the dark boxes that show AI prompts — their background and the text inside them)",
+      lb_shape_on:"Customize", tok_sbg:"Card background", tok_stextbg:"Text-box background", tok_shead:"Heading text", tok_stext:"Main text 🅰️", tok_smuted:"Small text",
+      shape_note:"ℹ️ Unchecked = the site keeps its current look. Check it to take control of the prompt-card colors for that mood.",
+      lb_shadow:"Shadow", opt_shadow_keep:"Current (keep)", opt_shadow_off:"No shadow (flat)", opt_shadow_soft:"Soft", opt_shadow_strong:"Strong",
+      lb_wrapmax:"Content width", hint_wrapmax:"(0 = current 1080px)",
       pv_title:"Live Preview", pv_mock:"Mock", pv_real:"Real site", mood_dark:"🌙 Dark", mood_light:"☀️ Light",
       pv_real_hint:"Real homepage inside the panel — turn on 👁 preview first.", pv_refresh:"🔄 Refresh",
       mock_search:"🔍 Search prompts…", mock_desc:"This is how your site will look with the new theme — colors, fonts and radius update here live.",
@@ -491,7 +576,7 @@
       ft_title:"🔤 ফন্ট", ft_sub:"বাংলা+ইংরেজি সাপোর্টেড Google Fonts — সাইটের সাথে সাথেই স্বয়ংক্রিয়ভাবে লোড হয়।",
       lb_body:"বডি ফন্ট", lb_head:"হেডিং ফন্ট (H1–H6 + ব্র্যান্ড)", lb_size:"বেস ফন্ট-সাইজ",
       opt_font_default_body:"সিস্টেম ডিফল্ট (বর্তমান)", opt_font_default_head:"বডি ফন্টের মতোই", val_default:"ডিফল্ট",
-      st_title:"📐 স্টাইল", st_sub:"কার্নারের বাঁক — বাটন, কার্ড, চিপ সব কন্টেনারে প্রযোজ্য।",
+      st_title:"📐 স্টাইল ও লেআউট", st_sub:"কার্নারের বাঁক, ছায়া আর কনটেন্টের চওড়া — বাটন, কার্ড, চিপ সব কন্টেনারে প্রযোজ্য।",
       lb_radius:"রেডিয়াস (বড়)", lb_radius_sm:"রেডিয়াস (ছোট)",
       ct_title:"📢 সাইট-কনটেন্ট কন্ট্রোল", ct_sub:"ঘোষণা-ব্যানার, ফুটার-লাইন ও ডিফল্ট থিম — কমিটের পর সব পেজে, সব ভিজিটরের কাছে।",
       lb_banner:"ঘোষণা-ব্যানার", lb_banner_on:"চালু করুন — সব পেজের হেডারের নিচে দেখাবে", lb_btext:"ব্যানারের লেখা",
@@ -513,8 +598,18 @@
       step3:"১০ মিনিটের মধ্যে (Pages ক্যাশ) পুরো সাইটে নতুন ব্র্যান্ড দেখা যাবে — সব পেজে, সব ভিজিটরের কাছে।",
       d_name:"সাইটের নাম", d_tagline:"ট্যাগলাইন", d_logo:"লোগো", d_favicon:"ফেভিকন", d_colors:"প্রাইমারি/সেকেন্ডারি রং + গ্রেডিয়েন্ট",
       d_dark:"ডার্ক মুড প্যালেট ({n}টি রং)", d_light:"লাইট মুড প্যালেট ({n}টি রং)", d_fonts:"ফন্ট", d_radius:"রেডিয়াস",
+      d_shape:"প্রম্পট-কার্ডের রং", d_shadow:"ছায়া", d_layout:"কনটেন্ট-চওড়া", d_pages:"পেজ-ভিত্তিক স্টাইল",
       d_banner:"ঘোষণা-ব্যানার", d_footer:"ফুটার © লাইন", d_theme:"ডিফল্ট থিম", d_css:"কাস্টম CSS",
       d_changed:"✓ বদলেছে", d_default:"— ডিফল্ট", d_total:"মোট", d_sections:"সেকশন বদলেছে",
+      nav_pages:"📄 পেজ", pg_title:"📄 পেজ-ভিত্তিক স্টাইল", pg_sub:"একটি পেজকে তার নিজের অ্যাকসেন্ট-রং বা CSS দিন — বাকি সাইট অপরিবর্তিত থাকবে। যেমন: শুধু AI Generator পেজে নীল থিম।",
+      lb_pickpage:"পেজ বাছুন", lb_page_on:"এই পেজের নিজের রং আছে", lb_pprimary:"পেজের প্রাইমারি", lb_psecondary:"পেজের সেকেন্ডারি",
+      lb_pagecss:"শুধু এই পেজে — এক্সট্রা CSS", btn_page_reset:"🗑 এই পেজ রিসেট (গ্লোবাল থিম ফলো করবে)", t_page_reset:"✓ পেজ রিসেট হয়েছে — এখন গ্লোবাল থিম ফলো করবে",
+      pg_grp_home:"হোম", pg_grp_browse:"ব্রাউজ", pg_grp_blog:"ব্লগ", pg_grp_ai:"AI টুলস", pg_grp_other:"অন্যান্য",
+      grp_shape:"🧩 প্রম্পট-কার্ড / শেপ-এর রং", grp_shape_hint:"(AI প্রম্পট দেখানো ডার্ক বক্সগুলো — তাদের পটভূমি আর ভেতরের লেখা)",
+      lb_shape_on:"কাস্টমাইজ", tok_sbg:"কার্ডের পটভূমি", tok_stextbg:"লেখা-বক্সের পটভূমি", tok_shead:"হেডিং-লেখা", tok_stext:"মূল লেখা 🅰️", tok_smuted:"ছোট লেখা",
+      shape_note:"ℹ️ চেক না দেওয়া = সাইট তার বর্তমান চেহারাই রাখবে। ওই মুডের প্রম্পট-কার্ডের রং নিজের হাতে নিতে চেক দিন।",
+      lb_shadow:"ছায়া", opt_shadow_keep:"বর্তমান (রাখুন)", opt_shadow_off:"ছায়া নেই (ফ্ল্যাট)", opt_shadow_soft:"নরম", opt_shadow_strong:"গাঢ়",
+      lb_wrapmax:"কনটেন্ট-চওড়া", hint_wrapmax:"(0 = বর্তমান 1080px)",
       pv_title:"লাইভ প্রিভিউ", pv_mock:"মক", pv_real:"আসল সাইট", mood_dark:"🌙 ডার্ক", mood_light:"☀️ লাইট",
       pv_real_hint:"প্যানেলের ভেতরেই আসল হোমপেজ — আগে 👁 প্রিভিউ চালু করুন।", pv_refresh:"🔄 রিফ্রেশ",
       mock_search:"🔍 প্রম্পট খুঁজুন…", mock_desc:"নতুন থিমে আপনার সাইট দেখতে এমন হবে — রং, ফন্ট, রেডিয়াস সবকিছু এখানে লাইভ আপডেট হয়।",
@@ -554,7 +649,7 @@
       ft_title:"🔤 फ़ॉन्ट", ft_sub:"बांग्ला + अंग्रेज़ी सपोर्ट वाले Google Fonts — साइट के साथ अपने-आप लोड होते हैं।",
       lb_body:"बॉडी फ़ॉन्ट", lb_head:"हेडिंग फ़ॉन्ट (H1–H6 + ब्रांड)", lb_size:"बेस फ़ॉन्ट-साइज़",
       opt_font_default_body:"सिस्टम डिफ़ॉल्ट (मौजूदा)", opt_font_default_head:"बॉडी फ़ॉन्ट जैसा ही", val_default:"डिफ़ॉल्ट",
-      st_title:"📐 स्टाइल", st_sub:"कोनों की गोलाई — बटन, कार्ड, चिप और सभी कंटेनर पर लागू।",
+      st_title:"📐 स्टाइल और लेआउट", st_sub:"कोनों की गोलाई, छाया और कंटेंट की चौड़ाई — बटन, कार्ड, चिप सभी कंटेनर पर लागू।",
       lb_radius:"रेडियस (बड़ा)", lb_radius_sm:"रेडियस (छोटा)",
       ct_title:"📢 साइट कंटेंट कंट्रोल", ct_sub:"अनाउंसमेंट बैनर, फ़ुटर लाइन और डिफ़ॉल्ट थीम — कमिट के बाद हर पेज पर, हर विज़िटर के लिए।",
       lb_banner:"अनाउंसमेंट बैनर", lb_banner_on:"चालू करें — हर पेज के हेडर के नीचे दिखेगा", lb_btext:"बैनर का टेक्स्ट",
@@ -576,8 +671,18 @@
       step3:"~10 मिनट में (Pages कैश) नया ब्रांड हर पेज पर, हर विज़िटर को दिखेगा।",
       d_name:"साइट का नाम", d_tagline:"टैगलाइन", d_logo:"लोगो", d_favicon:"फ़ेविकॉन", d_colors:"प्राइमरी/सेकेंडरी रंग + ग्रेडिएंट",
       d_dark:"डार्क मूड पैलेट ({n} रंग)", d_light:"लाइट मूड पैलेट ({n} रंग)", d_fonts:"फ़ॉन्ट", d_radius:"रेडियस",
+      d_shape:"प्रॉम्प्ट-कार्ड के रंग", d_shadow:"छाया", d_layout:"कंटेंट चौड़ाई", d_pages:"पेज-विशेष स्टाइल",
       d_banner:"अनाउंसमेंट बैनर", d_footer:"फ़ुटर © लाइन", d_theme:"डिफ़ॉल्ट थीम", d_css:"कस्टम CSS",
       d_changed:"✓ बदला", d_default:"— डिफ़ॉल्ट", d_total:"कुल", d_sections:"सेक्शन बदले",
+      nav_pages:"📄 पेज", pg_title:"📄 पेज-विशेष स्टाइल", pg_sub:"किसी एक पेज को उसका अपना एक्सेंट-रंग या CSS दें — बाकी साइट जस की तस रहेगी। जैसे: सिर्फ AI Generator पेज पर नीली थीम।",
+      lb_pickpage:"पेज चुनें", lb_page_on:"इस पेज के अपने रंग हैं", lb_pprimary:"पेज का प्राइमरी", lb_psecondary:"पेज का सेकेंडरी",
+      lb_pagecss:"सिर्फ इस पेज के लिए — अतिरिक्त CSS", btn_page_reset:"🗑 इस पेज को रीसेट (ग्लोबल थीम फ़ॉलो करेगा)", t_page_reset:"✓ पेज रीसेट — अब ग्लोबल थीम फ़ॉलो करेगा",
+      pg_grp_home:"होम", pg_grp_browse:"ब्राउज़", pg_grp_blog:"ब्लॉग", pg_grp_ai:"AI टूल्स", pg_grp_other:"अन्य",
+      grp_shape:"🧩 प्रॉम्प्ट-कार्ड / शेप के रंग", grp_shape_hint:"(AI प्रॉम्प्ट दिखाने वाले डार्क बॉक्स — उनका बैकग्राउंड और अंदर का टेक्स्ट)",
+      lb_shape_on:"कस्टमाइज़", tok_sbg:"कार्ड बैकग्राउंड", tok_stextbg:"टेक्स्ट-बॉक्स बैकग्राउंड", tok_shead:"हेडिंग टेक्स्ट", tok_stext:"मुख्य टेक्स्ट 🅰️", tok_smuted:"छोटा टेक्स्ट",
+      shape_note:"ℹ️ अनचेक = साइट अपना मौजूदा लुक रखेगी। उस मूड के प्रॉम्प्ट-कार्ड रंगों पर कंट्रोल पाने के लिए चेक करें।",
+      lb_shadow:"छाया", opt_shadow_keep:"मौजूदा (रखें)", opt_shadow_off:"छाया नहीं (फ्लैट)", opt_shadow_soft:"सॉफ़्ट", opt_shadow_strong:"स्ट्रॉन्ग",
+      lb_wrapmax:"कंटेंट चौड़ाई", hint_wrapmax:"(0 = मौजूदा 1080px)",
       pv_title:"लाइव प्रीव्यू", pv_mock:"मॉक", pv_real:"असली साइट", mood_dark:"🌙 डार्क", mood_light:"☀️ लाइट",
       pv_real_hint:"पैनल के अंदर ही असली होमपेज — पहले 👁 प्रीव्यू चालू करें।", pv_refresh:"🔄 रिफ्रेश",
       mock_search:"🔍 प्रॉम्प्ट खोजें…", mock_desc:"नई थीम में आपकी साइट ऐसी दिखेगी — रंग, फ़ॉन्ट और रेडियस यहाँ लाइव अपडेट होते हैं।",
@@ -614,7 +719,9 @@
     document.documentElement.lang = LANG;
     els = document.querySelectorAll(".lang-seg button[data-lang]");
     for (i = 0; i < els.length; i++) els[i].classList.toggle("act", els[i].getAttribute("data-lang") === LANG);
-    $("pvMood").textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
+    setPvMoodUI();
+    if (typeof buildPageSelect === "function") buildPageSelect();
+    $("f-wrapmax-val").textContent = (S.layout.wrapMax ? S.layout.wrapMax : 1080) + "px";
     $("f-font-size-val").textContent = S.fonts.bodySize ? S.fonts.bodySize + "px" : t("val_default");
     renderDiff(); renderLoadInfo(); renderStatus();
   }
@@ -636,19 +743,40 @@
     colors: {
       primary: "#ff2daa", secondary: "#ff7a00", autoGrad: true,
       dark:  { bg: "#09090b", bgSoft: "#0f0f14", card: "#131318", card2: "#18181f", border: "#232329", borderSoft: "#1c1c22", text: "#fafafa", muted: "#a1a1aa", muted2: "#71717a" },
-      light: { bg: "#f4f4f8", bgSoft: "#ffffff", card: "#ffffff", card2: "#eeeef4", border: "#e2e2eb", borderSoft: "#ebebf2", text: "#17171c", muted: "#565660", muted2: "#8a8a95" }
+      light: { bg: "#f4f4f8", bgSoft: "#ffffff", card: "#ffffff", card2: "#eeeef4", border: "#e2e2eb", borderSoft: "#ebebf2", text: "#17171c", muted: "#565660", muted2: "#8a8a95" },
+      shape: {
+        dark:  { bg: "#101016", textBg: "#0f0f14", head: "#a1a1aa", text: "#d4d4d8", muted: "#71717a" },
+        light: { bg: "#121218", textBg: "#1a1a24", head: "#b8b8cc", text: "#ececf5", muted: "#a2a2b5" }
+      }
     },
     fonts: { body: "", head: "", bodySize: 0 },
     radius: { base: 18, sm: 12 },
+    shadow: "",
+    layout: { wrapMax: 0 },
+    pages: {},
     theme: { default: "" },
     banner: { on: false, text: "", href: "", dismissible: true },
     footerText: "",
     customCss: ""
   };
   var TOK = {
-    dark:  [["bg","tok_bg"],["bgSoft","tok_bgSoft"],["card","tok_card"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"]],
-    light: [["bg","tok_bg"],["bgSoft","tok_bgSoft"],["card","tok_card"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"]]
+    dark:  [["bg","tok_bg"],["card","tok_card"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"],["bgSoft","tok_bgSoft"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"]],
+    light: [["bg","tok_bg"],["card","tok_card"],["text","tok_text"],["muted","tok_muted"],["muted2","tok_muted2"],["bgSoft","tok_bgSoft"],["card2","tok_card2"],["border","tok_border"],["borderSoft","tok_borderSoft"]]
   };
+  /* শেপ-টোকেন (প্রম্পট-কার্ড) — ডিফল্টমান = সাইটের বর্তমান হার্ডকোড রং */
+  var STOK = ["bg", "textBg", "head", "text", "muted"];
+  var SHAPE_DEF = {
+    dark:  { bg: "#101016", textBg: "#0f0f14", head: "#a1a1aa", text: "#d4d4d8", muted: "#71717a" },
+    light: { bg: "#121218", textBg: "#1a1a24", head: "#b8b8cc", text: "#ececf5", muted: "#a2a2b5" }
+  };
+  /* পেজ-তালিকা (ধরন অনুযায়ী গ্রুপ) */
+  var PAGE_GROUPS = [
+    { labelKey: "pg_grp_home", ids: ["index"] },
+    { labelKey: "pg_grp_browse", ids: ["discover", "category", "saved", "template"] },
+    { labelKey: "pg_grp_blog", ids: ["blog", "article"] },
+    { labelKey: "pg_grp_ai", ids: ["ai-hub", "ai-generator", "idea-maker", "photo-enhance", "infinite", "maker"] },
+    { labelKey: "pg_grp_other", ids: ["profile", "privacy"] }
+  ];
   var PRESETS = [
     { id: "default", nameKey: "preset_default", p: "#ff2daa", s: "#ff7a00" },
     { id: "blue",    nameKey: "preset_blue",    p: "#3b82f6", s: "#8b5cf6" },
@@ -663,7 +791,7 @@
   var PKEY = "chitro:tz:brand-preview";
   var MARK_START = "/*__TZBRAND_CONFIG_START__*/";
   var MARK_END = "/*__TZBRAND_CONFIG_END__*/";
-  var ENGINE_SRC = "/* ====================================================================\n   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v1.1)\n   --------------------------------------------------------------------\n   এই একটি ফাইল = পুরো সাইটের ব্র্যান্ড-কন্ট্রোল সিস্টেম।\n   • প্রতিটি পেজের <head>-এ লিখুন (stylesheet-লিংকের ঠিক নিচে):\n       <script src=\"site-brand.js\"><\/script>\n   • রং / ফন্ট / নাম / লোগো / ঘোষণা-ব্যানার / ফুটার / ডিফল্ট-থিম /\n     কাস্টম CSS বদলাতে brand-admin.html প্যানেল ব্যবহার করুন —\n     অথবা নিচের __TZBRAND_CONFIG__ অংশে হাতে মান বসান।\n   • প্যানেল: https://tezofystudio.github.io/tezofy/brand-admin.html\n   • ডিফল্ট মান = বর্তমান লাইভ সাইট → প্রথম কমিটে কোনো দৃশ্যমান\n     পরিবর্তন হবে না (zero-change install)।\n   • ⚠️ ENGINE অংশে (নিচের লাইন) হাত দেবেন না।\n   ==================================================================== */\n\n/*__TZBRAND_CONFIG_START__*/\nwindow.TZ_BRAND = {\n  \"siteName\": \"TEZOFY\",\n  \"tagline\": \"Premium AI Prompt Library\",\n  \"nameScope\": \"all\",\n  \"logo\": { \"type\": \"keep\", \"url\": \"\", \"emoji\": \"✦\", \"height\": 0 },\n  \"favicon\": \"\",\n  \"colors\": {\n    \"primary\": \"#ff2daa\",\n    \"secondary\": \"#ff7a00\",\n    \"autoGrad\": true,\n    \"dark\":  { \"bg\": \"#09090b\", \"bgSoft\": \"#0f0f14\", \"card\": \"#131318\", \"card2\": \"#18181f\", \"border\": \"#232329\", \"borderSoft\": \"#1c1c22\", \"text\": \"#fafafa\", \"muted\": \"#a1a1aa\", \"muted2\": \"#71717a\" },\n    \"light\": { \"bg\": \"#f4f4f8\", \"bgSoft\": \"#ffffff\", \"card\": \"#ffffff\", \"card2\": \"#eeeef4\", \"border\": \"#e2e2eb\", \"borderSoft\": \"#ebebf2\", \"text\": \"#17171c\", \"muted\": \"#565660\", \"muted2\": \"#8a8a95\" }\n  },\n  \"fonts\": { \"body\": \"\", \"head\": \"\", \"bodySize\": 0 },\n  \"radius\": { \"base\": 18, \"sm\": 12 },\n  \"theme\": { \"default\": \"\" },\n  \"banner\": { \"on\": false, \"text\": \"\", \"href\": \"\", \"dismissible\": true },\n  \"footerText\": \"\",\n  \"customCss\": \"\"\n};\n/*__TZBRAND_CONFIG_END__*/\n\n/* ==================== ENGINE v1.0 (সম্পাদনা নিষেধ) ==================== */\n(function () {\n  \"use strict\";\n\n  /* ---------- ১) ডিফল্ট = বর্তমান লাইভ সাইটের হুবহু মান ---------- */\n  var DEF = {\n    siteName: \"TEZOFY\",\n    tagline: \"Premium AI Prompt Library\",\n    nameScope: \"all\",\n    logo: { type: \"keep\", url: \"\", emoji: \"✦\", height: 0 },\n    favicon: \"\",\n    colors: {\n      primary: \"#ff2daa\", secondary: \"#ff7a00\", autoGrad: true,\n      dark:  { bg: \"#09090b\", bgSoft: \"#0f0f14\", card: \"#131318\", card2: \"#18181f\", border: \"#232329\", borderSoft: \"#1c1c22\", text: \"#fafafa\", muted: \"#a1a1aa\", muted2: \"#71717a\" },\n      light: { bg: \"#f4f4f8\", bgSoft: \"#ffffff\", card: \"#ffffff\", card2: \"#eeeef4\", border: \"#e2e2eb\", borderSoft: \"#ebebf2\", text: \"#17171c\", muted: \"#565660\", muted2: \"#8a8a95\" }\n    },\n    fonts: { body: \"\", head: \"\", bodySize: 0 },\n    radius: { base: 18, sm: 12 },\n    theme: { default: \"\" },\n    banner: { on: false, text: \"\", href: \"\", dismissible: true },\n    footerText: \"\",\n    customCss: \"\"\n  };\n  var PKEY = \"chitro:tz:brand-preview\";\n  var ORIG = { name: \"TEZOFY\", tagline: \"Premium AI Prompt Library\" };\n  var NAME_RE = /TEZOFY|Tezofy/g;\n\n  /* ---------- হেল্পার ---------- */\n  function merge(base, over) {\n    var out = {}, k, v;\n    for (k in base) out[k] = base[k];\n    if (!over || typeof over !== \"object\") return out;\n    for (k in over) {\n      v = over[k];\n      if (v && typeof v === \"object\" && !Array.isArray(v) && base[k] && typeof base[k] === \"object\" && !Array.isArray(base[k])) out[k] = merge(base[k], v);\n      else if (v !== undefined && v !== null && v !== \"\") out[k] = v;\n    }\n    return out;\n  }\n  function hexToRgb(h) {\n    h = String(h || \"\").replace(\"#\", \"\").trim();\n    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];\n    if (h.length !== 6) return null;\n    var n = parseInt(h, 16);\n    if (isNaN(n)) return null;\n    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];\n  }\n  function rgba(hex, a) {\n    var c = hexToRgb(hex);\n    return c ? \"rgba(\" + c[0] + \",\" + c[1] + \",\" + c[2] + \",\" + a + \")\" : null;\n  }\n  function escH(s) { return String(s).replace(/&/g, \"&amp;\").replace(/</g, \"&lt;\").replace(/>/g, \"&gt;\"); }\n  function escA(s) { return escH(s).replace(/\"/g, \"&quot;\"); }\n  function firstTextNode(el) {\n    for (var i = 0; i < el.childNodes.length; i++) {\n      var n = el.childNodes[i];\n      if (n.nodeType === 3 && n.nodeValue.trim()) return n;\n    }\n    return null;\n  }\n\n  /* ---------- কনফিগ একত্রীকরণ (committed + লাইভ-প্রিভিউ) ---------- */\n  var committed = window.TZ_BRAND || {};\n  var cfg = merge(DEF, committed);\n  var previewOn = false;\n  try {\n    var raw = localStorage.getItem(PKEY);\n    if (raw) {\n      var pv = JSON.parse(raw);\n      if (pv && pv.on && pv.config) { cfg = merge(cfg, pv.config); previewOn = true; }\n    }\n  } catch (e) {}\n\n  /* ============================================================\n     পাস ১ — CSS টোকেন-ওভাররাইড (স্টাইলশিট লোডের সাথে সাথেই কার্যকর)\n     ============================================================ */\n  function cssPass() {\n    var C = cfg.colors, D = DEF.colors, css = \"\", el, k;\n    /* ব্যানার-বেস CSS (সবসময় থাকে — ব্যানার চালু হলেই কাজ করবে) */\n    var bnCss = \".tz-brand-banner{display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 38px 9px 14px;background:var(--grad,linear-gradient(135deg,#ff2daa,#ff7a00));color:#fff;font-size:13.5px;font-weight:600;position:relative;z-index:80;text-align:center}\" +\n      \".tz-brand-banner .tz-bn-link{color:inherit;text-decoration:none;display:flex;align-items:center;gap:8px}\" +\n      \".tz-brand-banner .tz-bn-link:hover{text-decoration:underline}\" +\n      \".tz-brand-banner .tz-bn-text{opacity:.97}\" +\n      \".tz-brand-banner .tz-bn-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.18);border:none;color:#fff;width:22px;height:22px;border-radius:7px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center}\";\n    el = document.getElementById(\"tz-brand-base\");\n    if (!el) {\n      el = document.createElement(\"style\");\n      el.id = \"tz-brand-base\";\n      (document.head || document.documentElement).appendChild(el);\n    }\n    if (el.textContent !== bnCss) el.textContent = bnCss;\n    /* কাস্টম CSS (অ্যাডমিন-প্যানেল → অ্যাডভান্সড সেকশন) */\n    if (cfg.customCss) {\n      var cEl = document.getElementById(\"tz-brand-custom\");\n      if (!cEl) {\n        cEl = document.createElement(\"style\");\n        cEl.id = \"tz-brand-custom\";\n        (document.head || document.documentElement).appendChild(cEl);\n      }\n      if (cEl.textContent !== cfg.customCss) cEl.textContent = cfg.customCss;\n    }\n    var dmap = { bg: \"--bg\", bgSoft: \"--bg-soft\", card: \"--card\", card2: \"--card-2\", border: \"--border\", borderSoft: \"--border-soft\", text: \"--text\", muted: \"--muted\", muted2: \"--muted-2\" };\n    function block(sel, obj, def) {\n      var b = \"\";\n      for (k in dmap) if (obj[k] && String(obj[k]).toLowerCase() !== String(def[k]).toLowerCase()) b += dmap[k] + \":\" + obj[k] + \" !important;\";\n      return b ? sel + \"{\" + b + \"}\" : \"\";\n    }\n    css += block(\":root\", C.dark, D.dark);\n    css += block(':root[data-theme=\"light\"]', C.light, D.light);\n    if (String(C.primary).toLowerCase() !== String(D.primary).toLowerCase()) css += \":root{--pink:\" + C.primary + \" !important;}\";\n    if (String(C.secondary).toLowerCase() !== String(D.secondary).toLowerCase()) css += \":root{--orange:\" + C.secondary + \" !important;}\";\n    if (C.autoGrad && (String(C.primary).toLowerCase() !== String(D.primary).toLowerCase() || String(C.secondary).toLowerCase() !== String(D.secondary).toLowerCase())) {\n      var g1 = rgba(C.primary, .16), g2 = rgba(C.secondary, .16);\n      css += \":root{--grad:linear-gradient(135deg,\" + C.primary + \",\" + C.secondary + \") !important;\";\n      if (g1 && g2) css += \"--grad-soft:linear-gradient(135deg,\" + g1 + \",\" + g2 + \") !important;\";\n      css += \"}\";\n    }\n    if (cfg.radius.base !== DEF.radius.base) css += \":root{--radius:\" + cfg.radius.base + \"px !important;}\";\n    if (cfg.radius.sm !== DEF.radius.sm) css += \":root{--radius-sm:\" + cfg.radius.sm + \"px !important;}\";\n    if (cfg.fonts.body) css += \":root{--font:'\" + cfg.fonts.body + \"',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif !important;}\";\n    if (cfg.fonts.head) css += \"h1,h2,h3,h4,h5,h6,a.brand>span:not(.brand-mark){font-family:'\" + cfg.fonts.head + \"',var(--font) !important;}\";\n    if (cfg.fonts.bodySize) css += \"body{font-size:\" + cfg.fonts.bodySize + \"px !important;}\";\n    if (cfg.logo.height) css += \".brand-mark img,.brand-mark svg{height:\" + cfg.logo.height + \"px !important;width:auto !important;}\";\n    if (cfg.logo.type === \"emoji\") css += \".brand-mark .tz-emoji{font-size:24px;line-height:1;display:block;}\";\n    if (css) {\n      el = document.getElementById(\"tz-brand-style\");\n      if (!el) {\n        el = document.createElement(\"style\");\n        el.id = \"tz-brand-style\";\n        (document.head || document.documentElement).appendChild(el);\n      }\n      if (el.textContent !== css) el.textContent = css;\n    }\n    /* Google Fonts লোড */\n    if ((cfg.fonts.body || cfg.fonts.head) && !document.getElementById(\"tz-brand-fonts\")) {\n      var fams = [], q = function (n) { return \"family=\" + encodeURIComponent(n).replace(/%20/g, \"+\"); };\n      if (cfg.fonts.body) fams.push(q(cfg.fonts.body) + \":wght@400;500;600;700\");\n      if (cfg.fonts.head && cfg.fonts.head !== cfg.fonts.body) fams.push(q(cfg.fonts.head) + \":wght@500;600;700;800\");\n      var lk = document.createElement(\"link\");\n      lk.id = \"tz-brand-fonts\"; lk.rel = \"stylesheet\";\n      lk.href = \"https://fonts.googleapis.com/css2?\" + fams.join(\"&\") + \"&display=swap\";\n      (document.head || document.documentElement).appendChild(lk);\n    }\n    /* মোবাইল ব্রাউজার-বার রং */\n    if (C.dark.bg !== D.dark.bg) {\n      var mt = document.querySelector('meta[name=\"theme-color\"]');\n      if (mt) mt.setAttribute(\"content\", C.dark.bg);\n    }\n  }\n\n  /* ============================================================\n     পাস ২ — CSSOM রিরাইট: স্টাইলশিটের ভেতরে হার্ডকোড করা রং\n     (#ff2daa / rgba(255,45,170,…) → নতুন রং) — রানটাইমে, ফাইল না ছুঁয়ে\n     ============================================================ */\n  var CMAP = null, CFAST = null;\n  function buildColorMap() {\n    var list = [], fast = [], C = cfg.colors, D = DEF.colors;\n    /* প্রতিটি রঙের জন্য ৩টি প্যাটার্ন: #হেক্স · rgb() · rgba(…,α) — ব্রাউজার/CSSOM\n       মান নরমালাইজ করলেও (স্পেসসহ rgb(255, 45, 170)) ধরা পড়বে */\n    function pushColor(oldH, newH) {\n      if (!oldH || !newH || String(oldH).toLowerCase() === String(newH).toLowerCase()) return;\n      var o = String(oldH), n = String(newH);\n      list.push([new RegExp(\"#\" + o.slice(1), \"ig\"), n]);\n      var c = hexToRgb(o);\n      if (c) {\n        var pat = \"rgba?\\\\(\\\\s*\" + c[0] + \"\\\\s*,\\\\s*\" + c[1] + \"\\\\s*,\\\\s*\" + c[2] + \"\\\\s*(?:,\\\\s*([\\\\d.]+)\\\\s*)?\\\\)\";\n        list.push([new RegExp(pat, \"g\"), function (m, a) { return rgba(n, a === undefined ? 1 : a) || m; }]);\n        fast.push(c.join(\",\"));\n      }\n      fast.push(o.slice(1).toLowerCase());\n    }\n    pushColor(D.primary, C.primary);\n    pushColor(D.secondary, C.secondary);\n    [\"dark\", \"light\"].forEach(function (mode) {\n      var nm = C[mode] || {}, od = D[mode];\n      [\"bg\", \"bgSoft\", \"card\", \"card2\", \"border\", \"borderSoft\", \"text\", \"muted\", \"muted2\"].forEach(function (k) { pushColor(od[k], nm[k]); });\n    });\n    CFAST = fast;\n    return list;\n  }\n  function mapValue(v) {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length) return v;\n    /* দ্রুত প্রি-চেক: হোয়াইটস্পেস বাদ দিয়ে খোঁজা */\n    var low = String(v).toLowerCase().replace(/\\s+/g, \"\"), i;\n    for (i = 0; i < CFAST.length; i++) if (low.indexOf(CFAST[i]) > -1) break;\n    if (i >= CFAST.length) return v;\n    for (i = 0; i < CMAP.length; i++) v = v.replace(CMAP[i][0], CMAP[i][1]);\n    return v;\n  }\n  function rwStyle(st) {\n    var n = 0, i, p, v, nv;\n    for (i = 0; i < st.length; i++) {\n      p = st.item(i);\n      try { v = st.getPropertyValue(p); } catch (e) { continue; }\n      if (!v) continue;\n      nv = mapValue(v);\n      if (nv !== v) {\n        try { st.setProperty(p, nv, st.getPropertyPriority(p) || \"\"); n++; } catch (e2) {}\n      }\n    }\n    return n;\n  }\n  function rwRules(rules) {\n    var n = 0, i, r;\n    for (i = 0; i < rules.length; i++) {\n      r = rules[i];\n      try {\n        if (r.cssRules) n += rwRules(r.cssRules);\n        if (r.style) n += rwStyle(r.style);\n      } catch (e) {}\n    }\n    return n;\n  }\n  function rwSheet(sheet) {\n    try { return rwRules(sheet.cssRules); } catch (e) { return 0; }\n  }\n  var sheetStats = [], cssomCount = 0;\n  function cssomIncremental() {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length) return;\n    var sheets = document.styleSheets || [];\n    for (var i = 0; i < sheets.length; i++) {\n      var sh = sheets[i], key, cnt = 0, prev = null, j;\n      try { cnt = sh.cssRules.length; } catch (e) { continue; }\n      key = (sh.href || \"inline\") + \"#\" + i;\n      for (j = 0; j < sheetStats.length; j++) if (sheetStats[j].key === key) { prev = sheetStats[j]; break; }\n      if (prev && prev.count === cnt) continue;\n      cssomCount += rwSheet(sh);\n      if (prev) prev.count = cnt; else sheetStats.push({ key: key, count: cnt });\n    }\n  }\n\n  /* ============================================================\n     পাস ৩ — DOM ব্র্যান্ডিং (নাম / লোগো / ফেভিকন / ট্যাগলাইন)\n     ============================================================ */\n  function applyMark(mark) {\n    var cur;\n    if (cfg.logo.type === \"emoji\" && cfg.logo.emoji) {\n      cur = mark.querySelector(\".tz-emoji\");\n      if (!cur || cur.getAttribute(\"data-tz\") !== cfg.logo.emoji) {\n        mark.innerHTML = '<span class=\"tz-emoji\" data-tz=\"' + escA(cfg.logo.emoji) + '\">' + escH(cfg.logo.emoji) + \"</span>\";\n      }\n    } else if (cfg.logo.type === \"image\" && cfg.logo.url) {\n      cur = mark.querySelector(\"img\");\n      if (!cur || cur.getAttribute(\"src\") !== cfg.logo.url) {\n        mark.innerHTML = '<img src=\"' + escA(cfg.logo.url) + '\" alt=\"' + escH(cfg.siteName) + ' logo\">';\n        mark.classList.add(\"mark-img\");\n      }\n    }\n    /* type \"keep\" → app.js-এর বর্তমান লোগো অপরিবর্তিত থাকবে */\n  }\n  function brandPass() {\n    var name = cfg.siteName, i, b, sp, tn, sm, mark, fi, ap, ds;\n    /* ফেভিকন */\n    if (cfg.favicon) {\n      fi = document.querySelector('link[rel=\"icon\"]');\n      if (!fi) {\n        fi = document.createElement(\"link\");\n        fi.rel = \"icon\";\n        (document.head || document.documentElement).appendChild(fi);\n      }\n      if (fi.getAttribute(\"href\") !== cfg.favicon) fi.setAttribute(\"href\", cfg.favicon);\n      ap = document.querySelector('link[rel=\"apple-touch-icon\"]');\n      if (ap && ap.getAttribute(\"href\") !== cfg.favicon) ap.setAttribute(\"href\", cfg.favicon);\n    }\n    /* সব ব্র্যান্ড-অ্যাঙ্কর (হেডার + ফুটার) */\n    var brands = document.querySelectorAll(\"a.brand\");\n    for (i = 0; i < brands.length; i++) {\n      b = brands[i];\n      if (name !== ORIG.name) {\n        sp = b.querySelector(\"span:not(.brand-mark)\");\n        if (sp) {\n          tn = firstTextNode(sp);\n          if (tn && NAME_RE.test(tn.nodeValue)) { NAME_RE.lastIndex = 0; tn.nodeValue = tn.nodeValue.replace(/TEZOFY|Tezofy/g, name); }\n          NAME_RE.lastIndex = 0;\n        }\n        var al = b.getAttribute(\"aria-label\");\n        if (al && /TEZOFY|Tezofy/.test(al)) b.setAttribute(\"aria-label\", al.replace(/TEZOFY|Tezofy/g, name));\n      }\n      /* ট্যাগলাইন — নাম বদলুক বা না বদলুক, ডিফল্ট-ট্যাগলাইনের জায়গায় প্রযোজ্য */\n      sm = b.querySelector(\"small\");\n      if (sm && cfg.tagline !== ORIG.tagline && sm.textContent.trim() === ORIG.tagline) sm.textContent = cfg.tagline;\n      mark = b.querySelector(\".brand-mark\");\n      if (mark) applyMark(mark);\n    }\n    /* ইনডেক্স-স্প্ল্যাশ লোগো */\n    ds = document.querySelector(\".ds-logo img\");\n    if (ds) {\n      if (cfg.logo.type === \"image\" && cfg.logo.url && ds.getAttribute(\"src\") !== cfg.logo.url) ds.setAttribute(\"src\", cfg.logo.url);\n      if (name !== ORIG.name) {\n        var da = ds.getAttribute(\"alt\");\n        if (da && /TEZOFY|Tezofy/.test(da)) ds.setAttribute(\"alt\", da.replace(/TEZOFY|Tezofy/g, name));\n      }\n    }\n    /* ফুটার © লাইন (অ্যাডমিন-প্যানেল → কনটেন্ট সেকশন) */\n    if (cfg.footerText) {\n      var fbEl = document.querySelector(\".footer-bottom span\");\n      if (fbEl && fbEl.textContent.trim() !== cfg.footerText) fbEl.textContent = cfg.footerText;\n    }\n  }\n\n  /* ---------- ঘোষণা-ব্যানার (সব পেজের উপরে) ---------- */\n  var BKEY = \"chitro:tz:banner-off\";\n  function bannerPass() {\n    var bn = cfg.banner || {}, el = document.getElementById(\"tz-brand-banner\");\n    if (!bn.on || !bn.text || !document.body) { if (el) el.remove(); return; }\n    try {\n      if (bn.dismissible !== false && sessionStorage.getItem(BKEY) === \"1\") { if (el) el.remove(); return; }\n    } catch (e) {}\n    var sig = JSON.stringify(bn);\n    if (el && el.getAttribute(\"data-tz\") !== sig) { el.remove(); el = null; }\n    if (el) return;\n    el = document.createElement(\"div\");\n    el.id = \"tz-brand-banner\";\n    el.className = \"tz-brand-banner\";\n    el.setAttribute(\"data-tz\", sig);\n    var inner = '<span class=\"tz-bn-text\">' + escH(bn.text) + \"</span>\";\n    if (bn.href) inner = '<a class=\"tz-bn-link\" href=\"' + escA(bn.href) + '\">' + inner + \"</a>\";\n    if (bn.dismissible !== false) inner += '<button class=\"tz-bn-x\" aria-label=\"বন্ধ করুন\">✕</button>';\n    el.innerHTML = inner;\n    var header = document.querySelector(\"header.site-header, .site-header\");\n    if (header && header.parentNode) header.parentNode.insertBefore(el, header.nextSibling);\n    else document.body.insertBefore(el, document.body.firstChild);\n    var x = el.querySelector(\".tz-bn-x\");\n    if (x) x.addEventListener(\"click\", function () {\n      try { sessionStorage.setItem(BKEY, \"1\"); } catch (e2) {}\n      el.remove();\n    });\n  }\n\n  /* ---------- ডিফল্ট থিম (নতুন ভিজিটর — ইউজার-পছন্দ থাকলে স্পর্শ নয়) ---------- */\n  var THEME_KEY = \"chitro:theme\";\n  function themePass() {\n    var t = cfg.theme && cfg.theme.default;\n    if (t !== \"dark\" && t !== \"light\") return;\n    try { if (localStorage.getItem(THEME_KEY) !== null) return; } catch (e) { return; }\n    if (document.documentElement.getAttribute(\"data-theme\") !== t) document.documentElement.setAttribute(\"data-theme\", t);\n  }\n\n  /* নাম-পরিবর্তন: <title>, og/twitter meta, বডি-টেক্সট */\n  var SKIP = { SCRIPT: 1, STYLE: 1, CODE: 1, PRE: 1, TEXTAREA: 1, NOSCRIPT: 1 };\n  function walkText(root, name) {\n    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {\n      acceptNode: function (n) {\n        var p = n.parentNode;\n        if (p && SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;\n        return /TEZOFY|Tezofy/.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;\n      }\n    }), n, batch = [];\n    while ((n = w.nextNode())) batch.push(n);\n    for (var i = 0; i < batch.length; i++) batch[i].nodeValue = batch[i].nodeValue.replace(/TEZOFY|Tezofy/g, name);\n  }\n  function textPass() {\n    if (cfg.siteName === ORIG.name) return;\n    var name = cfg.siteName, i, c;\n    if (document.title && /TEZOFY|Tezofy/.test(document.title)) document.title = document.title.replace(/TEZOFY|Tezofy/g, name);\n    var metas = document.querySelectorAll('meta[property=\"og:site_name\"],meta[property=\"og:title\"],meta[name=\"twitter:title\"]');\n    for (i = 0; i < metas.length; i++) {\n      c = metas[i].getAttribute(\"content\");\n      if (c && /TEZOFY|Tezofy/.test(c)) metas[i].setAttribute(\"content\", c.replace(/TEZOFY|Tezofy/g, name));\n    }\n    if (!document.body) return;\n    if (cfg.nameScope === \"brand\") {\n      var scopes = document.querySelectorAll(\".site-header, .site-footer, footer, .bottombar, .ds-splash\");\n      for (i = 0; i < scopes.length; i++) walkText(scopes[i], name);\n    } else {\n      walkText(document.body, name);\n    }\n  }\n\n  /* ইনলাইন style=\"\" অ্যাট্রিবিউটে হার্ডকোড রং */\n  function inlineStylePass() {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length || !document.body) return;\n    var els = document.querySelectorAll(\"[style]\"), i, sv, nv;\n    for (i = 0; i < els.length; i++) {\n      sv = els[i].getAttribute(\"style\");\n      if (!sv || !/(#[0-9a-f]{3,8})|(rgb)/i.test(sv)) continue;\n      nv = mapValue(sv);\n      if (nv !== sv) els[i].setAttribute(\"style\", nv);\n    }\n  }\n\n  /* ---------- অর্কেস্ট্রেশন + MutationObserver ---------- */\n  var applying = false, scheduled = false, mo = null;\n  function applyAll() {\n    applying = true;\n    try { cssPass(); themePass(); brandPass(); bannerPass(); textPass(); inlineStylePass(); cssomIncremental(); }\n    finally { applying = false; }\n  }\n  function scheduleApply() {\n    if (scheduled || applying) return;\n    scheduled = true;\n    setTimeout(function () { scheduled = false; applyAll(); }, 80);\n  }\n  function startObserver() {\n    if (mo || typeof MutationObserver === \"undefined\") return;\n    mo = new MutationObserver(function () { if (!applying) scheduleApply(); });\n    mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true });\n  }\n\n  /* প্যানেল অন্য ট্যাবে প্রিভিউ টগল করলে অটো-রিফ্রেশ */\n  try {\n    window.addEventListener(\"storage\", function (ev) {\n      if (ev && ev.key === PKEY) { try { location.reload(); } catch (e) {} }\n    });\n  } catch (e) {}\n\n  /* ---------- বুট ---------- */\n  cssPass();\n  cssomIncremental();\n  function boot() { applyAll(); startObserver(); }\n  if (document.readyState === \"loading\") document.addEventListener(\"DOMContentLoaded\", boot);\n  else boot();\n\n  /* ---------- পাবলিক API ---------- */\n  window.TezoBrand = {\n    version: \"1.1\",\n    config: cfg,\n    committed: committed,\n    defaults: DEF,\n    previewOn: previewOn,\n    apply: applyAll,\n    cssomRewrites: function () { return cssomCount; }\n  };\n})();\n"; /* build-স্ক্রিপ্ট এখানে FILE-11-এর সোর্স বসায় */
+  var ENGINE_SRC = "/* ====================================================================\n   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.0)\n   --------------------------------------------------------------------\n   এই একটি ফাইল = পুরো সাইটের ব্র্যান্ড-কন্ট্রোল সিস্টেম।\n   • প্রতিটি পেজের <head>-এ লিখুন (stylesheet-লিংকের ঠিক নিচে):\n       <script src=\"site-brand.js\"><\/script>\n   • রং / ফন্ট / নাম / লোগো / ঘোষণা-ব্যানার / ফুটার / ডিফল্ট-থিম /\n     শেপ-লেখা / ছায়া / কনটেন্ট-চওড়া / পেজ-ভিত্তিক স্টাইল / কাস্টম CSS\n     বদলাতে brand-admin.html প্যানেল ব্যবহার করুন —\n     অথবা নিচের __TZBRAND_CONFIG__ অংশে হাতে মান বসান।\n   • প্যানেল: https://tezofystudio.github.io/tezofy/brand-admin.html\n   • ডিফল্ট মান = বর্তমান লাইভ সাইট → প্রথম কমিটে কোনো দৃশ্যমান\n     পরিবর্তন হবে না (zero-change install)।\n   • v2.0 নতুন: shape (প্রম্পট-কার্ডের পটভূমি ও ভেতরের লেখার রং —\n     ডার্ক/লাইট আলাদা), shadow (ছায়া), layout.wrapMax (কনটেন্ট-চওড়া),\n     pages (প্রতি-পেজ আলাদা primary/secondary + CSS), প্রিভিউ-মোডে\n     ডিফল্ট-থিম জোর করে দেখানো, আর প্রাইমারি বদলালে পিংক-টিন্ট\n     অ্যাকসেন্টগুলোও (হার্ট, চিপ, মার্ক) স্বয়ংক্রিয়ভাবে বদলায়।\n   • ⚠️ ENGINE অংশে (নিচের লাইন) হাত দেবেন না।\n   ==================================================================== */\n\n/*__TZBRAND_CONFIG_START__*/\nwindow.TZ_BRAND = {\n  \"siteName\": \"TEZOFY\",\n  \"tagline\": \"Premium AI Prompt Library\",\n  \"nameScope\": \"all\",\n  \"logo\": { \"type\": \"keep\", \"url\": \"\", \"emoji\": \"✦\", \"height\": 0 },\n  \"favicon\": \"\",\n  \"colors\": {\n    \"primary\": \"#ff2daa\",\n    \"secondary\": \"#ff7a00\",\n    \"autoGrad\": true,\n    \"dark\":  { \"bg\": \"#09090b\", \"bgSoft\": \"#0f0f14\", \"card\": \"#131318\", \"card2\": \"#18181f\", \"border\": \"#232329\", \"borderSoft\": \"#1c1c22\", \"text\": \"#fafafa\", \"muted\": \"#a1a1aa\", \"muted2\": \"#71717a\" },\n    \"light\": { \"bg\": \"#f4f4f8\", \"bgSoft\": \"#ffffff\", \"card\": \"#ffffff\", \"card2\": \"#eeeef4\", \"border\": \"#e2e2eb\", \"borderSoft\": \"#ebebf2\", \"text\": \"#17171c\", \"muted\": \"#565660\", \"muted2\": \"#8a8a95\" },\n    \"shape\": {\n      \"dark\":  { \"bg\": \"\", \"textBg\": \"\", \"head\": \"\", \"text\": \"\", \"muted\": \"\" },\n      \"light\": { \"bg\": \"\", \"textBg\": \"\", \"head\": \"\", \"text\": \"\", \"muted\": \"\" }\n    }\n  },\n  \"fonts\": { \"body\": \"\", \"head\": \"\", \"bodySize\": 0 },\n  \"radius\": { \"base\": 18, \"sm\": 12 },\n  \"shadow\": \"\",\n  \"layout\": { \"wrapMax\": 0 },\n  \"pages\": {},\n  \"theme\": { \"default\": \"\" },\n  \"banner\": { \"on\": false, \"text\": \"\", \"href\": \"\", \"dismissible\": true },\n  \"footerText\": \"\",\n  \"customCss\": \"\"\n};\n/*__TZBRAND_CONFIG_END__*/\n\n/* ==================== ENGINE v2.0 (সম্পাদনা নিষেধ) ==================== */\n(function () {\n  \"use strict\";\n\n  /* ---------- ১) ডিফল্ট = বর্তমান লাইভ সাইটের হুবহু মান ---------- */\n  var DEF = {\n    siteName: \"TEZOFY\",\n    tagline: \"Premium AI Prompt Library\",\n    nameScope: \"all\",\n    logo: { type: \"keep\", url: \"\", emoji: \"✦\", height: 0 },\n    favicon: \"\",\n    colors: {\n      primary: \"#ff2daa\", secondary: \"#ff7a00\", autoGrad: true,\n      dark:  { bg: \"#09090b\", bgSoft: \"#0f0f14\", card: \"#131318\", card2: \"#18181f\", border: \"#232329\", borderSoft: \"#1c1c22\", text: \"#fafafa\", muted: \"#a1a1aa\", muted2: \"#71717a\" },\n      light: { bg: \"#f4f4f8\", bgSoft: \"#ffffff\", card: \"#ffffff\", card2: \"#eeeef4\", border: \"#e2e2eb\", borderSoft: \"#ebebf2\", text: \"#17171c\", muted: \"#565660\", muted2: \"#8a8a95\" },\n      shape: {\n        dark:  { bg: \"\", textBg: \"\", head: \"\", text: \"\", muted: \"\" },\n        light: { bg: \"\", textBg: \"\", head: \"\", text: \"\", muted: \"\" }\n      }\n    },\n    fonts: { body: \"\", head: \"\", bodySize: 0 },\n    radius: { base: 18, sm: 12 },\n    shadow: \"\",\n    layout: { wrapMax: 0 },\n    pages: {},\n    theme: { default: \"\" },\n    banner: { on: false, text: \"\", href: \"\", dismissible: true },\n    footerText: \"\",\n    customCss: \"\"\n  };\n  var PKEY = \"chitro:tz:brand-preview\";\n  var ORIG = { name: \"TEZOFY\", tagline: \"Premium AI Prompt Library\" };\n  var NAME_RE = /TEZOFY|Tezofy/g;\n\n  /* ---------- হেল্পার ---------- */\n  function merge(base, over) {\n    var out = {}, k, v;\n    for (k in base) out[k] = base[k];\n    if (!over || typeof over !== \"object\") return out;\n    for (k in over) {\n      v = over[k];\n      if (v && typeof v === \"object\" && !Array.isArray(v) && base[k] && typeof base[k] === \"object\" && !Array.isArray(base[k])) out[k] = merge(base[k], v);\n      else if (v !== undefined && v !== null && v !== \"\") out[k] = v;\n    }\n    return out;\n  }\n  function hexToRgb(h) {\n    h = String(h || \"\").replace(\"#\", \"\").trim();\n    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];\n    if (h.length !== 6) return null;\n    var n = parseInt(h, 16);\n    if (isNaN(n)) return null;\n    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];\n  }\n  function rgba(hex, a) {\n    var c = hexToRgb(hex);\n    return c ? \"rgba(\" + c[0] + \",\" + c[1] + \",\" + c[2] + \",\" + a + \")\" : null;\n  }\n  function escH(s) { return String(s).replace(/&/g, \"&amp;\").replace(/<\/g, \"&lt;\").replace(/>/g, \"&gt;\"); }\n  function escA(s) { return escH(s).replace(/\"/g, \"&quot;\"); }\n  function firstTextNode(el) {\n    for (var i = 0; i < el.childNodes.length; i++) {\n      var n = el.childNodes[i];\n      if (n.nodeType === 3 && n.nodeValue.trim()) return n;\n    }\n    return null;\n  }\n  function isHex(v) { return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(String(v || \"\").trim()); }\n  function mixHex(a, b, r) {\n    var ca = hexToRgb(a), cb = hexToRgb(b);\n    if (!ca || !cb) return null;\n    var out = \"#\", i, v;\n    for (i = 0; i < 3; i++) {\n      v = Math.round(ca[i] + (cb[i] - ca[i]) * r);\n      out += (\"0\" + Math.max(0, Math.min(255, v)).toString(16)).slice(-2);\n    }\n    return out;\n  }\n  /* বর্তমান পেজের আইডি — pages-ওভাররাইডের জন্য (index/discover/…/profile) */\n  var PAGE_ID = (function () {\n    try {\n      var p = String(location.pathname).split(\"?\")[0].split(\"#\")[0];\n      var m = p.match(/\\/([^\\/]+)\\.html?$/i);\n      var id = m ? m[1] : (/\\/$/i.test(p) ? \"index\" : \"\");\n      return id.toLowerCase();\n    } catch (e) { return \"\"; }\n  })();\n\n  /* ---------- কনফিগ একত্রীকরণ (committed + লাইভ-প্রিভিউ) ---------- */\n  var committed = window.TZ_BRAND || {};\n  var cfg = merge(DEF, committed);\n  var previewOn = false;\n  try {\n    var raw = localStorage.getItem(PKEY);\n    if (raw) {\n      var pv = JSON.parse(raw);\n      if (pv && pv.on && pv.config) { cfg = merge(cfg, pv.config); previewOn = true; }\n    }\n  } catch (e) {}\n\n  /* ============================================================\n     পাস ১ — CSS টোকেন-ওভাররাইড (স্টাইলশিট লোডের সাথে সাথেই কার্যকর)\n     ============================================================ */\n  function cssPass() {\n    var C = cfg.colors, D = DEF.colors, css = \"\", el, k;\n    /* ব্যানার-বেস CSS (সবসময় থাকে — ব্যানার চালু হলেই কাজ করবে) */\n    var bnCss = \".tz-brand-banner{display:flex;align-items:center;justify-content:center;gap:10px;padding:9px 38px 9px 14px;background:var(--grad,linear-gradient(135deg,#ff2daa,#ff7a00));color:#fff;font-size:13.5px;font-weight:600;position:relative;z-index:80;text-align:center}\" +\n      \".tz-brand-banner .tz-bn-link{color:inherit;text-decoration:none;display:flex;align-items:center;gap:8px}\" +\n      \".tz-brand-banner .tz-bn-link:hover{text-decoration:underline}\" +\n      \".tz-brand-banner .tz-bn-text{opacity:.97}\" +\n      \".tz-brand-banner .tz-bn-x{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.18);border:none;color:#fff;width:22px;height:22px;border-radius:7px;cursor:pointer;font-size:11px;line-height:1;display:flex;align-items:center;justify-content:center}\";\n    el = document.getElementById(\"tz-brand-base\");\n    if (!el) {\n      el = document.createElement(\"style\");\n      el.id = \"tz-brand-base\";\n      (document.head || document.documentElement).appendChild(el);\n    }\n    if (el.textContent !== bnCss) el.textContent = bnCss;\n    /* কাস্টম CSS (অ্যাডমিন-প্যানেল → অ্যাডভান্সড সেকশন) */\n    if (cfg.customCss) {\n      var cEl = document.getElementById(\"tz-brand-custom\");\n      if (!cEl) {\n        cEl = document.createElement(\"style\");\n        cEl.id = \"tz-brand-custom\";\n        (document.head || document.documentElement).appendChild(cEl);\n      }\n      if (cEl.textContent !== cfg.customCss) cEl.textContent = cfg.customCss;\n    }\n    var dmap = { bg: \"--bg\", bgSoft: \"--bg-soft\", card: \"--card\", card2: \"--card-2\", border: \"--border\", borderSoft: \"--border-soft\", text: \"--text\", muted: \"--muted\", muted2: \"--muted-2\" };\n    function block(sel, obj, def) {\n      var b = \"\";\n      for (k in dmap) if (obj[k] && String(obj[k]).toLowerCase() !== String(def[k]).toLowerCase()) b += dmap[k] + \":\" + obj[k] + \" !important;\";\n      return b ? sel + \"{\" + b + \"}\" : \"\";\n    }\n    css += block(\":root\", C.dark, D.dark);\n    css += block(':root[data-theme=\"light\"]', C.light, D.light);\n    if (String(C.primary).toLowerCase() !== String(D.primary).toLowerCase()) css += \":root{--pink:\" + C.primary + \" !important;}\";\n    if (String(C.secondary).toLowerCase() !== String(D.secondary).toLowerCase()) css += \":root{--orange:\" + C.secondary + \" !important;}\";\n    if (C.autoGrad && (String(C.primary).toLowerCase() !== String(D.primary).toLowerCase() || String(C.secondary).toLowerCase() !== String(D.secondary).toLowerCase())) {\n      var g1 = rgba(C.primary, .16), g2 = rgba(C.secondary, .16);\n      css += \":root{--grad:linear-gradient(135deg,\" + C.primary + \",\" + C.secondary + \") !important;\";\n      if (g1 && g2) css += \"--grad-soft:linear-gradient(135deg,\" + g1 + \",\" + g2 + \") !important;\";\n      css += \"}\";\n    }\n    if (cfg.radius.base !== DEF.radius.base) css += \":root{--radius:\" + cfg.radius.base + \"px !important;}\";\n    if (cfg.radius.sm !== DEF.radius.sm) css += \":root{--radius-sm:\" + cfg.radius.sm + \"px !important;}\";\n    if (cfg.fonts.body) css += \":root{--font:'\" + cfg.fonts.body + \"',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans',sans-serif !important;}\";\n    if (cfg.fonts.head) css += \"h1,h2,h3,h4,h5,h6,a.brand>span:not(.brand-mark){font-family:'\" + cfg.fonts.head + \"',var(--font) !important;}\";\n    if (cfg.fonts.bodySize) css += \"body{font-size:\" + cfg.fonts.bodySize + \"px !important;}\";\n    if (cfg.logo.height) css += \".brand-mark img,.brand-mark svg{height:\" + cfg.logo.height + \"px !important;width:auto !important;}\";\n    if (cfg.logo.type === \"emoji\") css += \".brand-mark .tz-emoji{font-size:24px;line-height:1;display:block;}\";\n    /* ---------- v2.0: শেপ (প্রম্পট-কার্ড) — পটভূমি + ভেতরের লেখার রং ---------- */\n    (function () {\n      var SH = (cfg.colors && cfg.colors.shape) || {}, pre, o, decl;\n      [\"dark\", \"light\"].forEach(function (mode) {\n        o = SH[mode] || {};\n        pre = mode === \"dark\" ? \":root\" : ':root[data-theme=\"light\"]';\n        if (isHex(o.bg)) css += pre + \" .prompt-inner{background:\" + o.bg.trim() + \" !important;}\";\n        decl = \"\";\n        if (isHex(o.textBg)) decl += \"background:\" + o.textBg.trim() + \" !important;\";\n        if (isHex(o.text)) decl += \"color:\" + o.text.trim() + \" !important;\";\n        if (decl) css += pre + \" .prompt-text{\" + decl + \"}\";\n        if (isHex(o.head)) css += pre + \" .prompt-head h2{color:\" + o.head.trim() + \" !important;}\";\n        if (isHex(o.muted)) css += pre + \" .prompt-count,\" + pre + \" .paste-into,\" + pre + \" .cust-sub{color:\" + o.muted.trim() + \" !important;}\";\n      });\n    })();\n    /* ---------- v2.0: ছায়া (shadow) ---------- */\n    var SHV = { \"off\": \"none\", \"soft\": \"0 6px 18px rgba(0,0,0,.16)\", \"strong\": \"0 18px 50px rgba(0,0,0,.55)\" };\n    if (SHV[cfg.shadow]) css += \":root{--shadow:\" + SHV[cfg.shadow] + \" !important;}\";\n    /* ---------- v2.0: কনটেন্ট-চওড়া (layout.wrapMax) ---------- */\n    if (cfg.layout && +cfg.layout.wrapMax >= 900) css += \".wrap{max-width:\" + Math.round(+cfg.layout.wrapMax) + \"px !important;}\";\n    if (css) {\n      el = document.getElementById(\"tz-brand-style\");\n      if (!el) {\n        el = document.createElement(\"style\");\n        el.id = \"tz-brand-style\";\n        (document.head || document.documentElement).appendChild(el);\n      }\n      if (el.textContent !== css) el.textContent = css;\n    }\n    /* Google Fonts লোড */\n    if ((cfg.fonts.body || cfg.fonts.head) && !document.getElementById(\"tz-brand-fonts\")) {\n      var fams = [], q = function (n) { return \"family=\" + encodeURIComponent(n).replace(/%20/g, \"+\"); };\n      if (cfg.fonts.body) fams.push(q(cfg.fonts.body) + \":wght@400;500;600;700\");\n      if (cfg.fonts.head && cfg.fonts.head !== cfg.fonts.body) fams.push(q(cfg.fonts.head) + \":wght@500;600;700;800\");\n      var lk = document.createElement(\"link\");\n      lk.id = \"tz-brand-fonts\"; lk.rel = \"stylesheet\";\n      lk.href = \"https://fonts.googleapis.com/css2?\" + fams.join(\"&\") + \"&display=swap\";\n      (document.head || document.documentElement).appendChild(lk);\n    }\n    /* মোবাইল ব্রাউজার-বার রং */\n    if (C.dark.bg !== D.dark.bg) {\n      var mt = document.querySelector('meta[name=\"theme-color\"]');\n      if (mt) mt.setAttribute(\"content\", C.dark.bg);\n    }\n    /* ---------- v2.0: পেজ-ভিত্তিক ওভাররাইড (এই পেজেই সীমাবদ্ধ) ---------- */\n    var pg = (cfg.pages && PAGE_ID && cfg.pages[PAGE_ID]) || null, pcss = \"\";\n    if (pg) {\n      if (isHex(pg.primary)) pcss += \":root{--pink:\" + pg.primary.trim() + \" !important;}\";\n      if (isHex(pg.secondary)) pcss += \":root{--orange:\" + pg.secondary.trim() + \" !important;}\";\n      if (isHex(pg.primary) && isHex(pg.secondary) && pg.autoGrad !== false) {\n        pcss += \":root{--grad:linear-gradient(135deg,\" + pg.primary.trim() + \",\" + pg.secondary.trim() + \") !important;}\";\n        var pg1 = rgba(pg.primary, .16), pg2 = rgba(pg.secondary, .16);\n        if (pg1 && pg2) pcss += \":root{--grad-soft:linear-gradient(135deg,\" + pg1 + \",\" + pg2 + \") !important;}\";\n      }\n    }\n    if (pcss) {\n      var pEl = document.getElementById(\"tz-brand-page\");\n      if (!pEl) {\n        pEl = document.createElement(\"style\");\n        pEl.id = \"tz-brand-page\";\n        (document.head || document.documentElement).appendChild(pEl);\n      }\n      if (pEl.textContent !== pcss) pEl.textContent = pcss;\n    } else {\n      var pOld = document.getElementById(\"tz-brand-page\");\n      if (pOld) pOld.remove();\n    }\n    if (pg && pg.customCss) {\n      var pcEl = document.getElementById(\"tz-brand-pagecss\");\n      if (!pcEl) {\n        pcEl = document.createElement(\"style\");\n        pcEl.id = \"tz-brand-pagecss\";\n        (document.head || document.documentElement).appendChild(pcEl);\n      }\n      if (pcEl.textContent !== pg.customCss) pcEl.textContent = pg.customCss;\n    } else {\n      var pcOld = document.getElementById(\"tz-brand-pagecss\");\n      if (pcOld) pcOld.remove();\n    }\n  }\n\n  /* ============================================================\n     পাস ২ — CSSOM রিরাইট: স্টাইলশিটের ভেতরে হার্ডকোড করা রং\n     (#ff2daa / rgba(255,45,170,…) → নতুন রং) — রানটাইমে, ফাইল না ছুঁয়ে\n     ============================================================ */\n  var CMAP = null, CFAST = null;\n  function buildColorMap() {\n    var list = [], fast = [], C = cfg.colors, D = DEF.colors;\n    /* প্রতিটি রঙের জন্য ৩টি প্যাটার্ন: #হেক্স · rgb() · rgba(…,α) — ব্রাউজার/CSSOM\n       মান নরমালাইজ করলেও (স্পেসসহ rgb(255, 45, 170)) ধরা পড়বে */\n    function pushColor(oldH, newH) {\n      if (!oldH || !newH || String(oldH).toLowerCase() === String(newH).toLowerCase()) return;\n      var o = String(oldH), n = String(newH);\n      list.push([new RegExp(\"#\" + o.slice(1), \"ig\"), n]);\n      var c = hexToRgb(o);\n      if (c) {\n        var pat = \"rgba?\\\\(\\\\s*\" + c[0] + \"\\\\s*,\\\\s*\" + c[1] + \"\\\\s*,\\\\s*\" + c[2] + \"\\\\s*(?:,\\\\s*([\\\\d.]+)\\\\s*)?\\\\)\";\n        list.push([new RegExp(pat, \"g\"), function (m, a) { return rgba(n, a === undefined ? 1 : a) || m; }]);\n        fast.push(c.join(\",\"));\n      }\n      fast.push(o.slice(1).toLowerCase());\n    }\n    pushColor(D.primary, C.primary);\n    pushColor(D.secondary, C.secondary);\n    /* v2.0: প্রাইমারি/সেকেন্ডারি বদলালে সাইটের হার্ডকোড টিন্ট-অ্যাকসেন্টগুলোও\n       (হার্ট ❤, ক্যাট-চিপ, mark-হাইলাইট ইত্যাদি) নতুন রঙের সাথে মিলিয়ে যাবে */\n    var TINTS = [\n      [\"#ffb0da\", \"primary\", .60], [\"#ffc4e3\", \"primary\", .70], [\"#ff7ec3\", \"primary\", .40],\n      [\"#ffd4ee\", \"primary\", .82], [\"#ff9de0\", \"primary\", .55], [\"#ffb35e\", \"secondary\", .55],\n      [\"#ff7ec2\", \"primary\", .42]\n    ];\n    TINTS.forEach(function (tt) {\n      var nv = mixHex(C[tt[1]] || D[tt[1]], \"#ffffff\", tt[2]);\n      if (nv && String(C[tt[1]]).toLowerCase() !== String(D[tt[1]]).toLowerCase()) pushColor(tt[0], nv);\n    });\n    [\"dark\", \"light\"].forEach(function (mode) {\n      var nm = C[mode] || {}, od = D[mode];\n      [\"bg\", \"bgSoft\", \"card\", \"card2\", \"border\", \"borderSoft\", \"text\", \"muted\", \"muted2\"].forEach(function (k) { pushColor(od[k], nm[k]); });\n    });\n    CFAST = fast;\n    return list;\n  }\n  function mapValue(v) {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length) return v;\n    /* দ্রুত প্রি-চেক: হোয়াইটস্পেস বাদ দিয়ে খোঁজা */\n    var low = String(v).toLowerCase().replace(/\\s+/g, \"\"), i;\n    for (i = 0; i < CFAST.length; i++) if (low.indexOf(CFAST[i]) > -1) break;\n    if (i >= CFAST.length) return v;\n    for (i = 0; i < CMAP.length; i++) v = v.replace(CMAP[i][0], CMAP[i][1]);\n    return v;\n  }\n  function rwStyle(st) {\n    var n = 0, i, p, v, nv;\n    for (i = 0; i < st.length; i++) {\n      p = st.item(i);\n      try { v = st.getPropertyValue(p); } catch (e) { continue; }\n      if (!v) continue;\n      nv = mapValue(v);\n      if (nv !== v) {\n        try { st.setProperty(p, nv, st.getPropertyPriority(p) || \"\"); n++; } catch (e2) {}\n      }\n    }\n    return n;\n  }\n  function rwRules(rules) {\n    var n = 0, i, r;\n    for (i = 0; i < rules.length; i++) {\n      r = rules[i];\n      try {\n        if (r.cssRules) n += rwRules(r.cssRules);\n        if (r.style) n += rwStyle(r.style);\n      } catch (e) {}\n    }\n    return n;\n  }\n  function rwSheet(sheet) {\n    try { return rwRules(sheet.cssRules); } catch (e) { return 0; }\n  }\n  var sheetStats = [], cssomCount = 0;\n  function cssomIncremental() {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length) return;\n    var sheets = document.styleSheets || [];\n    for (var i = 0; i < sheets.length; i++) {\n      var sh = sheets[i], key, cnt = 0, prev = null, j;\n      try { cnt = sh.cssRules.length; } catch (e) { continue; }\n      key = (sh.href || \"inline\") + \"#\" + i;\n      for (j = 0; j < sheetStats.length; j++) if (sheetStats[j].key === key) { prev = sheetStats[j]; break; }\n      if (prev && prev.count === cnt) continue;\n      cssomCount += rwSheet(sh);\n      if (prev) prev.count = cnt; else sheetStats.push({ key: key, count: cnt });\n    }\n  }\n\n  /* ============================================================\n     পাস ৩ — DOM ব্র্যান্ডিং (নাম / লোগো / ফেভিকন / ট্যাগলাইন)\n     ============================================================ */\n  function applyMark(mark) {\n    var cur;\n    if (cfg.logo.type === \"emoji\" && cfg.logo.emoji) {\n      cur = mark.querySelector(\".tz-emoji\");\n      if (!cur || cur.getAttribute(\"data-tz\") !== cfg.logo.emoji) {\n        mark.innerHTML = '<span class=\"tz-emoji\" data-tz=\"' + escA(cfg.logo.emoji) + '\">' + escH(cfg.logo.emoji) + \"<\/span>\";\n      }\n    } else if (cfg.logo.type === \"image\" && cfg.logo.url) {\n      cur = mark.querySelector(\"img\");\n      if (!cur || cur.getAttribute(\"src\") !== cfg.logo.url) {\n        mark.innerHTML = '<img src=\"' + escA(cfg.logo.url) + '\" alt=\"' + escH(cfg.siteName) + ' logo\">';\n        mark.classList.add(\"mark-img\");\n      }\n    }\n    /* type \"keep\" → app.js-এর বর্তমান লোগো অপরিবর্তিত থাকবে */\n  }\n  function brandPass() {\n    var name = cfg.siteName, i, b, sp, tn, sm, mark, fi, ap, ds;\n    /* ফেভিকন */\n    if (cfg.favicon) {\n      fi = document.querySelector('link[rel=\"icon\"]');\n      if (!fi) {\n        fi = document.createElement(\"link\");\n        fi.rel = \"icon\";\n        (document.head || document.documentElement).appendChild(fi);\n      }\n      if (fi.getAttribute(\"href\") !== cfg.favicon) fi.setAttribute(\"href\", cfg.favicon);\n      ap = document.querySelector('link[rel=\"apple-touch-icon\"]');\n      if (ap && ap.getAttribute(\"href\") !== cfg.favicon) ap.setAttribute(\"href\", cfg.favicon);\n    }\n    /* সব ব্র্যান্ড-অ্যাঙ্কর (হেডার + ফুটার) */\n    var brands = document.querySelectorAll(\"a.brand\");\n    for (i = 0; i < brands.length; i++) {\n      b = brands[i];\n      if (name !== ORIG.name) {\n        sp = b.querySelector(\"span:not(.brand-mark)\");\n        if (sp) {\n          tn = firstTextNode(sp);\n          if (tn && NAME_RE.test(tn.nodeValue)) { NAME_RE.lastIndex = 0; tn.nodeValue = tn.nodeValue.replace(/TEZOFY|Tezofy/g, name); }\n          NAME_RE.lastIndex = 0;\n        }\n        var al = b.getAttribute(\"aria-label\");\n        if (al && /TEZOFY|Tezofy/.test(al)) b.setAttribute(\"aria-label\", al.replace(/TEZOFY|Tezofy/g, name));\n      }\n      /* ট্যাগলাইন — নাম বদলুক বা না বদলুক, ডিফল্ট-ট্যাগলাইনের জায়গায় প্রযোজ্য */\n      sm = b.querySelector(\"small\");\n      if (sm && cfg.tagline !== ORIG.tagline && sm.textContent.trim() === ORIG.tagline) sm.textContent = cfg.tagline;\n      mark = b.querySelector(\".brand-mark\");\n      if (mark) applyMark(mark);\n    }\n    /* ইনডেক্স-স্প্ল্যাশ লোগো */\n    ds = document.querySelector(\".ds-logo img\");\n    if (ds) {\n      if (cfg.logo.type === \"image\" && cfg.logo.url && ds.getAttribute(\"src\") !== cfg.logo.url) ds.setAttribute(\"src\", cfg.logo.url);\n      if (name !== ORIG.name) {\n        var da = ds.getAttribute(\"alt\");\n        if (da && /TEZOFY|Tezofy/.test(da)) ds.setAttribute(\"alt\", da.replace(/TEZOFY|Tezofy/g, name));\n      }\n    }\n    /* ফুটার © লাইন (অ্যাডমিন-প্যানেল → কনটেন্ট সেকশন) */\n    if (cfg.footerText) {\n      var fbEl = document.querySelector(\".footer-bottom span\");\n      if (fbEl && fbEl.textContent.trim() !== cfg.footerText) fbEl.textContent = cfg.footerText;\n    }\n  }\n\n  /* ---------- ঘোষণা-ব্যানার (সব পেজের উপরে) ---------- */\n  var BKEY = \"chitro:tz:banner-off\";\n  function bannerPass() {\n    var bn = cfg.banner || {}, el = document.getElementById(\"tz-brand-banner\");\n    if (!bn.on || !bn.text || !document.body) { if (el) el.remove(); return; }\n    try {\n      if (bn.dismissible !== false && sessionStorage.getItem(BKEY) === \"1\") { if (el) el.remove(); return; }\n    } catch (e) {}\n    var sig = JSON.stringify(bn);\n    if (el && el.getAttribute(\"data-tz\") !== sig) { el.remove(); el = null; }\n    if (el) return;\n    el = document.createElement(\"div\");\n    el.id = \"tz-brand-banner\";\n    el.className = \"tz-brand-banner\";\n    el.setAttribute(\"data-tz\", sig);\n    var inner = '<span class=\"tz-bn-text\">' + escH(bn.text) + \"<\/span>\";\n    if (bn.href) inner = '<a class=\"tz-bn-link\" href=\"' + escA(bn.href) + '\">' + inner + \"<\/a>\";\n    if (bn.dismissible !== false) inner += '<button class=\"tz-bn-x\" aria-label=\"বন্ধ করুন\">✕<\/button>';\n    el.innerHTML = inner;\n    var header = document.querySelector(\"header.site-header, .site-header\");\n    if (header && header.parentNode) header.parentNode.insertBefore(el, header.nextSibling);\n    else document.body.insertBefore(el, document.body.firstChild);\n    var x = el.querySelector(\".tz-bn-x\");\n    if (x) x.addEventListener(\"click\", function () {\n      try { sessionStorage.setItem(BKEY, \"1\"); } catch (e2) {}\n      el.remove();\n    });\n  }\n\n  /* ---------- ডিফল্ট থিম (নতুন ভিজিটর — ইউজার-পছন্দ থাকলে স্পর্শ নয়) ---------- */\n  var THEME_KEY = \"chitro:theme\";\n  function themePass() {\n    var t = cfg.theme && cfg.theme.default;\n    if (t !== \"dark\" && t !== \"light\") return;\n    /* v2.0: প্রিভিউ-মোডে (নিজের ব্রাউজারে 👁) ডিফল্ট-থিম জোর করে দেখাই —\n       মালিক নিজের সেভ-করা থিমের পেছনে লুকিয়ে থাকলেও নতুন ভিজিটর যা দেখবে তা বোঝা যাবে */\n    if (previewOn) {\n      if (document.documentElement.getAttribute(\"data-theme\") !== t) document.documentElement.setAttribute(\"data-theme\", t);\n      return;\n    }\n    try { if (localStorage.getItem(THEME_KEY) !== null) return; } catch (e) { return; }\n    if (document.documentElement.getAttribute(\"data-theme\") !== t) document.documentElement.setAttribute(\"data-theme\", t);\n  }\n\n  /* নাম-পরিবর্তন: <title>, og/twitter meta, বডি-টেক্সট */\n  var SKIP = { SCRIPT: 1, STYLE: 1, CODE: 1, PRE: 1, TEXTAREA: 1, NOSCRIPT: 1 };\n  function walkText(root, name) {\n    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {\n      acceptNode: function (n) {\n        var p = n.parentNode;\n        if (p && SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;\n        return /TEZOFY|Tezofy/.test(n.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;\n      }\n    }), n, batch = [];\n    while ((n = w.nextNode())) batch.push(n);\n    for (var i = 0; i < batch.length; i++) batch[i].nodeValue = batch[i].nodeValue.replace(/TEZOFY|Tezofy/g, name);\n  }\n  function textPass() {\n    if (cfg.siteName === ORIG.name) return;\n    var name = cfg.siteName, i, c;\n    if (document.title && /TEZOFY|Tezofy/.test(document.title)) document.title = document.title.replace(/TEZOFY|Tezofy/g, name);\n    var metas = document.querySelectorAll('meta[property=\"og:site_name\"],meta[property=\"og:title\"],meta[name=\"twitter:title\"]');\n    for (i = 0; i < metas.length; i++) {\n      c = metas[i].getAttribute(\"content\");\n      if (c && /TEZOFY|Tezofy/.test(c)) metas[i].setAttribute(\"content\", c.replace(/TEZOFY|Tezofy/g, name));\n    }\n    if (!document.body) return;\n    if (cfg.nameScope === \"brand\") {\n      var scopes = document.querySelectorAll(\".site-header, .site-footer, footer, .bottombar, .ds-splash\");\n      for (i = 0; i < scopes.length; i++) walkText(scopes[i], name);\n    } else {\n      walkText(document.body, name);\n    }\n  }\n\n  /* ইনলাইন style=\"\" অ্যাট্রিবিউটে হার্ডকোড রং */\n  function inlineStylePass() {\n    if (!CMAP) CMAP = buildColorMap();\n    if (!CMAP.length || !document.body) return;\n    var els = document.querySelectorAll(\"[style]\"), i, sv, nv;\n    for (i = 0; i < els.length; i++) {\n      sv = els[i].getAttribute(\"style\");\n      if (!sv || !/(#[0-9a-f]{3,8})|(rgb)/i.test(sv)) continue;\n      nv = mapValue(sv);\n      if (nv !== sv) els[i].setAttribute(\"style\", nv);\n    }\n  }\n\n  /* ---------- অর্কেস্ট্রেশন + MutationObserver ---------- */\n  var applying = false, scheduled = false, mo = null;\n  function applyAll() {\n    applying = true;\n    try { cssPass(); themePass(); brandPass(); bannerPass(); textPass(); inlineStylePass(); cssomIncremental(); }\n    finally { applying = false; }\n  }\n  function scheduleApply() {\n    if (scheduled || applying) return;\n    scheduled = true;\n    setTimeout(function () { scheduled = false; applyAll(); }, 80);\n  }\n  function startObserver() {\n    if (mo || typeof MutationObserver === \"undefined\") return;\n    mo = new MutationObserver(function () { if (!applying) scheduleApply(); });\n    mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true });\n  }\n\n  /* প্যানেল অন্য ট্যাবে প্রিভিউ টগল করলে অটো-রিফ্রেশ */\n  try {\n    window.addEventListener(\"storage\", function (ev) {\n      if (ev && ev.key === PKEY) { try { location.reload(); } catch (e) {} }\n    });\n  } catch (e) {}\n\n  /* ---------- বুট ---------- */\n  cssPass();\n  cssomIncremental();\n  function boot() { applyAll(); startObserver(); }\n  if (document.readyState === \"loading\") document.addEventListener(\"DOMContentLoaded\", boot);\n  else boot();\n\n  /* ---------- পাবলিক API ---------- */\n  window.TezoBrand = {\n    version: \"2.0\",\n    page: PAGE_ID,\n    config: cfg,\n    committed: committed,\n    defaults: DEF,\n    previewOn: previewOn,\n    apply: applyAll,\n    cssomRewrites: function () { return cssomCount; }\n  };\n})();\n"; /* build: FILE-11 এখানে এমবেড হয় */
 
   var S = JSON.parse(JSON.stringify(DEFAULTS));
   var COMMITTED = null, ENGINE_FETCHED = null, previewOn = false, pvMood = "dark";
@@ -757,6 +885,20 @@
     $("f-radius-val").textContent = S.radius.base + "px";
     $("f-radius-sm").value = S.radius.sm;
     $("f-radius-sm-val").textContent = S.radius.sm + "px";
+    $("f-shadow").value = S.shadow || "";
+    $("f-wrapmax").value = S.layout.wrapMax || 0;
+    $("f-wrapmax-val").textContent = (S.layout.wrapMax ? S.layout.wrapMax : 1080) + "px";
+    /* শেপ (প্রম্পট-কার্ড) */
+    ["dark", "light"].forEach(function (mode) {
+      var on = !!(S.colors.shape && S.colors.shape[mode] && S.colors.shape[mode].on);
+      $("f-shape-on-" + mode).checked = on;
+      STOK.forEach(function (k) {
+        var val = (S.colors.shape && S.colors.shape[mode] && S.colors.shape[mode][k]) || SHAPE_DEF[mode][k];
+        setColorPair("sc-" + mode + "-" + k, "sh-" + mode + "-" + k, val);
+      });
+    });
+    /* পেজ-এডিটর */
+    fillPageEditor();
     $("f-theme").value = S.theme.default;
     $("f-banner-on").checked = !!S.banner.on;
     $("f-banner-text").value = S.banner.text;
@@ -766,6 +908,65 @@
     $("f-customcss").value = S.customCss;
   }
   function setColorPair(cid, hid, val) { $(cid).value = val; $(hid).value = val; }
+
+  /* ---------- v2.0: শেপ-স্টেট নরমালাইজ (on-ফ্ল্যাগ আন্দাজ) ---------- */
+  function normalizeShapeState() {
+    if (!S.colors.shape) S.colors.shape = deepCopy(DEFAULTS.colors.shape);
+    ["dark", "light"].forEach(function (mode) {
+      var o = S.colors.shape[mode] || (S.colors.shape[mode] = {});
+      var anySet = STOK.some(function (k) { return !!o[k]; });
+      /* কমিটে মান থাকলে বা ডিফল্ট থেকে বদলে থাকলে → on */
+      if (o.on === undefined) o.on = anySet && STOK.some(function (k) { return o[k] && normHex(o[k]) !== normHex(SHAPE_DEF[mode][k]); });
+      STOK.forEach(function (k) { if (!o[k]) o[k] = SHAPE_DEF[mode][k]; });
+    });
+  }
+  /* ---------- v2.0: পেজ-এডিটর ---------- */
+  var curPage = "index";
+  function buildPageSelect() {
+    var sel = $("f-page"), seen = {};
+    sel.innerHTML = "";
+    PAGE_GROUPS.forEach(function (g) {
+      var og = document.createElement("optgroup");
+      og.setAttribute("label", t(g.labelKey));
+      g.ids.forEach(function (id) {
+        if (seen[id]) return; seen[id] = 1;
+        var o = document.createElement("option");
+        o.value = id; o.textContent = id + ".html" + (S.pages && S.pages[id] ? " ●" : "");
+        og.appendChild(o);
+      });
+      sel.appendChild(og);
+    });
+    sel.value = curPage;
+  }
+  function fillPageEditor() {
+    buildPageSelect();
+    var pg = (S.pages && S.pages[curPage]) || {};
+    $("f-page-on").checked = !!pg.on;
+    setColorPair("f-page-primary", "f-page-primary-hex", pg.primary || S.colors.primary);
+    setColorPair("f-page-secondary", "f-page-secondary-hex", pg.secondary || S.colors.secondary);
+    $("f-page-css").value = pg.customCss || "";
+    $("btnPageReset").style.display = S.pages && S.pages[curPage] ? "" : "none";
+  }
+  function setPvMoodUI() {
+    var d = $("pvMoodDark"), l = $("pvMoodLight");
+    if (d) d.classList.toggle("act", pvMood === "dark");
+    if (l) l.classList.toggle("act", pvMood === "light");
+  }
+  function setPvMood(m) {
+    pvMood = (m === "light") ? "light" : "dark";
+    setPvMoodUI();
+    renderMock();
+    syncRealFrame();
+  }
+  /* Real-site iframe-কেও প্যানেলের মুডে আনা (same-origin) */
+  function syncRealFrame() {
+    try {
+      var fr = $("pvReal");
+      if (fr && fr.contentDocument && fr.contentDocument.documentElement) {
+        fr.contentDocument.documentElement.setAttribute("data-theme", pvMood);
+      }
+    } catch (e) { /* cross-origin হলে নীরব */ }
+  }
 
   function onFormInput(e) {
     var id = e.target.id || "", v = e.target.value, mode, key, m;
@@ -782,11 +983,8 @@
     else if (id === "f-autograd") S.colors.autoGrad = e.target.checked;
     else if ((m = id.match(/^([ch])-(dark|light)-([a-zA-Z2]+)$/))) {
       mode = m[2]; key = m[3];
-      /* 🔧 ফিক্স: যে-মুডের রং এডিট হচ্ছে, প্রিভিউ-মক নিজেই সেই মুডে চলে যাবে */
-      if (mode !== pvMood) {
-        pvMood = mode;
-        $("pvMood").textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
-      }
+      /* 🔧 যে-মুডের রং এডিট হচ্ছে, প্রিভিউ-মক নিজেই সেই মুডে চলে যাবে */
+      if (mode !== pvMood) setPvMood(mode);
       if (key in S.colors[mode] && isHex(v)) {
         S.colors[mode][key] = v.trim();
         setColorPair("c-" + mode + "-" + key, "h-" + mode + "-" + key, v.trim());
@@ -798,6 +996,58 @@
     else if (id === "f-radius") { S.radius.base = parseInt(v, 10) || 0; $("f-radius-val").textContent = S.radius.base + "px"; }
     else if (id === "f-radius-sm") { S.radius.sm = parseInt(v, 10) || 0; $("f-radius-sm-val").textContent = S.radius.sm + "px"; }
     else if (id === "f-theme") S.theme.default = v;
+    else if (id === "f-shadow") S.shadow = v;
+    else if (id === "f-wrapmax") {
+      S.layout.wrapMax = parseInt(v, 10) || 0;
+      $("f-wrapmax-val").textContent = (S.layout.wrapMax ? S.layout.wrapMax : 1080) + "px";
+    }
+    else if (id === "f-shape-on-dark" || id === "f-shape-on-light") {
+      var smode = id.slice(-5) === "light" ? "light" : "dark";
+      S.colors.shape[smode].on = e.target.checked;
+      if (!e.target.checked) STOK.forEach(function (k) { S.colors.shape[smode][k] = SHAPE_DEF[smode][k]; });
+      fillForm();
+    }
+    else if ((m = id.match(/^(sc|sh)-(dark|light)-(bg|textBg|head|text|muted)$/))) {
+      mode = m[2]; key = m[3];
+      if (mode !== pvMood) setPvMood(mode);
+      if (S.colors.shape && S.colors.shape[mode] && isHex(v)) {
+        S.colors.shape[mode][key] = v.trim();
+        S.colors.shape[mode].on = true;
+        setColorPair("sc-" + mode + "-" + key, "sh-" + mode + "-" + key, v.trim());
+      }
+    }
+    else if (id === "f-page") { curPage = v; fillPageEditor(); }
+    else if (id === "f-page-on") {
+      if (!S.pages) S.pages = {};
+      if (e.target.checked) {
+        S.pages[curPage] = S.pages[curPage] || { on: true, primary: "", secondary: "", customCss: "" };
+        S.pages[curPage].on = true;
+      } else if (S.pages[curPage]) {
+        S.pages[curPage].on = false;
+      }
+      buildPageSelect(); $("btnPageReset").style.display = S.pages[curPage] ? "" : "none";
+    }
+    else if (id === "f-page-primary" || id === "f-page-primary-hex") {
+      if (isHex(v)) {
+        if (!S.pages[curPage]) S.pages[curPage] = { on: true, primary: "", secondary: "", customCss: "" };
+        S.pages[curPage].primary = v.trim(); S.pages[curPage].on = true;
+        setColorPair("f-page-primary", "f-page-primary-hex", v.trim());
+        buildPageSelect();
+      }
+    }
+    else if (id === "f-page-secondary" || id === "f-page-secondary-hex") {
+      if (isHex(v)) {
+        if (!S.pages[curPage]) S.pages[curPage] = { on: true, primary: "", secondary: "", customCss: "" };
+        S.pages[curPage].secondary = v.trim(); S.pages[curPage].on = true;
+        setColorPair("f-page-secondary", "f-page-secondary-hex", v.trim());
+        buildPageSelect();
+      }
+    }
+    else if (id === "f-page-css") {
+      if (!S.pages[curPage]) S.pages[curPage] = { on: true, primary: "", secondary: "", customCss: "" };
+      S.pages[curPage].customCss = v;
+      buildPageSelect();
+    }
     else if (id === "f-banner-on") S.banner.on = e.target.checked;
     else if (id === "f-banner-text") S.banner.text = v.trim();
     else if (id === "f-banner-href") S.banner.href = v.trim();
@@ -819,6 +1069,19 @@
     st.setProperty("--radius", S.radius.base + "px"); st.setProperty("--radius-sm", S.radius.sm + "px");
     var fam = S.fonts.body ? "'" + S.fonts.body + "'," : "";
     st.setProperty("--font", fam + "'Hind Siliguri',system-ui,sans-serif");
+    /* v2.0: শেপ (প্রম্পট-কার্ড) প্রিভিউ */
+    var shOn = !!(S.colors.shape && S.colors.shape[pvMood] && S.colors.shape[pvMood].on);
+    var shp = shOn ? (S.colors.shape[pvMood] || SHAPE_DEF[pvMood]) : SHAPE_DEF[pvMood];
+    var pvPr = $("pvPrompt");
+    if (pvPr) {
+      pvPr.style.background = shp.bg;
+      pvPr.style.borderColor = pal.border;
+      $("pvPHead").style.color = shp.head;
+      $("pvPText").style.background = shp.textBg;
+      $("pvPText").style.color = shp.text;
+      $("pvPCount").style.color = shp.muted;
+      pvPr.classList.toggle("custom", shOn);
+    }
     var headFam = S.fonts.head ? "'" + S.fonts.head + "'," : "";
     $("pvName").style.fontFamily = headFam ? headFam + "var(--font)" : "";
     $("pvH").style.fontFamily = headFam ? headFam + "var(--font)" : "";
@@ -867,6 +1130,10 @@
       ["d_light", countChanged("light") > 0, countChanged("light")],
       ["d_fonts", !!S.fonts.body || !!S.fonts.head || S.fonts.bodySize > 0],
       ["d_radius", S.radius.base !== DEFAULTS.radius.base || S.radius.sm !== DEFAULTS.radius.sm],
+      ["d_shape", !!((S.colors.shape && S.colors.shape.dark && S.colors.shape.dark.on) || (S.colors.shape && S.colors.shape.light && S.colors.shape.light.on))],
+      ["d_shadow", !!S.shadow],
+      ["d_layout", !!(S.layout && S.layout.wrapMax > 0)],
+      ["d_pages", !!(S.pages && Object.keys(S.pages).some(function (p) { return S.pages[p] && S.pages[p].on; }))],
       ["d_banner", !!(S.banner.on && S.banner.text)],
       ["d_footer", !!S.footerText],
       ["d_theme", !!S.theme.default],
@@ -885,6 +1152,29 @@
 
   /* ---------- কনফিগ → ফাইল ---------- */
   function toConfig() {
+    /* শেপ: on না থাকলে খালি-স্ট্রিং (ইঞ্জিন তখন সাইটের নিজের রং রাখে) */
+    var shapeOut = {};
+    ["dark", "light"].forEach(function (mode) {
+      var o = (S.colors.shape && S.colors.shape[mode]) || {};
+      var on = !!o.on;
+      shapeOut[mode] = {};
+      STOK.forEach(function (k) {
+        shapeOut[mode][k] = (on && o[k] && isHex(o[k])) ? o[k] : "";
+      });
+    });
+    /* পেজ-ওভাররাইড: শুধু চালু-থাকা পেজগুলো, পরিচ্ছন্ন অবজেক্টে */
+    var pagesOut = {};
+    var nPages = 0;
+    if (S.pages) Object.keys(S.pages).forEach(function (pid) {
+      var p = S.pages[pid];
+      if (!p || !p.on) return;
+      pagesOut[pid] = {
+        primary: isHex(p.primary) ? p.primary : "",
+        secondary: isHex(p.secondary) ? p.secondary : "",
+        customCss: p.customCss || ""
+      };
+      nPages++;
+    });
     return {
       siteName: S.siteName || "TEZOFY",
       tagline: S.tagline,
@@ -893,18 +1183,30 @@
       favicon: S.favicon,
       colors: {
         primary: S.colors.primary, secondary: S.colors.secondary, autoGrad: !!S.colors.autoGrad,
-        dark: deepCopy(S.colors.dark), light: deepCopy(S.colors.light)
+        dark: deepCopy(S.colors.dark), light: deepCopy(S.colors.light),
+        shape: shapeOut
       },
       fonts: { body: S.fonts.body, head: S.fonts.head, bodySize: S.fonts.bodySize || 0 },
       radius: { base: S.radius.base, sm: S.radius.sm },
+      shadow: S.shadow || "",
+      layout: { wrapMax: S.layout.wrapMax || 0 },
+      pages: pagesOut,
       theme: { default: S.theme.default },
       banner: { on: !!S.banner.on, text: S.banner.text, href: S.banner.href, dismissible: S.banner.dismissible !== false },
       footerText: S.footerText,
       customCss: S.customCss
     };
   }
+  function engineVer(src) {
+    var m = String(src || "").match(/ENGINE v(\d+)\.(\d+)/i);
+    return m ? (parseInt(m[1], 10) * 100 + parseInt(m[2], 10)) : 0;
+  }
   function generateFile() {
-    var tpl = (ENGINE_FETCHED && ENGINE_FETCHED.indexOf(MARK_START) > -1) ? ENGINE_FETCHED : ENGINE_SRC;
+    /* v2.0: লাইভ-ইঞ্জিন পুরনো হলে (যেমন v1.1) এমবেডেড v2.0-ই টেমপ্লেট হবে —
+       নইলে নতুন ফিচার-কনফিগ লাইভ থাকলেও কাজ করত না */
+    var tpl;
+    if (ENGINE_FETCHED && ENGINE_FETCHED.indexOf(MARK_START) > -1 && engineVer(ENGINE_FETCHED) >= engineVer(ENGINE_SRC)) tpl = ENGINE_FETCHED;
+    else tpl = ENGINE_SRC;
     if (tpl.indexOf(MARK_START) === -1) { toast("⚠️ engine template missing!"); return ""; }
     var block = MARK_START + "\nwindow.TZ_BRAND = " + JSON.stringify(toConfig(), null, 2).replace(/<\/script/gi, "<\\/script") + ";\n" + MARK_END;
     var re = new RegExp(MARK_START.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&") + "[\\s\\S]*?" + MARK_END.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&"));
@@ -993,7 +1295,10 @@
         body = body.replace(/^\s*window\.TZ_BRAND\s*=\s*/, "").replace(/;\s*$/, "");
         COMMITTED = JSON.parse(body);
         S = merge(DEFAULTS, COMMITTED);
+        normalizeShapeState();
         fillForm();
+        pvMood = (S.theme.default === "light" || S.theme.default === "dark") ? S.theme.default : "dark";
+        setPvMoodUI();
         renderAll();
         lastLoadState = "ok"; renderLoadInfo();
       }).catch(function () { lastLoadState = "fail"; renderLoadInfo(); });
@@ -1007,18 +1312,19 @@
       host.innerHTML = '<div class="st-chip st-warn"><span class="sti">⚠️</span><span>' + t("st_unknown") + '<div class="st-sub">' + t("st_unknown_sub") + "</div></span></div>";
       return;
     }
-    var html = '<div class="st-chip ' + (lastStatus.engineOk ? "st-ok" : "st-bad") + '"><span class="sti">' + (lastStatus.engineOk ? "🟢" : "🔴") + "</span><span>" + t(lastStatus.engineOk ? "st_engine_ok" : "st_engine_nok") + '<div class="st-sub">' + t(lastStatus.engineOk ? "st_engine_ok_sub" : "st_engine_nok_sub") + "</div></span></div>";
+    var engVer = lastStatus.engineVer ? " (v" + lastStatus.engineVer + ")" : "";
+    var html = '<div class="st-chip ' + (lastStatus.engineOk ? "st-ok" : "st-bad") + '"><span class="sti">' + (lastStatus.engineOk ? "🟢" : "🔴") + "</span><span>" + t(lastStatus.engineOk ? "st_engine_ok" : "st_engine_nok") + engVer + '<div class="st-sub">' + t(lastStatus.engineOk ? "st_engine_ok_sub" : "st_engine_nok_sub") + "</div></span></div>";
     html += '<div class="st-chip ' + (lastStatus.lineOk ? "st-ok" : "st-bad") + '"><span class="sti">' + (lastStatus.lineOk ? "🟢" : "🔴") + "</span><span>" + t(lastStatus.lineOk ? "st_line_ok" : "st_line_nok") + '<div class="st-sub">' + t(lastStatus.lineOk ? "st_line_ok_sub" : "st_line_nok_sub") + "</div></span></div>";
     host.innerHTML = html;
   }
   function checkSetup() {
     lastStatus = null; renderStatus();
-    function afterEngine(engineOk) {
+    function afterEngine(engineOk, ver) {
       fetch("index.html?ts=" + Date.now()).then(function (r2) { return r2.ok ? r2.text() : Promise.reject(new Error("http " + r2.status)); }).then(function (html) {
-        lastStatus = { known: true, engineOk: engineOk, lineOk: html.indexOf("site-brand.js") > -1 };
+        lastStatus = { known: true, engineOk: engineOk, lineOk: html.indexOf("site-brand.js") > -1, engineVer: ver || "" };
         renderStatus();
       }).catch(function () {
-        lastStatus = { known: true, engineOk: engineOk, lineOk: false };
+        lastStatus = { known: true, engineOk: engineOk, lineOk: false, engineVer: ver || "" };
         renderStatus();
       });
     }
@@ -1029,7 +1335,8 @@
         return r.text();
       }).then(function (txt) {
         if (txt === null) return;
-        afterEngine(txt.indexOf(MARK_START) > -1);
+        var vm = String(txt).match(/ENGINE v(\d+\.\d+)/i);
+        afterEngine(txt.indexOf(MARK_START) > -1, vm ? vm[1] : "");
       }).catch(function () { lastStatus = { known: false }; renderStatus(); });
     } catch (e) { lastStatus = { known: false }; renderStatus(); }
   }
@@ -1151,10 +1458,12 @@
   $("btnCopy").addEventListener("click", function () { copyText(generateFile()); });
   $("btnDownload").addEventListener("click", download);
   $("btnPreview").addEventListener("click", function () { setPreview(!previewOn); });
-  $("pvMood").addEventListener("click", function () {
-    pvMood = pvMood === "dark" ? "light" : "dark";
-    this.textContent = pvMood === "dark" ? t("mood_dark") : t("mood_light");
-    renderMock();
+  $("pvMoodDark").addEventListener("click", function () { setPvMood("dark"); });
+  $("pvMoodLight").addEventListener("click", function () { setPvMood("light"); });
+  $("pvReal").addEventListener("load", function () { setTimeout(syncRealFrame, 150); });
+  $("btnPageReset").addEventListener("click", function () {
+    if (S.pages && S.pages[curPage]) { delete S.pages[curPage]; }
+    fillPageEditor(); renderAll(); toast(t("t_page_reset"));
   });
   $("pvToggle").addEventListener("click", function () {
     var card = $("pvCard");
@@ -1194,13 +1503,17 @@
   buildPalette("light");
   buildPresets();
   buildFonts();
+  normalizeShapeState();
   applyLang();
   fillForm();
+  /* প্রিভিউ-মুড শুরু: ডিফল্ট-থিম সেট থাকলে সেটাই দেখাই (নতুন ভিজিটর যা দেখবে) */
+  pvMood = (S.theme.default === "light" || S.theme.default === "dark") ? S.theme.default : "dark";
+  setPvMoodUI();
   renderAll();
   loadCommitted();
   checkSetup();
   gateInit();
-  window.TezoBrandPanel = { version: "1.2", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, setLang: setLang, state: function () { return S; }, hashPassword: sha256 };
+  window.TezoBrandPanel = { version: "2.0", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, setLang: setLang, setPvMood: setPvMood, state: function () { return S; }, hashPassword: sha256 };
 })();
 </script>
 </body>
