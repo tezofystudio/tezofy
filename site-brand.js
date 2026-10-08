@@ -1,5 +1,5 @@
 /* ====================================================================
-   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.1)
+   TEZOFY BRAND CONTROL — site-brand.js  (ENGINE v2.2)
    --------------------------------------------------------------------
    এই একটি ফাইল = পুরো সাইটের ব্র্যান্ড-কন্ট্রোল সিস্টেম।
    • প্রতিটি পেজের <head>-এ লিখুন (stylesheet-লিংকের ঠিক নিচে):
@@ -11,6 +11,8 @@
    • প্যানেল: https://tezofystudio.github.io/tezofy/brand-admin.html
    • ডিফল্ট মান = বর্তমান লাইভ সাইট → প্রথম কমিটে কোনো দৃশ্যমান
      পরিবর্তন হবে না (zero-change install)।
+   • v2.2 নতুন: লাইট-মোডে লগইন-শিট (.auth-card) ও লক-কার্ড (.lock-card)
+     এখন লাইট-প্যালেট ফলো করে (আগে গাঢ় কার্ডে গাঢ় লেখা পড়া যেত না)।
    • v2.1 নতুন: লাইট-মোডে হেডার ও নিচের বার এখন পঠনযোগ্য (সাইটের কালো বারে
      গাঢ় লেখা অদৃশ্য হয়ে যেত — এখন বার লাইট-প্যালেট ফলো করে)।
    • v2.0 নতুন: shape (প্রম্পট-কার্ডের পটভূমি ও ভেতরের লেখার রং —
@@ -51,7 +53,7 @@ window.TZ_BRAND = {
 };
 /*__TZBRAND_CONFIG_END__*/
 
-/* ==================== ENGINE v2.1 (সম্পাদনা নিষেধ) ==================== */
+/* ==================== ENGINE v2.2 (সম্পাদনা নিষেধ) ==================== */
 (function () {
   "use strict";
 
@@ -169,6 +171,9 @@ window.TZ_BRAND = {
     bnCss += ':root[data-theme="light"] .bottombar{background:var(--bg-soft) !important;}';
     bnCss += ':root[data-theme="light"] .site-header .brand{color:var(--text) !important;}';
     bnCss += ':root[data-theme="light"] .site-header .brand small{color:var(--muted) !important;}';
+    /* v2.2: লগইন-শিট ও লক-কার্ড — গাঢ় হার্ডকোডের বদলে লাইট-প্যালেট */
+    bnCss += ':root[data-theme="light"] .auth-card{background:var(--card) !important;}';
+    bnCss += ':root[data-theme="light"] .lock-card{background:var(--card) !important;}';
     el = document.getElementById("tz-brand-base");
     if (!el) {
       el = document.createElement("style");
@@ -575,7 +580,7 @@ window.TZ_BRAND = {
 
   /* ---------- পাবলিক API ---------- */
   window.TezoBrand = {
-    version: "2.1",
+    version: "2.2",
     page: PAGE_ID,
     config: cfg,
     committed: committed,
