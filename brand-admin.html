@@ -121,8 +121,8 @@
   .pv-grip:hover::after,.pv-grip.on::after{background:var(--bc-pink,#ff2daa)}
   .pv-fullbtn{background:var(--bc-panel);border:1px solid var(--bc-line);color:var(--bc-text);border-radius:9px;font-size:14px;font-weight:700;width:32px;height:27px;cursor:pointer;line-height:1}
   .pv-fullbtn:hover{border-color:var(--bc-pink,#ff2daa)}
-  .pv-frame{width:100%;position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--bc-line);background:#fff}
-  .pv-frame .pv-real{width:100%;height:440px;border:none;display:block;background:#fff;transform-origin:0 0;transform:scale(var(--pvs,1))}
+  .pv-frame{width:100%;position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--bc-line);background:#09090b}
+  .pv-frame .pv-real{width:100%;height:440px;border:none;display:block;background:#09090b;transform-origin:0 0;transform:scale(var(--pvs,1))}
   .pv-frame.dev-mobile{max-width:404px;margin:0 auto;border-radius:26px;border:7px solid #17171d;box-shadow:0 16px 44px rgba(0,0,0,.45)}
   /* ⛶ ফুল-স্ক্রিন প্রিভিউ */
   body.pv-full .bc-top,body.pv-full .bc-side,body.pv-full .bc-main,body.pv-full .pv-mini{display:none !important}
@@ -217,7 +217,7 @@
 <body>
 
 <header class="bc-top">
-  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v2.2</span></div>
+  <div class="bc-brand"><span class="logo-dot">🎨</span><span>TEZOFY Brand Admin</span><span class="bc-ver">v2.3</span></div>
   <div class="bc-top-actions">
     <div class="lang-seg" id="langSeg" role="group" aria-label="Language">
       <button type="button" data-lang="en">EN</button>
@@ -1591,11 +1591,14 @@
     var fw = frame.clientWidth || 0, full = false;
     try { full = document.body.classList.contains("pv-full"); } catch (e) {}
     var baseW, baseH;
-    if (pvDevice === "desktop") { baseW = 1280; baseH = full ? Math.max(560, window.innerHeight - 240) : 820; }
-    else if (pvDevice === "mobile") { baseW = 390; baseH = full ? Math.max(560, window.innerHeight - 240) : 680; }
-    else { baseW = fw || 420; baseH = full ? Math.max(520, window.innerHeight - 240) : Math.max(400, Math.round((fw || 420) * 1.05)); }
+    if (pvDevice === "desktop") { baseW = 1280; baseH = full ? Math.max(620, window.innerHeight - 170) : 900; }
+    else if (pvDevice === "mobile") { baseW = 390; baseH = full ? Math.max(620, window.innerHeight - 170) : 720; }
+    else { baseW = fw || 420; baseH = full ? Math.max(560, window.innerHeight - 170) : Math.max(440, Math.round((fw || 420) * 1.15)); }
     var scale = (pvDevice === "auto") ? 1 : Math.min(1.6, (fw || baseW) / baseW);
+    /* 🔧 v2.3 ফিক্স: iframe-এর নিজের উচ্চতাও baseH হতে হবে — নইলে iframe তার
+       CSS-উচ্চতায় (440px) আটকে থাকে আর ফ্রেমের বাকি অংশ সাদা ফাঁকা দেখায় */
     ifr.style.width = baseW + "px";
+    ifr.style.height = baseH + "px";
     ifr.style.transform = "scale(" + scale + ")";
     frame.style.height = Math.round(baseH * scale) + "px";
     updateWidthLab();
@@ -1719,7 +1722,7 @@
   loadCommitted();
   checkSetup();
   gateInit();
-  window.TezoBrandPanel = { version: "2.2", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, setLang: setLang, setPvMood: setPvMood, state: function () { return S; }, hashPassword: sha256 };
+  window.TezoBrandPanel = { version: "2.3", generateFile: generateFile, toConfig: toConfig, setPreview: setPreview, setLang: setLang, setPvMood: setPvMood, state: function () { return S; }, hashPassword: sha256 };
 })();
 </script>
 </body>
