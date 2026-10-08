@@ -705,6 +705,14 @@
     "#tzSetMenu .tz-h{font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted,#888);padding:10px 12px 4px}" +
     "#tzSetMenu .tz-sep{height:1px;background:var(--border,rgba(255,255,255,.1));margin:6px 8px}" +
     "#tzSetMenu .tz-note{font-size:.68rem;color:var(--muted,#888);padding:6px 12px 8px;text-align:center}" +
+    "#tzSetMenu .tz-seg{display:flex;gap:6px;padding:2px 8px 4px}" +
+    "#tzSetMenu .tz-ico{flex:1;display:flex;align-items:center;justify-content:center;height:38px;border-radius:10px;border:1px solid var(--border,rgba(255,255,255,.16));background:transparent;color:inherit;font-size:1.05rem;cursor:pointer;font-family:inherit;transition:.15s ease}" +
+    "#tzSetMenu .tz-ico span{font-size:.78rem;font-weight:800}" +
+    "#tzSetMenu .tz-ico:hover{border-color:#ff7ec2}" +
+    "#tzSetMenu .tz-ico.act{background:linear-gradient(135deg,#ff5fa2,#ff8a3d);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(255,95,162,.35)}" +
+    "#tzSetMenu .tz-langlist{display:none}" +
+    "#tzSetMenu .tz-langlist.open{display:block}" +
+    "#tzSetMenu .tz-sub{padding-left:28px;font-size:.85rem}" +
     "html.tz-calm *{animation:none !important;transition:none !important}" +
     "@media(min-width:760px){#tzSetFab{bottom:20px}}";
   document.head.appendChild(st);
@@ -722,6 +730,8 @@
   function themeIsDark() { return (document.documentElement.dataset.theme || "dark") !== "light"; }
   function applyCalm() { document.documentElement.classList.toggle("tz-calm", localStorage.getItem("tz_calm") === "1"); }
   applyCalm();
+  /* সেভ-করা লেখার আকার প্রতি লোডে প্রয়োগ */
+  (function () { var f = localStorage.getItem("tz_font") || "m"; if (f !== "m") document.documentElement.style.fontSize = f === "s" ? "14.5px" : "17px"; })();
 
   /* মেনু প্রতিবার ওপেনের আগে সতেজ রেন্ডার — থিম/ভাষা/টগল সিংকে */
   function buildMenu() {
@@ -729,37 +739,71 @@
     var h1 = document.createElement("div"); h1.className = "tz-h"; h1.textContent = "Appearance / চেহারা";
     menu.appendChild(h1);
 
-    /* 🌗 থিম রো — আপনার app.js-এর #themeBtn-ই চাপ দেই: কোনো লজিক-ডুপ্লিকেশন নেই */
-    var tRow = document.createElement("button"); tRow.type = "button"; tRow.className = "tz-row";
-    tRow.innerHTML = '<span>' + (themeIsDark() ? "🌙 Night mode" : "☀️ Day mode") + '</span><span class="tz-val">tap to switch ↔</span>';
-    tRow.addEventListener("click", function () {
-      var tb = document.getElementById("themeBtn");
-      if (tb) tb.click();
-      else document.documentElement.dataset.theme = themeIsDark() ? "light" : "dark";
-      setTimeout(buildMenu, 80);
-      setTimeout(function () { try { scan(document.body); } catch (e) {} }, 140);   // থিম-টোস্টও অনুবাদে ধরা হোক
+    /* 🌗 থিম — এখন শুধু আইকন: 🌙 | ☀️ (বর্তমানটা গ্রেডিয়েন্টে লাইট-আপ) */
+    var curTheme = themeIsDark() ? "dark" : "light";
+    var seg = document.createElement("div"); seg.className = "tz-seg";
+    [["dark", "🌙"], ["light", "☀️"]].forEach(function (t) {
+      var b = document.createElement("button"); b.type = "button";
+      b.className = "tz-ico" + (t[0] === curTheme ? " act" : "");
+      b.title = t[0] === "dark" ? "Night mode" : "Day mode";
+      b.innerHTML = t[1];
+      b.addEventListener("click", function () {
+        if (t[0] === curTheme) return;
+        var tb = document.getElementById("themeBtn");
+        if (tb) tb.click();
+        else document.documentElement.dataset.theme = t[0];
+        setTimeout(buildMenu, 80);
+        setTimeout(function () { try { scan(document.body); } catch (e) {} }, 140);
+      });
+      seg.appendChild(b);
     });
-    menu.appendChild(tRow);
+    menu.appendChild(seg);
 
     var s1 = document.createElement("div"); s1.className = "tz-sep"; menu.appendChild(s1);
     var h2 = document.createElement("div"); h2.className = "tz-h"; h2.textContent = "Language / ভাষা";
     menu.appendChild(h2);
+    /* 🌐 ভাষা — একটি বাটন, ক্লিকে ভাষার তালিকা খোলে/বন্ধ হয় */
+    var lBtn = document.createElement("button"); lBtn.type = "button"; lBtn.className = "tz-row tz-langbtn";
+    lBtn.innerHTML = "<span>🌐 " + NAMES[cur] + "</span><span class='tz-val'>▾</span>";
+    var lList = document.createElement("div"); lList.className = "tz-langlist";
     SUPPORTED.forEach(function (l) {
       var b = document.createElement("button"); b.type = "button";
-      b.className = "tz-row" + (l === cur ? " on" : "");
-      b.innerHTML = '<span>' + NAMES[l] + '</span>' + (l === cur ? '<span class="tz-val">✓</span>' : "");
+      b.className = "tz-row tz-sub" + (l === cur ? " on" : "");
+      b.innerHTML = "<span>" + NAMES[l] + "</span>" + (l === cur ? "<span class='tz-val'>✓</span>" : "");
       b.addEventListener("click", function () {
         localStorage.setItem(LS_LANG, l);
         location.reload();
       });
-      menu.appendChild(b);
+      lList.appendChild(b);
     });
+    lBtn.addEventListener("click", function () {
+      var open = lList.classList.toggle("open");
+      var v = lBtn.querySelector(".tz-val"); if (v) v.textContent = open ? "▴" : "▾";
+    });
+    menu.appendChild(lBtn);
+    menu.appendChild(lList);
 
     var s2 = document.createElement("div"); s2.className = "tz-sep"; menu.appendChild(s2);
     var h3 = document.createElement("div"); h3.className = "tz-h"; h3.textContent = "My site / ইউজার-সেটিং";
     menu.appendChild(h3);
 
-    /* 🧘 নমুনা ইউজার-সেটিং — এখানেই ভবিষ্যতের সেটিং যোগ করবেন (এক লাইনেই রো!) */
+    /* 🔤 লেখার আকার — A- | A | A+ (পুরো সাইটে প্রযোজ্য, মনে রাখে) */
+    var fz = localStorage.getItem("tz_font") || "m";
+    var fRow = document.createElement("div"); fRow.className = "tz-seg";
+    [["s", "A-", "Small"], ["m", "A", "Default"], ["l", "A+", "Large"]].forEach(function (f) {
+      var b = document.createElement("button"); b.type = "button";
+      b.className = "tz-ico" + (fz === f[0] ? " act" : "");
+      b.title = f[2]; b.innerHTML = "<span>" + f[1] + "</span>";
+      b.addEventListener("click", function () {
+        localStorage.setItem("tz_font", f[0]);
+        document.documentElement.style.fontSize = f[0] === "s" ? "14.5px" : f[0] === "l" ? "17px" : "";
+        buildMenu();
+      });
+      fRow.appendChild(b);
+    });
+    menu.appendChild(fRow);
+
+    /* 🧘 অ্যানিমেশন কমান — পুরনো সুবিধা আগের মতোই */
     var calm = localStorage.getItem("tz_calm") === "1";
     var cRow = document.createElement("button"); cRow.type = "button"; cRow.className = "tz-row";
     cRow.innerHTML = "<span>" + (calm ? "☑ " : "☐ ") + "Reduce animations ✨</span>";
@@ -770,7 +814,39 @@
     });
     menu.appendChild(cRow);
 
-    var nt = document.createElement("div"); nt.className = "tz-note"; nt.textContent = "More settings soon 🚀";
+    /* 📲 অ্যাপ-ইনস্টল — সাইটের নিজের PWA-প্রম্পট এখান থেকেই */
+    var iRow = document.createElement("button"); iRow.type = "button"; iRow.className = "tz-row";
+    iRow.innerHTML = "<span>📲 Install app</span><span class='tz-val'>Add ⟵</span>";
+    iRow.addEventListener("click", function () {
+      if (window.__chitroInstall) {
+        window.__chitroInstall.prompt();
+      } else {
+        var b = document.getElementById("installBanner");
+        if (b) b.classList.add("show");
+      }
+    });
+    menu.appendChild(iRow);
+
+    /* 🔗 শর্টকাট — প্রোফাইল ও সেভড-প্রম্পট */
+    var pRow = document.createElement("button"); pRow.type = "button"; pRow.className = "tz-row";
+    pRow.innerHTML = "<span>👤 My profile</span><span class='tz-val'>→</span>";
+    pRow.addEventListener("click", function () { location.href = "profile.html"; });
+    menu.appendChild(pRow);
+    var sRow = document.createElement("button"); sRow.type = "button"; sRow.className = "tz-row";
+    sRow.innerHTML = "<span>💖 Saved prompts</span><span class='tz-val'>→</span>";
+    sRow.addEventListener("click", function () { location.href = "saved.html"; });
+    menu.appendChild(sRow);
+
+    /* ↺ সব সেটিংস রিসেট */
+    var rRow = document.createElement("button"); rRow.type = "button"; rRow.className = "tz-row";
+    rRow.innerHTML = "<span>↺ Reset all settings</span>";
+    rRow.addEventListener("click", function () {
+      ["tz_font", "tz_calm", LS_LANG].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+      location.reload();
+    });
+    menu.appendChild(rRow);
+
+    var nt = document.createElement("div"); nt.className = "tz-note"; nt.textContent = "TEZOFY ⚙️ v2";
     menu.appendChild(nt);
   }
 
