@@ -234,6 +234,41 @@
   <script src="assets/js/tezo-migration.js"></script><!-- ✚ নতুন -->
   <script src="assets/js/tezo-analytics.js"></script><!-- ✚ নতুন -->
   <script src="assets/js/app.js"></script>
+  <!-- ✚ Live stats (pure add-on): auto-counts the real PROMPTS + TOPICS from the
+       site's own data; updates itself when new prompts arrive from the Sheet
+       (cache = instant, live fetch = seconds). Zero existing lines are modified —
+       this block simply gets added after app.js. -->
+  <script>
+  (function () {
+    "use strict";
+    /* hero stat chips: [0] Prompts, [1] Topics, [2] Free To Use */
+    var bs = document.querySelectorAll(".stats .stat b");
+    if (bs.length < 3) return; /* hero structure changed → do nothing safely */
+    var EL_P = bs[0], EL_T = bs[1];
+    var T0 = Date.now(), BASE = -1, shown = false, stable = 0, last = -1, iv = null;
+    function countP() { try { return (typeof PROMPTS !== "undefined" && PROMPTS) ? PROMPTS.length : 0; } catch (e) { return 0; } }
+    function countT() { try { return (typeof TOPICS !== "undefined" && TOPICS) ? TOPICS.length : 0; } catch (e) { return 0; } }
+    function upd() {
+      /* Topics - fixed list, set immediately */
+      var t = countT();
+      if (EL_T && t && EL_T.textContent !== String(t)) EL_T.textContent = String(t);
+      /* Prompts - hold the written number until the merged (real) count arrives,
+         so visitors never see a flash of the base-only count */
+      var p = countP();
+      if (!shown) {
+        if ((p !== BASE && p > 0) || Date.now() - T0 > 8000) shown = true;
+        else return;
+      }
+      if (EL_P && p > 0 && EL_P.textContent !== String(p)) EL_P.textContent = String(p);
+      /* stop polling once the count has been stable for a while */
+      if (p === last) { stable++; if (stable > 60 && Date.now() - T0 > 20000 && iv) clearInterval(iv); }
+      else { stable = 0; last = p; }
+    }
+    BASE = countP();
+    upd();
+    iv = setInterval(upd, 400);
+  })();
+  </script>
   <script src="assets/js/i18n.js" defer></script>
   <script src="assets/js/i18n-content.js" defer></script>
   <script src="assets/js/masonry.js" defer></script>
@@ -256,5 +291,5 @@
   <script src="assets/js/magic-spin.js" defer></script>
 <script>window.addEventListener("DOMContentLoaded", function () { window.tzSpin && tzSpin.init({ auto: true }); });</script>
 <script src="assets/js/desktop-nav.js" defer></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a47f8ad35f062154',t:'MTc5MTU3MTUyNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
