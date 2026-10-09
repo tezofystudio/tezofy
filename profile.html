@@ -221,13 +221,19 @@
   <script src="assets/js/ai-menu.js" defer></script>
   <script src="assets/js/profile.js"></script>
   <script>
-/* ✚ SCROLL-HIDE BARS — scrolling down hides the top header + bottom nav bar,
-   scrolling up brings them right back. Runs on every page that has the bars.
-   Self-contained: injects its own CSS, guards against double-include. */
+  <script>
+    
+/* ✚ SCROLL-HIDE BARS — scrolling down hides the top header + bottom nav bar;
+   scrolling up brings them back only after ~2–3 steps of upward scrolling
+   (accumulated distance, so tiny jiggles don't flicker the bars back).
+   Runs on every page that has the bars. Self-contained: injects its own
+   CSS, guards against double-include. */
 (function () {
   "use strict";
   if (window.__tzScrollBars) return; /* double-include guard */
   window.__tzScrollBars = true;
+  /* upward pixels (≈ 2–3 scroll steps) required before the bars come back */
+  var SHOW_AFTER_UP = 150;
   var st = document.createElement("style");
   st.id = "tzScrollBarsStyle";
   st.textContent =
@@ -237,6 +243,7 @@
     "html.tz-bars-hidden .bottombar{transform:translateY(102%)}";
   document.head.appendChild(st);
   var lastY = window.scrollY || 0;
+  var upAcc = 0; /* upward distance accumulated since the bars hid */
   var ticking = false;
   function onScroll() {
     ticking = false;
@@ -245,9 +252,16 @@
     lastY = y;
     var root = document.documentElement;
     /* keep both bars visible while the settings menu is open */
-    if (document.querySelector("#tzSetMenu.open")) { root.classList.remove("tz-bars-hidden"); return; }
-    if (dy > 6 && y > 90) root.classList.add("tz-bars-hidden");           /* scrolling down  → hide  */
-    else if (dy < -6 || y <= 90) root.classList.remove("tz-bars-hidden"); /* scrolling up / near top → show */
+    if (document.querySelector("#tzSetMenu.open")) { root.classList.remove("tz-bars-hidden"); upAcc = 0; return; }
+    /* top zone → always visible */
+    if (y <= 90) { root.classList.remove("tz-bars-hidden"); upAcc = 0; return; }
+    /* scrolling down → hide immediately, reset the upward counter */
+    if (dy > 6) { root.classList.add("tz-bars-hidden"); upAcc = 0; return; }
+    /* scrolling up → count the distance; show only after enough steps */
+    if (dy < 0) {
+      upAcc += -dy;
+      if (upAcc >= SHOW_AFTER_UP) { root.classList.remove("tz-bars-hidden"); upAcc = 0; }
+    }
   }
   window.addEventListener("scroll", function () {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
