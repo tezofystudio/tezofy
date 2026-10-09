@@ -2181,48 +2181,86 @@
   else boot();
 })();
 
-/* ✚ SCROLL-HIDE BARS — scrolling down hides the top header + bottom nav bar;
-   scrolling up brings them back only after ~2–3 steps of upward scrolling
-   (accumulated distance, so tiny jiggles don't flicker the bars back).
-   Runs on every page that has the bars. Self-contained: injects its own
-   CSS, guards against double-include. */
+/* ✚ SCROLL-HIDE BARS v3 — generic pages: down hides the bars, ~2–3 steps up
+   brings them back (as before). Template (prompt detail) page: bars start
+   HIDDEN, the prompt image fills the whole screen at its natural ratio, and —
+   double-tap on the image toggles the bars; scrolling down keeps them hidden;
+   ~3–4 steps of upward scrolling brings them back. The settings-menu guard,
+   rAF throttling and the double-include guard are all preserved. */
 (function () {
   "use strict";
   if (window.__tzScrollBars) return; /* double-include guard */
   window.__tzScrollBars = true;
-  /* upward pixels (≈ 2–3 scroll steps) required before the bars come back */
-  var SHOW_AFTER_UP = 150;
+  /* upward pixels required before the bars come back */
+  var SHOW_AFTER_UP = 150;        /* every page: ~2–3 steps */
+  var SHOW_AFTER_UP_TMPL = 200;   /* template page: ~3–4 steps */
+  function isTemplate() {
+    var b = document.body;
+    return !!(b && b.getAttribute("data-page") === "template");
+  }
   var st = document.createElement("style");
   st.id = "tzScrollBarsStyle";
   st.textContent =
     ".site-header{transition:transform .3s ease}" +
     ".bottombar{transition:transform .3s ease}" +
     "html.tz-bars-hidden .site-header{transform:translateY(-102%)}" +
-    "html.tz-bars-hidden .bottombar{transform:translateY(102%)}";
+    "html.tz-bars-hidden .bottombar{transform:translateY(102%)}" +
+    /* template page only: image fills the whole screen, natural ratio (no crop) */
+    "body[data-page=\"template\"] .detail-img img.main{max-height:calc(100vh - var(--header-h,60px)) !important}" +
+    "body[data-page=\"template\"] .detail-img img.main{max-height:calc(100dvh - var(--header-h,60px)) !important}";
   document.head.appendChild(st);
+  var root = document.documentElement;
   var lastY = window.scrollY || 0;
-  var upAcc = 0; /* upward distance accumulated since the bars hid */
+  var upAcc = 0;   /* upward distance accumulated since the bars hid */
   var ticking = false;
+  function show() { root.classList.remove("tz-bars-hidden"); upAcc = 0; }
+  function hide() { root.classList.add("tz-bars-hidden"); upAcc = 0; }
   function onScroll() {
     ticking = false;
     var y = window.scrollY || 0;
     var dy = y - lastY;
     lastY = y;
-    var root = document.documentElement;
     /* keep both bars visible while the settings menu is open */
-    if (document.querySelector("#tzSetMenu.open")) { root.classList.remove("tz-bars-hidden"); upAcc = 0; return; }
-    /* top zone → always visible */
-    if (y <= 90) { root.classList.remove("tz-bars-hidden"); upAcc = 0; return; }
-    /* scrolling down → hide immediately, reset the upward counter */
-    if (dy > 6) { root.classList.add("tz-bars-hidden"); upAcc = 0; return; }
-    /* scrolling up → count the distance; show only after enough steps */
-    if (dy < 0) {
+    if (document.querySelector("#tzSetMenu.open")) { show(); return; }
+    var tmpl = isTemplate();
+    if (dy > 6) { hide(); return; }                 /* down → hide, reset counter */
+    if (dy < 0) {                                   /* up → count the distance */
       upAcc += -dy;
-      if (upAcc >= SHOW_AFTER_UP) { root.classList.remove("tz-bars-hidden"); upAcc = 0; }
+      if (upAcc >= (tmpl ? SHOW_AFTER_UP_TMPL : SHOW_AFTER_UP)) show();
+      return;
     }
+    if (!tmpl && y <= 90) show();                   /* near top → show (generic pages only) */
   }
+  /* template page: bars start hidden — full-screen image view */
+  if (isTemplate()) hide();
   window.addEventListener("scroll", function () {
     if (!ticking) { ticking = true; requestAnimationFrame(onScroll); }
+  }, { passive: true });
+  /* double-tap on the big image toggles the bars (template page only) */
+  var lastToggle = 0, lastTap = 0, lastTX = 0, lastTY = 0;
+  function toggleByTap() {
+    if (!isTemplate()) return;
+    var now = Date.now();
+    if (now - lastToggle < 500) return; /* touch + mouse both fired → single toggle */
+    lastToggle = now;
+    if (root.classList.contains("tz-bars-hidden")) show(); else hide();
+  }
+  document.addEventListener("dblclick", function (e) {
+    if (!isTemplate() || !e.target || !e.target.closest) return;
+    if (e.target.closest(".detail-img") && !e.target.closest("button")) toggleByTap();
+  });
+  document.addEventListener("touchend", function (e) {
+    if (!isTemplate() || !e.target || !e.target.closest) return;
+    var t = e.changedTouches && e.changedTouches[0];
+    if (!t) return;
+    if (!e.target.closest(".detail-img") || e.target.closest("button")) { lastTap = 0; return; }
+    var now = Date.now();
+    if (now - lastTap < 350 && Math.abs(t.clientX - lastTX) < 40 && Math.abs(t.clientY - lastTY) < 40) {
+      lastTap = 0;
+      toggleByTap();
+    } else {
+      lastTap = now; lastTX = t.clientX; lastTY = t.clientY;
+    }
   }, { passive: true });
   onScroll();
 })();
